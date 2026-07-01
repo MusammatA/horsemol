@@ -10,6 +10,9 @@
         --strip-height: clamp(3.1rem, 6vw, 3.8rem);
         --scroll-distance: 0px;
         --scroll-duration: 12s;
+        --strip-color-rgb: 82, 98, 111;
+        --strip-foreground-rgb: 255, 255, 255;
+        --strip-foreground: rgb(var(--strip-foreground-rgb));
         background: #ffffff;
       }
 
@@ -74,13 +77,19 @@
         display: flex;
         align-items: center;
         gap: 0.8rem;
+        color: var(--strip-foreground);
         min-height: var(--strip-height);
         padding: 0.5rem 0.9rem 0.5rem 0.55rem;
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(var(--strip-foreground-rgb), 0.24);
         border-radius: 999px;
-        background: rgba(8, 12, 18, 0.72);
+        background: linear-gradient(
+          90deg,
+          rgba(var(--strip-color-rgb), 0.94),
+          rgba(var(--strip-color-rgb), 0.72)
+        );
         box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.25);
         backdrop-filter: blur(14px);
+        transition: background 220ms ease, border-color 220ms ease, color 220ms ease;
       }
 
       #player-toggle {
@@ -92,13 +101,13 @@
         display: grid;
         place-items: center;
         cursor: pointer;
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.16);
+        color: inherit;
+        background: rgba(var(--strip-foreground-rgb), 0.16);
         transition: background-color 160ms ease, transform 160ms ease;
       }
 
       #player-toggle:hover {
-        background: rgba(255, 255, 255, 0.24);
+        background: rgba(var(--strip-foreground-rgb), 0.24);
       }
 
       #player-toggle:active {
@@ -158,7 +167,7 @@
         gap: 2.5rem;
         width: max-content;
         max-width: none;
-        color: #ffffff;
+        color: inherit;
         white-space: nowrap;
       }
 
@@ -345,6 +354,7 @@
 
       const backgroundSwitcher = document.getElementById("background-switcher");
       const backgroundImage = document.getElementById("background-image");
+      const musicStrip = document.getElementById("music-strip");
       const playerToggle = document.getElementById("player-toggle");
       const trackWindow = document.getElementById("track-window");
       const trackTitle = document.getElementById("track-title");
@@ -352,8 +362,11 @@
       const imageRotations = {
         "1.jpg": "90deg",
       };
+      const thumbnailColorCache = new Map();
       let currentImageIndex = 0;
       let currentTrackIndex = 0;
+      let currentTrackVideoId = firstVideoId;
+      let activeColorVideoId = "";
       let player;
       let playerReady = false;
       let isPlaying = false;
@@ -370,6 +383,159 @@
         backgroundImage.style.setProperty("--rotation-angle", rotationAngle);
         backgroundImage.classList.toggle("is-rotated", shouldRotate);
       });
+
+      function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+      }
+
+      function rgbToLuminance(channel) {
+        const normalized = channel / 255;
+
+        if (normalized <= 0.03928) {
+          return normalized / 12.92;
+        }
+
+        return ((normalized + 0.055) / 1.055) ** 2.4;
+      }
+
+      function setStripColor(color) {
+        if (!color) {
+          return;
+        }
+
+        const r = Math.round(clamp(color.r, 0, 255));
+        const g = Math.round(clamp(color.g, 0, 255));
+        const b = Math.round(clamp(color.b, 0, 255));
+        const luminance =
+          0.2126 * rgbToLuminance(r) +
+          0.7152 * rgbToLuminance(g) +
+          0.0722 * rgbToLuminance(b);
+        const foregroundRgb = luminance > 0.46 ? "12, 17, 24" : "255, 255, 255";
+
+        document.documentElement.style.setProperty("--strip-color-rgb", `${r}, ${g}, ${b}`);
+        document.documentElement.style.setProperty("--strip-foreground-rgb", foregroundRgb);
+      }
+
+      function enhanceSampledColor(color) {
+        const average = (color.r + color.g + color.b) / 3;
+        const boost = 1.22;
+        const adjusted = {
+          r: average + (color.r - average) * boost,
+          g: average + (color.g - average) * boost,
+          b: average + (color.b - average) * boost,
+        };
+        const brightness = (adjusted.r + adjusted.g + adjusted.b) / 3;
+        const targetBrightness = clamp(brightness, 76, 196) || 128;
+        const brightnessScale = targetBrightness / Math.max(brightness, 1);
+
+        return {
+          r: clamp(adjusted.r * brightnessScale, 0, 255),
+          g: clamp(adjusted.g * brightnessScale, 0, 255),
+          b: clamp(adjusted.b * brightnessScale, 0, 255),
+        };
+      }
+
+      function extractDominantColor(image) {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+
+        if (!context) {
+          return null;
+        }
+
+        const sampleSize = 24;
+        canvas.width = sampleSize;
+        canvas.height = sampleSize;
+        context.drawImage(image, 0, 0, sampleSize, sampleSize);
+
+        const pixels = context.getImageData(0, 0, sampleSize, sampleSize).data;
+        let totalWeight = 0;
+        let red = 0;
+        let green = 0;
+        let blue = 0;
+
+        for (let index = 0; index < pixels.length; index += 4) {
+          const r = pixels[index];
+          const g = pixels[index + 1];
+          const b = pixels[index + 2];
+          const alpha = pixels[index + 3];
+          const maxChannel = Math.max(r, g, b);
+          const minChannel = Math.min(r, g, b);
+          const brightness = (r + g + b) / 3;
+
+          if (alpha < 180 || brightness < 18) {
+            continue;
+          }
+
+          const saturation = maxChannel - minChannel;
+          const weight = 0.45 + saturation / 255;
+
+          red += r * weight;
+          green += g * weight;
+          blue += b * weight;
+          totalWeight += weight;
+        }
+
+        if (!totalWeight) {
+          return null;
+        }
+
+        return enhanceSampledColor({
+          r: red / totalWeight,
+          g: green / totalWeight,
+          b: blue / totalWeight,
+        });
+      }
+
+      function sampleThumbnailColor(videoId) {
+        if (!videoId) {
+          return Promise.resolve(null);
+        }
+
+        if (thumbnailColorCache.has(videoId)) {
+          return Promise.resolve(thumbnailColorCache.get(videoId));
+        }
+
+        return new Promise((resolve) => {
+          const image = new Image();
+
+          image.crossOrigin = "anonymous";
+          image.referrerPolicy = "no-referrer";
+          image.onload = () => {
+            let color = null;
+
+            try {
+              color = extractDominantColor(image);
+            } catch (error) {
+              color = null;
+            }
+
+            thumbnailColorCache.set(videoId, color);
+            resolve(color);
+          };
+          image.onerror = () => {
+            thumbnailColorCache.set(videoId, null);
+            resolve(null);
+          };
+          image.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+        });
+      }
+
+      async function updateStripColorForVideo(videoId) {
+        if (!videoId || videoId === activeColorVideoId) {
+          return;
+        }
+
+        activeColorVideoId = videoId;
+        musicStrip.dataset.videoId = videoId;
+        const sampledColor = await sampleThumbnailColor(videoId);
+
+        if (!sampledColor || activeColorVideoId !== videoId) {
+          return;
+        }
+
+        setStripColor(sampledColor);
+      }
 
       function setTrackTitle(title) {
         trackTitle.textContent = title;
@@ -426,6 +592,11 @@
 
           if (videoData && typeof videoData.title === "string") {
             liveTitle = videoData.title.trim();
+          }
+
+          if (videoData && typeof videoData.video_id === "string" && videoData.video_id.trim()) {
+            currentTrackVideoId = videoData.video_id.trim();
+            updateStripColorForVideo(currentTrackVideoId);
           }
         }
 
@@ -503,6 +674,7 @@
         shouldPlayWhenReady = false;
         updateToggleState();
         setTrackTitle(getFallbackTitle(currentTrackIndex));
+        updateStripColorForVideo(currentTrackVideoId);
       }
 
       function onPlayerError() {
@@ -594,6 +766,7 @@
 
       renderBackground();
       setTrackTitle(getFallbackTitle(currentTrackIndex));
+      updateStripColorForVideo(firstVideoId);
       loadYouTubeApi();
     </script>
   </body>
