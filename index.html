@@ -6,6 +6,10 @@
     <title>horsemol</title>
     <style>
       :root {
+        --page-gutter: clamp(0.75rem, 2vw, 1.25rem);
+        --strip-height: clamp(3.1rem, 6vw, 3.8rem);
+        --scroll-distance: 0px;
+        --scroll-duration: 12s;
         background: #ffffff;
       }
 
@@ -21,6 +25,7 @@
         min-height: 100vh;
         overflow: hidden;
         background: #000000;
+        font-family: "Trebuchet MS", "Gill Sans", sans-serif;
       }
 
       #background-switcher {
@@ -33,7 +38,7 @@
         overflow: hidden;
         cursor: pointer;
         background: #000000;
-        appearance: none;
+        user-select: none;
       }
 
       #background-image {
@@ -53,12 +58,182 @@
         height: 100vw;
         transform: translate(-50%, -50%) rotate(var(--rotation-angle, -90deg));
       }
+
+      #background-switcher:focus-visible,
+      #player-toggle:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.88);
+        outline-offset: 0.2rem;
+      }
+
+      #music-strip {
+        position: fixed;
+        top: var(--page-gutter);
+        left: var(--page-gutter);
+        right: 50%;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        min-height: var(--strip-height);
+        padding: 0.5rem 0.9rem 0.5rem 0.55rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(8, 12, 18, 0.72);
+        box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(14px);
+      }
+
+      #player-toggle {
+        flex: 0 0 auto;
+        width: 2.35rem;
+        height: 2.35rem;
+        border: 0;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.16);
+        transition: background-color 160ms ease, transform 160ms ease;
+      }
+
+      #player-toggle:hover {
+        background: rgba(255, 255, 255, 0.24);
+      }
+
+      #player-toggle:active {
+        transform: scale(0.97);
+      }
+
+      .player-icon {
+        position: relative;
+        display: block;
+        width: 0.92rem;
+        height: 0.92rem;
+      }
+
+      .player-icon::before,
+      .player-icon::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transition: all 160ms ease;
+        background: currentColor;
+      }
+
+      #player-toggle:not(.is-playing) .player-icon::before {
+        clip-path: polygon(18% 8%, 92% 50%, 18% 92%);
+      }
+
+      #player-toggle:not(.is-playing) .player-icon::after {
+        opacity: 0;
+      }
+
+      #player-toggle.is-playing .player-icon::before,
+      #player-toggle.is-playing .player-icon::after {
+        width: 0.24rem;
+        border-radius: 999px;
+        clip-path: none;
+        opacity: 1;
+      }
+
+      #player-toggle.is-playing .player-icon::before {
+        left: 0.16rem;
+      }
+
+      #player-toggle.is-playing .player-icon::after {
+        left: auto;
+        right: 0.16rem;
+      }
+
+      #track-window {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      #track-marquee {
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+        width: max-content;
+        max-width: none;
+        color: #ffffff;
+        white-space: nowrap;
+      }
+
+      #track-title,
+      #track-title-clone {
+        display: inline-block;
+        font-size: clamp(0.85rem, 1.5vw, 1rem);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      #track-title-clone {
+        display: none;
+      }
+
+      #track-window.is-scrolling #track-title-clone {
+        display: inline-block;
+      }
+
+      #track-window.is-scrolling #track-marquee {
+        animation: marquee-scroll var(--scroll-duration) linear infinite;
+      }
+
+      #yt-player-shell {
+        position: fixed;
+        width: 240px;
+        height: 240px;
+        right: -260px;
+        bottom: -260px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      @keyframes marquee-scroll {
+        from {
+          transform: translateX(0);
+        }
+
+        to {
+          transform: translateX(calc(-1 * var(--scroll-distance)));
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #track-window.is-scrolling #track-marquee {
+          animation: none;
+        }
+      }
     </style>
   </head>
   <body>
-    <button id="background-switcher" type="button" aria-label="Change background image">
+    <div
+      id="background-switcher"
+      role="button"
+      tabindex="0"
+      aria-label="Change background image"
+    >
       <img id="background-image" alt="" />
-    </button>
+    </div>
+
+    <div id="music-strip">
+      <button id="player-toggle" type="button" aria-label="Play playlist">
+        <span class="player-icon" aria-hidden="true"></span>
+      </button>
+      <div id="track-window" aria-live="polite">
+        <div id="track-marquee">
+          <span id="track-title">Attar</span>
+          <span id="track-title-clone" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="yt-player-shell" aria-hidden="true">
+      <div id="yt-player"></div>
+    </div>
 
     <script>
       const images = [
@@ -69,37 +244,357 @@
         "9.jpg",
         "10.jpg",
       ];
+      const playlistId = "PLi3vi3tWSp047q5lgf8g0LSLGmInym5N1";
+      const firstVideoId = "Paiy3DDl-SU";
+      const fallbackTitles = [
+        "Attar",
+        "Warrior's Words",
+        "Kai Kozhong",
+        "Topshur",
+        "Maral Deer",
+        "Kaichylar Bards",
+        "Spring Water",
+        "Ulu Kaan (Ulagan Aimag)",
+        "Janar Altai Folk Strains",
+        "Oh Frost, Frost",
+        "Amyran (Amyr Akchin Style Of Singing)",
+        "Uluhan",
+        "Snowdrop",
+        "Cranes",
+        "Kai Throat Singing",
+        "Mother Fire",
+        "Golden Cuckoo",
+        "Golden Autumn",
+        "Wondrous Altai",
+        "Kai Kozhong",
+        "Memories",
+        "Oino, Oino, Altai",
+        "Kara-Suu",
+        "Ancient Kai Song and Tunur Drum",
+        "Amyrai",
+        "Kezer Tash",
+        "Jerim",
+        "Altai Kabai",
+        "Oyim, Oyim, Oy-Oyim",
+        "Hero Warriors",
+        "Altai Argimak",
+        "Siberian Sygyn (feat. Russian State Symphony Orchestra)",
+        "Cradle Of Altai (Live)",
+        "Golden Lake",
+        "Jerim",
+        "Kara Suu (Live) (feat. Aka Odko)",
+        "Snowdrop Flower (feat. Russian State Symphony Orchestra)",
+        "Telengit Style Janar Strains",
+        "Argimak",
+        "Irbis",
+        "Golden Lake Morning",
+        "El-Jonim",
+        "Ere-Chuy",
+        "Argali",
+        "Khan-Altai",
+        "Komuzym, Oino, Oino",
+        "Oh, Frost (feat. Russian State Symphony Orchestra)",
+        "Shunu Warrior",
+        "Tuulu Altai",
+        "Tuularym",
+        "My Altai",
+        "The Great Khan (feat. Russian State Symphony Orchestra)",
+        "Epos Oskus Uul",
+        "Blessing",
+        "My Altai",
+        "Prayers",
+        "Kai Throatsinging (feat. Russian State Symphony Orchestra)",
+        "Altai Folkstrains (feat. Russian State Symphony Orchestra)",
+        "Sananarym",
+        "Sacred Ere Chuy",
+        "Uldamdy Tujenip",
+        "Golden Fall Season (feat. Russian State Symphony Orchestra)",
+        "Mountain Sheep (feat. Russian State Symphony Orchestra)",
+        "Ancient Kai Song and Tunur Drum",
+        "Koyonok",
+        "Sanaalar",
+        "Altyn Kol",
+        "Uch-Sumer",
+        "Jangar Style Song From Ulagan Aimag",
+        "Golden Lake (feat. Russian State Symphony Orchestra)",
+        "Attu Kuresh",
+        "Alash",
+        "Dyanar",
+        "Play, Play, My Khomus",
+        "Uchar",
+        "Ak Korumnyng Tynyzhy",
+        "Golden Cuckoo (feat. Russian State Symphony Orchestra)",
+        "Jerding Ozy",
+        "Naigrish",
+        "Morning at the Golden Lake (feat. Russian State Symphony Orchestra)",
+        "Summer",
+        "Oskus Uul",
+        "Different Styles of Throat Singing",
+        "Ar-Butken",
+        "Kalygym",
+        "Kaskatu",
+        "Dance for the 3 Sumer Mountain and Khatun River (feat. Russian State Symphony Orchestra)",
+        "Topshurym",
+        "Janar",
+        "Ak Borobys",
+        "Khan Altai",
+        "Jeren Adym",
+        "Telgennin Uchuzhy",
+        "My Native Land, Altai (Live)",
+      ];
 
       const backgroundSwitcher = document.getElementById("background-switcher");
       const backgroundImage = document.getElementById("background-image");
+      const playerToggle = document.getElementById("player-toggle");
+      const trackWindow = document.getElementById("track-window");
+      const trackTitle = document.getElementById("track-title");
+      const trackTitleClone = document.getElementById("track-title-clone");
       const imageRotations = {
         "1.jpg": "90deg",
       };
-      let currentIndex = 0;
+      let currentImageIndex = 0;
+      let currentTrackIndex = 0;
+      let player;
+      let playerReady = false;
+      let isPlaying = false;
+      let shouldPlayWhenReady = false;
+      let hasQueuedPlaylist = false;
+      let marqueeFrame = 0;
+      let titleSyncInterval = 0;
 
       backgroundImage.addEventListener("load", () => {
         const shouldRotate = backgroundImage.naturalHeight > backgroundImage.naturalWidth;
-        const currentImage = images[currentIndex];
+        const currentImage = images[currentImageIndex];
         const rotationAngle = imageRotations[currentImage] || "-90deg";
 
         backgroundImage.style.setProperty("--rotation-angle", rotationAngle);
         backgroundImage.classList.toggle("is-rotated", shouldRotate);
       });
 
+      function setTrackTitle(title) {
+        trackTitle.textContent = title;
+        trackTitleClone.textContent = title;
+        window.cancelAnimationFrame(marqueeFrame);
+        marqueeFrame = window.requestAnimationFrame(updateMarqueeState);
+      }
+
+      function updateMarqueeState() {
+        const overflowAmount = trackTitle.scrollWidth - trackWindow.clientWidth;
+        const shouldScroll = overflowAmount > 0;
+
+        trackWindow.classList.remove("is-scrolling");
+
+        if (!shouldScroll) {
+          return;
+        }
+
+        const gap = 40;
+        const totalDistance = trackTitle.scrollWidth + gap;
+        const duration = Math.max(10, totalDistance / 28);
+
+        trackWindow.style.setProperty("--scroll-distance", `${totalDistance}px`);
+        trackWindow.style.setProperty("--scroll-duration", `${duration}s`);
+        trackWindow.classList.add("is-scrolling");
+      }
+
+      function updateToggleState() {
+        playerToggle.classList.toggle("is-playing", isPlaying);
+        playerToggle.setAttribute("aria-label", isPlaying ? "Pause playlist" : "Play playlist");
+      }
+
+      function getFallbackTitle(index) {
+        return fallbackTitles[index] || `Track ${index + 1}`;
+      }
+
+      function syncTrackInfo() {
+        if (!playerReady || !player) {
+          return;
+        }
+
+        if (typeof player.getPlaylistIndex === "function") {
+          const apiIndex = player.getPlaylistIndex();
+
+          if (Number.isInteger(apiIndex) && apiIndex >= 0) {
+            currentTrackIndex = apiIndex;
+          }
+        }
+
+        let liveTitle = "";
+
+        if (typeof player.getVideoData === "function") {
+          const videoData = player.getVideoData();
+
+          if (videoData && typeof videoData.title === "string") {
+            liveTitle = videoData.title.trim();
+          }
+        }
+
+        setTrackTitle(liveTitle || getFallbackTitle(currentTrackIndex));
+      }
+
+      function queuePlaylist() {
+        if (!playerReady || !player || hasQueuedPlaylist) {
+          return;
+        }
+
+        if (typeof player.cuePlaylist === "function") {
+          player.cuePlaylist({
+            index: currentTrackIndex,
+            list: playlistId,
+            listType: "playlist",
+          });
+          hasQueuedPlaylist = true;
+        }
+      }
+
       function renderBackground() {
-        const currentImage = images[currentIndex];
+        const currentImage = images[currentImageIndex];
 
         backgroundImage.classList.remove("is-rotated");
         backgroundImage.src = encodeURI(currentImage);
-        backgroundSwitcher.setAttribute("aria-label", `Show next background image. Current image ${currentIndex}`);
+        backgroundSwitcher.setAttribute(
+          "aria-label",
+          `Show next background image. Current image ${currentImageIndex}`,
+        );
       }
 
-      backgroundSwitcher.addEventListener("click", () => {
-        currentIndex = (currentIndex + 1) % images.length;
+      function showNextBackground() {
+        currentImageIndex = (currentImageIndex + 1) % images.length;
         renderBackground();
+      }
+
+      function onPlayerReady(event) {
+        playerReady = true;
+        currentTrackIndex = 0;
+        queuePlaylist();
+        setTrackTitle(getFallbackTitle(currentTrackIndex));
+        window.setTimeout(syncTrackInfo, 400);
+        titleSyncInterval = window.setInterval(syncTrackInfo, 1500);
+
+        if (shouldPlayWhenReady) {
+          event.target.playVideo();
+        }
+      }
+
+      function onPlayerStateChange(event) {
+        if (!window.YT) {
+          return;
+        }
+
+        if (event.data === window.YT.PlayerState.PLAYING) {
+          isPlaying = true;
+          syncTrackInfo();
+        } else if (event.data === window.YT.PlayerState.BUFFERING) {
+          syncTrackInfo();
+        } else if (event.data === window.YT.PlayerState.PAUSED) {
+          isPlaying = false;
+        } else if (event.data === window.YT.PlayerState.CUED) {
+          syncTrackInfo();
+        } else if (event.data === window.YT.PlayerState.ENDED) {
+          isPlaying = false;
+          syncTrackInfo();
+        }
+
+        updateToggleState();
+      }
+
+      function onAutoplayBlocked() {
+        isPlaying = false;
+        shouldPlayWhenReady = false;
+        updateToggleState();
+        setTrackTitle(getFallbackTitle(currentTrackIndex));
+      }
+
+      function onPlayerError() {
+        isPlaying = false;
+        shouldPlayWhenReady = false;
+        updateToggleState();
+        setTrackTitle("Playlist unavailable right now");
+      }
+
+      function loadYouTubeApi() {
+        if (window.YT && typeof window.YT.Player === "function") {
+          window.onYouTubeIframeAPIReady();
+          return;
+        }
+
+        if (document.querySelector('script[data-yt-api="true"]')) {
+          return;
+        }
+
+        const apiScript = document.createElement("script");
+        apiScript.src = "https://www.youtube.com/iframe_api";
+        apiScript.async = true;
+        apiScript.dataset.ytApi = "true";
+        apiScript.addEventListener("error", onPlayerError);
+        document.head.append(apiScript);
+      }
+
+      window.onYouTubeIframeAPIReady = function onYouTubeIframeAPIReady() {
+        if (player) {
+          return;
+        }
+
+        const playerVars = {
+          controls: 0,
+          list: playlistId,
+          listType: "playlist",
+          loop: 1,
+          playsinline: 1,
+          rel: 0,
+        };
+
+        if (window.location.protocol.startsWith("http")) {
+          playerVars.origin = window.location.origin;
+        }
+
+        player = new window.YT.Player("yt-player", {
+          width: "240",
+          height: "240",
+          videoId: firstVideoId,
+          playerVars,
+          events: {
+            onAutoplayBlocked,
+            onError: onPlayerError,
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange,
+          },
+        });
+      };
+
+      backgroundSwitcher.addEventListener("click", showNextBackground);
+      backgroundSwitcher.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          showNextBackground();
+        }
+      });
+
+      playerToggle.addEventListener("click", () => {
+        shouldPlayWhenReady = !isPlaying;
+
+        if (!playerReady || !player) {
+          loadYouTubeApi();
+          return;
+        }
+
+        if (isPlaying) {
+          shouldPlayWhenReady = false;
+          player.pauseVideo();
+          return;
+        }
+
+        player.playVideo();
+      });
+
+      window.addEventListener("resize", () => {
+        window.cancelAnimationFrame(marqueeFrame);
+        marqueeFrame = window.requestAnimationFrame(updateMarqueeState);
       });
 
       renderBackground();
+      setTrackTitle(getFallbackTitle(currentTrackIndex));
+      loadYouTubeApi();
     </script>
   </body>
 </html>
