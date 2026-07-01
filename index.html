@@ -44,7 +44,7 @@
         user-select: none;
       }
 
-      #background-image {
+      .background-image {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -54,9 +54,17 @@
         object-position: center;
         transform: translate(-50%, -50%);
         background: #000000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 520ms ease;
+        will-change: transform, opacity;
       }
 
-      #background-image.is-rotated {
+      .background-image.is-visible {
+        opacity: 1;
+      }
+
+      .background-image.is-rotated {
         width: 100vh;
         height: 100vw;
         transform: translate(-50%, -50%) rotate(var(--rotation-angle, -90deg));
@@ -187,8 +195,45 @@
 
       #track-window {
         flex: 1 1 auto;
+        width: 0;
         min-width: 0;
         overflow: hidden;
+        position: relative;
+      }
+
+      #track-window::before,
+      #track-window::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2.35rem;
+        pointer-events: none;
+        z-index: 1;
+        transition: opacity 220ms ease;
+      }
+
+      #track-window::before {
+        left: 0;
+        opacity: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(var(--strip-color-rgb), 0.94),
+          rgba(var(--strip-color-rgb), 0)
+        );
+      }
+
+      #track-window::after {
+        right: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(var(--strip-color-rgb), 0),
+          rgba(var(--strip-color-rgb), 0.82)
+        );
+      }
+
+      #track-window.is-scrolling::before {
+        opacity: 1;
       }
 
       #track-marquee {
@@ -199,6 +244,7 @@
         max-width: none;
         color: inherit;
         white-space: nowrap;
+        will-change: transform;
       }
 
       #track-title,
@@ -218,7 +264,7 @@
       }
 
       #track-window.is-scrolling #track-marquee {
-        animation: marquee-scroll var(--scroll-duration) linear infinite;
+        animation: marquee-scroll var(--scroll-duration) ease-in-out infinite;
       }
 
       #up-next-list {
@@ -297,11 +343,13 @@
       }
 
       @keyframes marquee-scroll {
-        from {
+        0%,
+        14% {
           transform: translateX(0);
         }
 
-        to {
+        86%,
+        100% {
           transform: translateX(calc(-1 * var(--scroll-distance)));
         }
       }
@@ -348,7 +396,8 @@
       tabindex="0"
       aria-label="Change background image"
     >
-      <img id="background-image" alt="" />
+      <img class="background-image" alt="" />
+      <img class="background-image" alt="" />
     </div>
 
     <div id="music-stack">
@@ -535,7 +584,7 @@
       ];
 
       const backgroundSwitcher = document.getElementById("background-switcher");
-      const backgroundImage = document.getElementById("background-image");
+      const backgroundImages = Array.from(document.querySelectorAll(".background-image"));
       const musicStrip = document.getElementById("music-strip");
       const playerToggle = document.getElementById("player-toggle");
       const previousTrackButton = document.getElementById("previous-track");
@@ -550,7 +599,10 @@
       const imageRotations = {
         "1.jpg": "90deg",
       };
+      const backgroundCache = new Map();
       const thumbnailColorCache = new Map();
+      let activeBackgroundLayerIndex = -1;
+      let backgroundRenderToken = 0;
       let currentImageIndex = 0;
       let currentTrackIndex = 0;
       let currentTrackVideoId = firstVideoId;
@@ -563,17 +615,34 @@
       let marqueeFrame = 0;
       let titleSyncInterval = 0;
 
-      backgroundImage.addEventListener("load", () => {
-        const shouldRotate = backgroundImage.naturalHeight > backgroundImage.naturalWidth;
-        const currentImage = images[currentImageIndex];
-        const rotationAngle = imageRotations[currentImage] || "-90deg";
-
-        backgroundImage.style.setProperty("--rotation-angle", rotationAngle);
-        backgroundImage.classList.toggle("is-rotated", shouldRotate);
-      });
-
       function clamp(value, min, max) {
         return Math.min(max, Math.max(min, value));
+      }
+
+      function preloadBackgroundImage(imagePath) {
+        if (backgroundCache.has(imagePath)) {
+          return backgroundCache.get(imagePath);
+        }
+
+        const request = new Promise((resolve, reject) => {
+          const loader = new Image();
+
+          loader.onload = () => resolve(loader);
+          loader.onerror = reject;
+          loader.src = encodeURI(imagePath);
+        });
+
+        backgroundCache.set(imagePath, request);
+        return request;
+      }
+
+      function applyBackgroundImage(element, imagePath, loadedImage) {
+        const rotationAngle = imageRotations[imagePath] || "-90deg";
+        const shouldRotate = loadedImage.naturalHeight > loadedImage.naturalWidth;
+
+        element.style.setProperty("--rotation-angle", rotationAngle);
+        element.classList.toggle("is-rotated", shouldRotate);
+        element.src = encodeURI(imagePath);
       }
 
       function rgbToLuminance(channel) {
@@ -778,9 +847,9 @@
           return;
         }
 
-        const gap = 40;
+        const gap = 54;
         const totalDistance = trackTitle.scrollWidth + gap;
-        const duration = Math.max(10, totalDistance / 28);
+        const duration = Math.max(16, totalDistance / 18);
 
         trackWindow.style.setProperty("--scroll-distance", `${totalDistance}px`);
         trackWindow.style.setProperty("--scroll-duration", `${duration}s`);
@@ -839,20 +908,54 @@
         }
       }
 
-      function renderBackground() {
-        const currentImage = images[currentImageIndex];
+      async function renderBackground({ immediate = false } = {}) {
+        const imagePath = images[currentImageIndex];
+        const requestToken = ++backgroundRenderToken;
 
-        backgroundImage.classList.remove("is-rotated");
-        backgroundImage.src = encodeURI(currentImage);
-        backgroundSwitcher.setAttribute(
-          "aria-label",
-          `Show next background image. Current image ${currentImageIndex}`,
-        );
+        try {
+          const loadedImage = await preloadBackgroundImage(imagePath);
+
+          if (requestToken !== backgroundRenderToken) {
+            return;
+          }
+
+          const nextLayerIndex = activeBackgroundLayerIndex === 0 ? 1 : 0;
+          const nextLayer = backgroundImages[nextLayerIndex];
+          const currentLayer =
+            activeBackgroundLayerIndex >= 0 ? backgroundImages[activeBackgroundLayerIndex] : null;
+
+          applyBackgroundImage(nextLayer, imagePath, loadedImage);
+
+          if (currentLayer && currentLayer !== nextLayer) {
+            currentLayer.classList.remove("is-visible");
+          }
+
+          if (immediate) {
+            nextLayer.style.transition = "none";
+            nextLayer.classList.add("is-visible");
+            window.requestAnimationFrame(() => {
+              nextLayer.style.transition = "";
+            });
+          } else {
+            nextLayer.classList.add("is-visible");
+          }
+
+          activeBackgroundLayerIndex = nextLayerIndex;
+          backgroundSwitcher.setAttribute(
+            "aria-label",
+            `Show next background image. Current image ${currentImageIndex}`,
+          );
+
+          const nextImagePath = images[(currentImageIndex + 1) % images.length];
+          void preloadBackgroundImage(nextImagePath);
+        } catch (error) {
+          // Keep the current image visible if the next one fails to load.
+        }
       }
 
       function showNextBackground() {
         currentImageIndex = (currentImageIndex + 1) % images.length;
-        renderBackground();
+        void renderBackground();
       }
 
       function onPlayerReady(event) {
@@ -885,7 +988,11 @@
           syncTrackInfo();
         } else if (event.data === window.YT.PlayerState.ENDED) {
           isPlaying = false;
-          syncTrackInfo();
+          if (currentTrackIndex >= getPlaylistLength() - 1) {
+            playTrackAt(0);
+          } else {
+            syncTrackInfo();
+          }
         }
 
         updateToggleState();
@@ -924,6 +1031,32 @@
         player.playVideo();
       }
 
+      function playTrackAt(index) {
+        if (!playerReady || !player) {
+          loadYouTubeApi();
+          return;
+        }
+
+        const playlistLength = getPlaylistLength();
+        currentTrackIndex = normalizePlaylistIndex(index, playlistLength);
+        setTrackTitle(getTrackTitleAt(currentTrackIndex));
+        renderUpcomingTracks();
+        shouldPlayWhenReady = true;
+
+        if (typeof player.playVideoAt === "function") {
+          player.playVideoAt(currentTrackIndex);
+          return;
+        }
+
+        if (typeof player.loadPlaylist === "function") {
+          player.loadPlaylist({
+            index: currentTrackIndex,
+            list: playlistId,
+            listType: "playlist",
+          });
+        }
+      }
+
       function seekBy(seconds) {
         if (!playerReady || !player || typeof player.seekTo !== "function") {
           return;
@@ -945,7 +1078,19 @@
         }
 
         const playlistLength = getPlaylistLength();
-        currentTrackIndex = normalizePlaylistIndex(currentTrackIndex + direction, playlistLength);
+        const targetIndex = normalizePlaylistIndex(currentTrackIndex + direction, playlistLength);
+
+        if (direction < 0 && currentTrackIndex === 0) {
+          playTrackAt(playlistLength - 1);
+          return;
+        }
+
+        if (direction > 0 && currentTrackIndex === playlistLength - 1) {
+          playTrackAt(0);
+          return;
+        }
+
+        currentTrackIndex = targetIndex;
         setTrackTitle(getTrackTitleAt(currentTrackIndex));
         renderUpcomingTracks();
 
@@ -1028,7 +1173,7 @@
         marqueeFrame = window.requestAnimationFrame(updateMarqueeState);
       });
 
-      renderBackground();
+      void renderBackground({ immediate: true });
       setTrackTitle(getTrackTitleAt(currentTrackIndex));
       renderUpcomingTracks();
       updateStripColorForVideo(firstVideoId);
