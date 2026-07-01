@@ -63,23 +63,32 @@
       }
 
       #background-switcher:focus-visible,
-      #player-toggle:focus-visible {
+      .transport-control:focus-visible {
         outline: 2px solid rgba(255, 255, 255, 0.88);
         outline-offset: 0.2rem;
       }
 
-      #music-strip {
+      #music-stack {
         position: fixed;
         top: var(--page-gutter);
         left: var(--page-gutter);
-        right: 50%;
         z-index: 5;
+        width: min(44rem, calc(50vw - (var(--page-gutter) * 2)));
+        display: grid;
+        gap: 0.38rem;
+        pointer-events: none;
+      }
+
+      #music-strip {
+        position: relative;
         display: flex;
         align-items: center;
         gap: 0.8rem;
+        width: 100%;
+        pointer-events: auto;
         color: var(--strip-foreground);
         min-height: var(--strip-height);
-        padding: 0.5rem 0.9rem 0.5rem 0.55rem;
+        padding: 0.5rem 0.65rem 0.5rem 0.95rem;
         border: 1px solid rgba(var(--strip-foreground-rgb), 0.24);
         border-radius: 999px;
         background: linear-gradient(
@@ -92,10 +101,16 @@
         transition: background 220ms ease, border-color 220ms ease, color 220ms ease;
       }
 
-      #player-toggle {
+      #transport-controls {
         flex: 0 0 auto;
-        width: 2.35rem;
-        height: 2.35rem;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.32rem;
+      }
+
+      .transport-control {
+        flex: 0 0 auto;
         border: 0;
         border-radius: 999px;
         display: grid;
@@ -106,12 +121,27 @@
         transition: background-color 160ms ease, transform 160ms ease;
       }
 
-      #player-toggle:hover {
+      .transport-control:hover {
         background: rgba(var(--strip-foreground-rgb), 0.24);
       }
 
-      #player-toggle:active {
+      .transport-control:active {
         transform: scale(0.97);
+      }
+
+      .transport-chip {
+        min-width: 2.8rem;
+        height: 2.15rem;
+        padding: 0 0.72rem;
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      #player-toggle {
+        width: 2.35rem;
+        height: 2.35rem;
       }
 
       .player-icon {
@@ -191,6 +221,71 @@
         animation: marquee-scroll var(--scroll-duration) linear infinite;
       }
 
+      #up-next-list {
+        display: grid;
+        gap: 0.34rem;
+        pointer-events: none;
+      }
+
+      .up-next-item {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        min-height: 2.45rem;
+        padding: 0.5rem 0.95rem;
+        border: 1px solid rgba(var(--strip-foreground-rgb), 0.16);
+        border-radius: 999px;
+        background: rgba(var(--strip-color-rgb), 0.5);
+        color: var(--strip-foreground);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 0.5rem 1.4rem rgba(0, 0, 0, 0.16);
+        transition: background 220ms ease, border-color 220ms ease, color 220ms ease;
+      }
+
+      .up-next-item:nth-child(1) {
+        opacity: 0.8;
+      }
+
+      .up-next-item:nth-child(2) {
+        opacity: 0.68;
+        transform: translateX(0.35rem);
+      }
+
+      .up-next-item:nth-child(3) {
+        opacity: 0.56;
+        transform: translateX(0.7rem);
+      }
+
+      .up-next-item:nth-child(4) {
+        opacity: 0.44;
+        transform: translateX(1.05rem);
+      }
+
+      .up-next-item:nth-child(5) {
+        opacity: 0.32;
+        transform: translateX(1.4rem);
+      }
+
+      .up-next-position {
+        flex: 0 0 auto;
+        min-width: 1.75rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        opacity: 0.74;
+      }
+
+      .up-next-title {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        font-size: clamp(0.78rem, 1.35vw, 0.94rem);
+        letter-spacing: 0.04em;
+        text-overflow: ellipsis;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
       #yt-player-shell {
         position: fixed;
         width: 240px;
@@ -216,6 +311,34 @@
           animation: none;
         }
       }
+
+      @media (max-width: 960px) {
+        #music-stack {
+          width: calc(100vw - (var(--page-gutter) * 2));
+        }
+      }
+
+      @media (max-width: 640px) {
+        #music-strip {
+          padding-left: 0.78rem;
+          padding-right: 0.52rem;
+          gap: 0.55rem;
+        }
+
+        #transport-controls {
+          gap: 0.24rem;
+        }
+
+        .transport-chip {
+          min-width: 2.4rem;
+          padding: 0 0.52rem;
+          font-size: 0.6rem;
+        }
+
+        .up-next-item:nth-child(n) {
+          transform: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -228,14 +351,73 @@
       <img id="background-image" alt="" />
     </div>
 
-    <div id="music-strip">
-      <button id="player-toggle" type="button" aria-label="Play playlist">
-        <span class="player-icon" aria-hidden="true"></span>
-      </button>
-      <div id="track-window" aria-live="polite">
-        <div id="track-marquee">
-          <span id="track-title">Attar</span>
-          <span id="track-title-clone" aria-hidden="true"></span>
+    <div id="music-stack">
+      <div id="music-strip">
+        <div id="track-window" aria-live="polite">
+          <div id="track-marquee">
+            <span id="track-title">Attar</span>
+            <span id="track-title-clone" aria-hidden="true"></span>
+          </div>
+        </div>
+        <div id="transport-controls" aria-label="Playlist controls">
+          <button
+            id="previous-track"
+            class="transport-control transport-chip"
+            type="button"
+            aria-label="Previous song"
+          >
+            Prev
+          </button>
+          <button
+            id="seek-back"
+            class="transport-control transport-chip"
+            type="button"
+            aria-label="Back 10 seconds"
+          >
+            -10
+          </button>
+          <button id="player-toggle" class="transport-control" type="button" aria-label="Play playlist">
+            <span class="player-icon" aria-hidden="true"></span>
+          </button>
+          <button
+            id="seek-forward"
+            class="transport-control transport-chip"
+            type="button"
+            aria-label="Forward 10 seconds"
+          >
+            +10
+          </button>
+          <button
+            id="next-track"
+            class="transport-control transport-chip"
+            type="button"
+            aria-label="Next song"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      <div id="up-next-list" aria-hidden="true">
+        <div class="up-next-item">
+          <span class="up-next-position">02</span>
+          <span class="up-next-title">Warrior's Words</span>
+        </div>
+        <div class="up-next-item">
+          <span class="up-next-position">03</span>
+          <span class="up-next-title">Kai Kozhong</span>
+        </div>
+        <div class="up-next-item">
+          <span class="up-next-position">04</span>
+          <span class="up-next-title">Topshur</span>
+        </div>
+        <div class="up-next-item">
+          <span class="up-next-position">05</span>
+          <span class="up-next-title">Maral Deer</span>
+        </div>
+        <div class="up-next-item">
+          <span class="up-next-position">06</span>
+          <span class="up-next-title">Kaichylar Bards</span>
         </div>
       </div>
     </div>
@@ -356,9 +538,15 @@
       const backgroundImage = document.getElementById("background-image");
       const musicStrip = document.getElementById("music-strip");
       const playerToggle = document.getElementById("player-toggle");
+      const previousTrackButton = document.getElementById("previous-track");
+      const nextTrackButton = document.getElementById("next-track");
+      const seekBackButton = document.getElementById("seek-back");
+      const seekForwardButton = document.getElementById("seek-forward");
       const trackWindow = document.getElementById("track-window");
       const trackTitle = document.getElementById("track-title");
       const trackTitleClone = document.getElementById("track-title-clone");
+      const upNextPositions = Array.from(document.querySelectorAll(".up-next-position"));
+      const upNextTitles = Array.from(document.querySelectorAll(".up-next-title"));
       const imageRotations = {
         "1.jpg": "90deg",
       };
@@ -544,6 +732,42 @@
         marqueeFrame = window.requestAnimationFrame(updateMarqueeState);
       }
 
+      function getPlaylistLength() {
+        if (playerReady && player && typeof player.getPlaylist === "function") {
+          const playlist = player.getPlaylist();
+
+          if (Array.isArray(playlist) && playlist.length) {
+            return playlist.length;
+          }
+        }
+
+        return fallbackTitles.length;
+      }
+
+      function normalizePlaylistIndex(index, playlistLength = getPlaylistLength()) {
+        if (!playlistLength) {
+          return 0;
+        }
+
+        return ((index % playlistLength) + playlistLength) % playlistLength;
+      }
+
+      function getTrackTitleAt(index) {
+        const normalizedIndex = normalizePlaylistIndex(index, fallbackTitles.length);
+        return fallbackTitles[normalizedIndex] || `Track ${normalizedIndex + 1}`;
+      }
+
+      function renderUpcomingTracks() {
+        const playlistLength = getPlaylistLength();
+
+        upNextTitles.forEach((titleNode, itemIndex) => {
+          const upcomingIndex = normalizePlaylistIndex(currentTrackIndex + itemIndex + 1, playlistLength);
+
+          upNextPositions[itemIndex].textContent = String(upcomingIndex + 1).padStart(2, "0");
+          titleNode.textContent = getTrackTitleAt(upcomingIndex);
+        });
+      }
+
       function updateMarqueeState() {
         const overflowAmount = trackTitle.scrollWidth - trackWindow.clientWidth;
         const shouldScroll = overflowAmount > 0;
@@ -566,10 +790,6 @@
       function updateToggleState() {
         playerToggle.classList.toggle("is-playing", isPlaying);
         playerToggle.setAttribute("aria-label", isPlaying ? "Pause playlist" : "Play playlist");
-      }
-
-      function getFallbackTitle(index) {
-        return fallbackTitles[index] || `Track ${index + 1}`;
       }
 
       function syncTrackInfo() {
@@ -600,7 +820,8 @@
           }
         }
 
-        setTrackTitle(liveTitle || getFallbackTitle(currentTrackIndex));
+        setTrackTitle(liveTitle || getTrackTitleAt(currentTrackIndex));
+        renderUpcomingTracks();
       }
 
       function queuePlaylist() {
@@ -638,7 +859,8 @@
         playerReady = true;
         currentTrackIndex = 0;
         queuePlaylist();
-        setTrackTitle(getFallbackTitle(currentTrackIndex));
+        setTrackTitle(getTrackTitleAt(currentTrackIndex));
+        renderUpcomingTracks();
         window.setTimeout(syncTrackInfo, 400);
         titleSyncInterval = window.setInterval(syncTrackInfo, 1500);
 
@@ -673,7 +895,8 @@
         isPlaying = false;
         shouldPlayWhenReady = false;
         updateToggleState();
-        setTrackTitle(getFallbackTitle(currentTrackIndex));
+        setTrackTitle(getTrackTitleAt(currentTrackIndex));
+        renderUpcomingTracks();
         updateStripColorForVideo(currentTrackVideoId);
       }
 
@@ -682,6 +905,58 @@
         shouldPlayWhenReady = false;
         updateToggleState();
         setTrackTitle("Playlist unavailable right now");
+      }
+
+      function togglePlayback() {
+        shouldPlayWhenReady = !isPlaying;
+
+        if (!playerReady || !player) {
+          loadYouTubeApi();
+          return;
+        }
+
+        if (isPlaying) {
+          shouldPlayWhenReady = false;
+          player.pauseVideo();
+          return;
+        }
+
+        player.playVideo();
+      }
+
+      function seekBy(seconds) {
+        if (!playerReady || !player || typeof player.seekTo !== "function") {
+          return;
+        }
+
+        const currentTime =
+          typeof player.getCurrentTime === "function" ? player.getCurrentTime() : 0;
+        const duration = typeof player.getDuration === "function" ? player.getDuration() : 0;
+        const maxTime = duration > 0 ? duration : currentTime + Math.abs(seconds);
+        const targetTime = clamp(currentTime + seconds, 0, maxTime);
+
+        player.seekTo(targetTime, true);
+      }
+
+      function changeTrack(direction) {
+        if (!playerReady || !player) {
+          loadYouTubeApi();
+          return;
+        }
+
+        const playlistLength = getPlaylistLength();
+        currentTrackIndex = normalizePlaylistIndex(currentTrackIndex + direction, playlistLength);
+        setTrackTitle(getTrackTitleAt(currentTrackIndex));
+        renderUpcomingTracks();
+
+        if (direction < 0 && typeof player.previousVideo === "function") {
+          player.previousVideo();
+          return;
+        }
+
+        if (direction > 0 && typeof player.nextVideo === "function") {
+          player.nextVideo();
+        }
       }
 
       function loadYouTubeApi() {
@@ -742,22 +1017,11 @@
         }
       });
 
-      playerToggle.addEventListener("click", () => {
-        shouldPlayWhenReady = !isPlaying;
-
-        if (!playerReady || !player) {
-          loadYouTubeApi();
-          return;
-        }
-
-        if (isPlaying) {
-          shouldPlayWhenReady = false;
-          player.pauseVideo();
-          return;
-        }
-
-        player.playVideo();
-      });
+      playerToggle.addEventListener("click", togglePlayback);
+      previousTrackButton.addEventListener("click", () => changeTrack(-1));
+      nextTrackButton.addEventListener("click", () => changeTrack(1));
+      seekBackButton.addEventListener("click", () => seekBy(-10));
+      seekForwardButton.addEventListener("click", () => seekBy(10));
 
       window.addEventListener("resize", () => {
         window.cancelAnimationFrame(marqueeFrame);
@@ -765,7 +1029,8 @@
       });
 
       renderBackground();
-      setTrackTitle(getFallbackTitle(currentTrackIndex));
+      setTrackTitle(getTrackTitleAt(currentTrackIndex));
+      renderUpcomingTracks();
       updateStripColorForVideo(firstVideoId);
       loadYouTubeApi();
     </script>
