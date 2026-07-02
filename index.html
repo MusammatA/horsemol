@@ -13,6 +13,7 @@
         --modal-width: min(34rem, calc(100vw - 2rem));
         --timer-panel-width: min(56rem, calc(100vw - 2rem));
         --account-panel-width: min(64rem, calc(100vw - 2rem));
+        --altai-blue-rgb: 51, 153, 255;
         --scroll-distance: 0px;
         --scroll-duration: 12s;
         --strip-color-rgb: 82, 98, 111;
@@ -845,7 +846,21 @@
         padding: 1.35rem;
         border: 1px solid rgba(216, 176, 84, 0.72);
         border-radius: 1.35rem;
-        background: rgba(255, 255, 255, 0.12);
+        background-color: rgba(var(--altai-blue-rgb), 0.78);
+        background-image:
+          url("gold-ornament-vertical.svg"),
+          url("gold-ornament-vertical.svg"),
+          linear-gradient(
+            180deg,
+            rgba(var(--altai-blue-rgb), 0.8),
+            rgba(31, 131, 231, 0.82)
+          );
+        background-repeat: repeat-y, repeat-y, no-repeat;
+        background-size: 0.92rem 6rem, 0.92rem 6rem, auto;
+        background-position:
+          left 0.36rem top 1.2rem,
+          right 0.36rem top 1.2rem,
+          center;
         box-shadow:
           inset 0 0 0 1px rgba(245, 220, 152, 0.15),
           0 0 0 1px rgba(88, 63, 18, 0.26),
@@ -873,23 +888,23 @@
       #account-panel::after {
         content: "";
         position: absolute;
-        left: 1.1rem;
-        right: 1.1rem;
-        height: 1rem;
+        left: 1.06rem;
+        right: 1.06rem;
+        height: 1.08rem;
         pointer-events: none;
-        background: url("gold-ornament.svg") repeat-x center / 8.5rem 100%;
+        background: url("gold-ornament.svg") repeat-x center / 8rem 100%;
         opacity: 0.98;
         z-index: 0;
       }
 
       #timer-panel::before,
       #account-panel::before {
-        top: 0.46rem;
+        top: 0.42rem;
       }
 
       #timer-panel::after,
       #account-panel::after {
-        bottom: 0.46rem;
+        bottom: 0.42rem;
         transform: scaleY(-1);
       }
 
@@ -960,15 +975,19 @@
         padding: 1rem;
         border: 1px solid rgba(215, 176, 84, 0.2);
         border-radius: 1.05rem;
-        background: rgba(255, 255, 255, 0.06);
+        background: rgba(15, 86, 156, 0.28);
         box-shadow: inset 0 0 0 1px rgba(255, 233, 181, 0.04);
       }
 
       #timer-panel-layout {
         display: grid;
-        grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1rem 1.1rem;
-        align-items: start;
+        align-items: stretch;
+      }
+
+      #timer-panel-layout > .timer-panel-section {
+        height: 100%;
       }
 
       #timer-preset-options,
@@ -980,10 +999,10 @@
 
       .timer-choice {
         width: 100%;
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.82);
         border-radius: 0.95rem;
-        background: rgba(255, 255, 255, 0.08);
-        color: inherit;
+        background: rgba(255, 255, 255, 0.92);
+        color: rgba(17, 21, 28, 0.94);
         font: inherit;
         display: flex;
         align-items: flex-start;
@@ -996,9 +1015,12 @@
       }
 
       .timer-choice.is-selected {
-        background: rgba(255, 255, 255, 0.9);
-        border-color: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 1);
+        border-color: rgba(255, 255, 255, 1);
         color: rgba(17, 21, 28, 0.94);
+        box-shadow:
+          0 0 0 2px rgba(255, 255, 255, 0.2),
+          0 0 0 3px rgba(215, 176, 84, 0.7);
       }
 
       #timer-focus-options .timer-choice {
@@ -1080,19 +1102,22 @@
         font-size: 0.72rem;
         line-height: 1.4;
         color: rgba(255, 255, 255, 0.76);
+        width: 100%;
+        text-align: center;
       }
 
       #timer-panel-footer {
         grid-column: 1 / -1;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 0.8rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         align-items: center;
+        gap: 0.52rem;
       }
 
       #timer-start-button {
         min-width: 11.5rem;
-        align-self: stretch;
+        align-self: center;
         justify-content: center;
       }
 
@@ -1339,7 +1364,7 @@
         padding: 1rem;
         border: 1px solid rgba(215, 176, 84, 0.2);
         border-radius: 1.05rem;
-        background: rgba(255, 255, 255, 0.06);
+        background: rgba(15, 86, 156, 0.28);
         box-shadow: inset 0 0 0 1px rgba(255, 233, 181, 0.04);
       }
 
@@ -1490,10 +1515,10 @@
       }
 
       .account-action {
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.82);
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.12);
-        color: inherit;
+        background: rgba(255, 255, 255, 0.94);
+        color: rgba(18, 22, 30, 0.94);
         font: inherit;
         font-size: 0.72rem;
         font-weight: 700;
@@ -1504,7 +1529,7 @@
       }
 
       .account-action.is-primary {
-        background: rgba(255, 255, 255, 0.88);
+        background: rgba(255, 255, 255, 1);
         color: rgba(18, 22, 30, 0.94);
       }
 
@@ -1530,7 +1555,21 @@
         padding: 1.35rem 1.2rem 1.15rem;
         border: 1px solid rgba(216, 176, 84, 0.72);
         border-radius: 1.25rem;
-        background: rgba(255, 255, 255, 0.12);
+        background-color: rgba(var(--altai-blue-rgb), 0.8);
+        background-image:
+          url("gold-ornament-vertical.svg"),
+          url("gold-ornament-vertical.svg"),
+          linear-gradient(
+            180deg,
+            rgba(var(--altai-blue-rgb), 0.82),
+            rgba(31, 131, 231, 0.84)
+          );
+        background-repeat: repeat-y, repeat-y, no-repeat;
+        background-size: 0.92rem 6rem, 0.92rem 6rem, auto;
+        background-position:
+          left 0.34rem top 1.05rem,
+          right 0.34rem top 1.05rem,
+          center;
         box-shadow:
           inset 0 0 0 1px rgba(245, 220, 152, 0.14),
           0 0 0 1px rgba(88, 63, 18, 0.26),
@@ -1549,7 +1588,7 @@
         position: absolute;
         left: 1rem;
         right: 1rem;
-        height: 0.92rem;
+        height: 1.04rem;
         pointer-events: none;
         background: url("gold-ornament.svg") repeat-x center / 8rem 100%;
         opacity: 0.98;
@@ -1605,9 +1644,9 @@
 
       #auth-google-button {
         align-self: flex-start;
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.86);
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 1);
         color: rgba(18, 22, 30, 0.94);
         font: inherit;
         font-size: 0.74rem;
@@ -1619,10 +1658,10 @@
       }
 
       #auth-dismiss-button {
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.86);
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        color: inherit;
+        background: rgba(255, 255, 255, 1);
+        color: rgba(18, 22, 30, 0.94);
         font: inherit;
         font-size: 0.74rem;
         font-weight: 700;
