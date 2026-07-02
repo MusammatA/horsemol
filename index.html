@@ -11,6 +11,8 @@
         --todo-tool-width: clamp(10rem, calc(100vw - (var(--page-gutter) * 2) - 8.4rem), 20.5rem);
         --desk-tool-width: clamp(8.9rem, 16vw, 11.25rem);
         --modal-width: min(34rem, calc(100vw - 2rem));
+        --timer-panel-width: min(56rem, calc(100vw - 2rem));
+        --account-panel-width: min(64rem, calc(100vw - 2rem));
         --scroll-distance: 0px;
         --scroll-duration: 12s;
         --strip-color-rgb: 82, 98, 111;
@@ -837,20 +839,27 @@
       #timer-panel,
       #account-panel {
         position: relative;
-        width: var(--modal-width);
+        width: var(--timer-panel-width);
         max-height: calc(100vh - 2rem);
         overflow-y: auto;
-        padding: 0.88rem;
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        border-radius: 1.1rem;
+        padding: 1.35rem;
+        border: 1px solid rgba(216, 176, 84, 0.72);
+        border-radius: 1.35rem;
         background: rgba(255, 255, 255, 0.12);
-        box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.18);
+        box-shadow:
+          inset 0 0 0 1px rgba(245, 220, 152, 0.15),
+          0 0 0 1px rgba(88, 63, 18, 0.26),
+          0 1rem 2.4rem rgba(0, 0, 0, 0.24);
         backdrop-filter: blur(16px);
         color: rgba(255, 255, 255, 0.94);
         display: none;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 0.9rem;
         pointer-events: auto;
+      }
+
+      #account-panel {
+        width: var(--account-panel-width);
       }
 
       #timer-panel.is-open,
@@ -858,26 +867,59 @@
         display: flex;
       }
 
+      #timer-panel::before,
+      #timer-panel::after,
+      #account-panel::before,
+      #account-panel::after {
+        content: "";
+        position: absolute;
+        left: 1.1rem;
+        right: 1.1rem;
+        height: 1rem;
+        pointer-events: none;
+        background: url("gold-ornament.svg") repeat-x center / 8.5rem 100%;
+        opacity: 0.98;
+        z-index: 0;
+      }
+
+      #timer-panel::before,
+      #account-panel::before {
+        top: 0.46rem;
+      }
+
+      #timer-panel::after,
+      #account-panel::after {
+        bottom: 0.46rem;
+        transform: scaleY(-1);
+      }
+
+      #timer-panel > *,
+      #account-panel > * {
+        position: relative;
+        z-index: 1;
+      }
+
       .panel-close {
         position: absolute;
-        top: 0.7rem;
-        right: 0.7rem;
+        top: 0.78rem;
+        right: 0.78rem;
         width: 2rem;
         height: 2rem;
         border: 0;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        color: rgba(255, 255, 255, 0.88);
+        background: rgba(115, 84, 23, 0.34);
+        color: rgba(255, 245, 218, 0.9);
         font: inherit;
         font-size: 1.1rem;
         line-height: 1;
         display: grid;
         place-items: center;
         cursor: pointer;
+        z-index: 2;
       }
 
       .panel-close:hover {
-        background: rgba(255, 255, 255, 0.16);
+        background: rgba(168, 129, 49, 0.38);
       }
 
       #timer-panel-title,
@@ -890,7 +932,11 @@
       }
 
       #timer-panel-heading {
-        padding-right: 2rem;
+        grid-column: 1 / -1;
+        padding: 0.4rem 2.5rem 0.2rem 0.2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.16rem;
       }
 
       #timer-panel-name {
@@ -909,13 +955,27 @@
       .timer-panel-section {
         display: flex;
         flex-direction: column;
-        gap: 0.52rem;
+        gap: 0.65rem;
+        min-width: 0;
+        padding: 1rem;
+        border: 1px solid rgba(215, 176, 84, 0.2);
+        border-radius: 1.05rem;
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: inset 0 0 0 1px rgba(255, 233, 181, 0.04);
+      }
+
+      #timer-panel-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+        gap: 1rem 1.1rem;
+        align-items: start;
       }
 
       #timer-preset-options,
       #timer-focus-options {
         display: grid;
-        gap: 0.5rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.62rem;
       }
 
       .timer-choice {
@@ -926,10 +986,11 @@
         color: inherit;
         font: inherit;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.8rem;
-        padding: 0.75rem 0.82rem;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 0.72rem;
+        min-height: 4.5rem;
+        padding: 0.86rem 0.9rem;
         cursor: pointer;
         text-align: left;
       }
@@ -940,10 +1001,22 @@
         color: rgba(17, 21, 28, 0.94);
       }
 
+      #timer-focus-options .timer-choice {
+        min-height: 3.5rem;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      #timer-focus-options .timer-choice-text {
+        align-items: center;
+      }
+
       .timer-choice-text {
         display: flex;
         flex-direction: column;
-        gap: 0.1rem;
+        gap: 0.14rem;
+        min-width: 0;
       }
 
       .timer-choice-title {
@@ -1009,7 +1082,16 @@
         color: rgba(255, 255, 255, 0.76);
       }
 
+      #timer-panel-footer {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.8rem;
+        align-items: center;
+      }
+
       #timer-start-button {
+        min-width: 11.5rem;
         align-self: stretch;
         justify-content: center;
       }
@@ -1065,7 +1147,7 @@
       #account-panel-header {
         display: flex;
         align-items: center;
-        gap: 0.72rem;
+        gap: 0.82rem;
       }
 
       #account-panel-avatar-wrap {
@@ -1240,16 +1322,38 @@
         color: rgba(255, 255, 255, 0.76);
       }
 
+      #account-panel-layout {
+        display: grid;
+        grid-template-columns: minmax(17rem, 19rem) minmax(0, 1fr);
+        gap: 1rem 1.2rem;
+        align-items: start;
+      }
+
+      #account-panel-main,
+      #account-warrior-section,
+      #account-focus-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 0.62rem;
+        min-width: 0;
+        padding: 1rem;
+        border: 1px solid rgba(215, 176, 84, 0.2);
+        border-radius: 1.05rem;
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: inset 0 0 0 1px rgba(255, 233, 181, 0.04);
+      }
+
+      #account-panel-side {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.95rem;
+      }
+
       #account-actions {
         display: flex;
         flex-wrap: wrap;
         gap: 0.48rem;
-      }
-
-      #account-warrior-section {
-        display: flex;
-        flex-direction: column;
-        gap: 0.58rem;
       }
 
       #account-warrior-grid {
@@ -1331,11 +1435,9 @@
       }
 
       #account-focus-summary {
-        display: flex;
-        flex-direction: column;
         gap: 0.58rem;
-        padding-top: 0.16rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        padding-top: 1rem;
+        border-top: 0;
       }
 
       #account-focus-total {
@@ -1424,26 +1526,60 @@
 
       #auth-card {
         position: relative;
-        width: var(--modal-width);
-        padding: 1.15rem 1rem 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 1.2rem;
+        width: min(42rem, calc(100vw - 2rem));
+        padding: 1.35rem 1.2rem 1.15rem;
+        border: 1px solid rgba(216, 176, 84, 0.72);
+        border-radius: 1.25rem;
         background: rgba(255, 255, 255, 0.12);
-        box-shadow: 0 1rem 2.6rem rgba(0, 0, 0, 0.24);
+        box-shadow:
+          inset 0 0 0 1px rgba(245, 220, 152, 0.14),
+          0 0 0 1px rgba(88, 63, 18, 0.26),
+          0 1rem 2.6rem rgba(0, 0, 0, 0.24);
         backdrop-filter: blur(18px);
         color: rgba(255, 255, 255, 0.96);
-        display: flex;
-        flex-direction: column;
-        gap: 0.86rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.86rem 1rem;
+        align-items: center;
+      }
+
+      #auth-card::before,
+      #auth-card::after {
+        content: "";
+        position: absolute;
+        left: 1rem;
+        right: 1rem;
+        height: 0.92rem;
+        pointer-events: none;
+        background: url("gold-ornament.svg") repeat-x center / 8rem 100%;
+        opacity: 0.98;
+        z-index: 0;
+      }
+
+      #auth-card::before {
+        top: 0.42rem;
+      }
+
+      #auth-card::after {
+        bottom: 0.42rem;
+        transform: scaleY(-1);
+      }
+
+      #auth-card > * {
+        position: relative;
+        z-index: 1;
       }
 
       #auth-actions {
         display: flex;
         flex-wrap: wrap;
         gap: 0.55rem;
+        justify-self: end;
       }
 
       #auth-title {
+        padding-top: 0.2rem;
+        padding-right: 1rem;
         font-size: 1.06rem;
         font-weight: 700;
         line-height: 1.2;
@@ -1452,6 +1588,7 @@
 
       #auth-copy {
         display: none;
+        grid-column: 1 / -1;
         font-size: 0.82rem;
         line-height: 1.55;
         color: rgba(255, 255, 255, 0.76);
@@ -1459,6 +1596,7 @@
 
       #auth-status {
         display: none;
+        grid-column: 1 / -1;
         min-height: 1.2rem;
         font-size: 0.72rem;
         line-height: 1.4;
@@ -1503,6 +1641,7 @@
 
       #auth-setup-note {
         display: none;
+        grid-column: 1 / -1;
         font-size: 0.72rem;
         line-height: 1.5;
         color: rgba(255, 255, 255, 0.7);
@@ -1834,6 +1973,17 @@
         #music-stack {
           width: calc(100vw - (var(--page-gutter) * 2));
         }
+
+        #timer-panel-layout,
+        #account-panel-layout,
+        #timer-panel-footer {
+          grid-template-columns: 1fr;
+        }
+
+        #timer-start-button {
+          width: 100%;
+          min-width: 0;
+        }
       }
 
       @media (max-width: 640px) {
@@ -1841,6 +1991,8 @@
           --todo-tool-width: clamp(9rem, calc(100vw - (var(--page-gutter) * 2) - 7rem), 15.75rem);
           --desk-tool-width: clamp(8.3rem, 42vw, 10rem);
           --modal-width: min(100vw - 1rem, 28rem);
+          --timer-panel-width: min(100vw - 1rem, 34rem);
+          --account-panel-width: min(100vw - 1rem, 36rem);
         }
 
         #music-strip {
@@ -1878,6 +2030,30 @@
 
         #timer-custom-fields {
           grid-template-columns: 1fr;
+        }
+
+        #timer-preset-options,
+        #timer-focus-options {
+          grid-template-columns: 1fr;
+        }
+
+        #account-warrior-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        #timer-panel,
+        #account-panel {
+          padding: 1.12rem 0.98rem;
+        }
+
+        #auth-card {
+          width: min(100vw - 1rem, 30rem);
+          grid-template-columns: 1fr;
+          padding: 1.12rem 0.98rem 1rem;
+        }
+
+        #auth-actions {
+          justify-self: start;
         }
 
         #todo-list-panel {
@@ -2025,128 +2201,138 @@
       <div id="timer-panel-backdrop" aria-hidden="true">
         <div id="timer-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="timer-panel-title">
           <button id="timer-panel-close" class="panel-close" type="button" aria-label="Close timer">×</button>
-          <div id="timer-panel-heading">
-            <div id="timer-panel-title">Start Timer</div>
-          </div>
-          <div class="timer-panel-section">
-            <div class="account-section-title">Choose A Timer</div>
-            <div id="timer-preset-options">
-              <button class="timer-choice is-selected" type="button" data-preset-key="25-5">
-                <span class="timer-choice-text">
-                  <span class="timer-choice-title">25 / 5</span>
-                  <span class="timer-choice-copy">25 minutes focus, 5 minute break</span>
-                </span>
-              </button>
-              <button class="timer-choice" type="button" data-preset-key="50-15">
-                <span class="timer-choice-text">
-                  <span class="timer-choice-title">50 / 15</span>
-                  <span class="timer-choice-copy">50 minutes focus, 15 minute break</span>
-                </span>
-              </button>
-              <button class="timer-choice" type="button" data-preset-key="90-20">
-                <span class="timer-choice-text">
-                  <span class="timer-choice-title">90 / 20</span>
-                  <span class="timer-choice-copy">90 minutes focus, 20 minute break</span>
-                </span>
-              </button>
-              <button class="timer-choice" type="button" data-preset-key="custom">
-                <span class="timer-choice-text">
-                  <span class="timer-choice-title">Custom</span>
-                  <span class="timer-choice-copy">Set your own focus and break minutes</span>
-                </span>
+          <div id="timer-panel-layout">
+            <div id="timer-panel-heading">
+              <div id="timer-panel-title">Start Timer</div>
+            </div>
+            <div class="timer-panel-section">
+              <div class="account-section-title">Choose A Timer</div>
+              <div id="timer-preset-options">
+                <button class="timer-choice is-selected" type="button" data-preset-key="25-5">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">25 / 5</span>
+                    <span class="timer-choice-copy">25 minutes focus, 5 minute break</span>
+                  </span>
+                </button>
+                <button class="timer-choice" type="button" data-preset-key="50-15">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">50 / 15</span>
+                    <span class="timer-choice-copy">50 minutes focus, 15 minute break</span>
+                  </span>
+                </button>
+                <button class="timer-choice" type="button" data-preset-key="90-20">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">90 / 20</span>
+                    <span class="timer-choice-copy">90 minutes focus, 20 minute break</span>
+                  </span>
+                </button>
+                <button class="timer-choice" type="button" data-preset-key="custom">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">Custom</span>
+                    <span class="timer-choice-copy">Set your own focus and break minutes</span>
+                  </span>
+                </button>
+              </div>
+              <div id="timer-custom-fields" hidden>
+                <label class="timer-field">
+                  <span class="timer-field-label">Focus Minutes</span>
+                  <input id="timer-custom-focus-input" class="timer-field-input" type="number" min="1" max="999" value="25" />
+                </label>
+                <label class="timer-field">
+                  <span class="timer-field-label">Break Minutes</span>
+                  <input id="timer-custom-break-input" class="timer-field-input" type="number" min="0" max="999" value="5" />
+                </label>
+              </div>
+            </div>
+            <div class="timer-panel-section">
+              <div class="account-section-title">What do you want to focus on?</div>
+              <div id="timer-focus-options">
+                <button class="timer-choice is-selected" type="button" data-focus-category="Study">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">Study</span>
+                  </span>
+                </button>
+                <button class="timer-choice" type="button" data-focus-category="Work">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">Work</span>
+                  </span>
+                </button>
+                <button class="timer-choice" type="button" data-focus-category="Creative">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">Creative</span>
+                  </span>
+                </button>
+                <button class="timer-choice" type="button" data-focus-category="Climb the Altai Mountains">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">Climb the Altai Mountains</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div id="timer-panel-footer">
+              <div id="timer-panel-status" aria-live="polite"></div>
+              <button id="timer-start-button" class="account-action is-primary" type="button">
+                Start Timer
               </button>
             </div>
-            <div id="timer-custom-fields" hidden>
-              <label class="timer-field">
-                <span class="timer-field-label">Focus Minutes</span>
-                <input id="timer-custom-focus-input" class="timer-field-input" type="number" min="1" max="999" value="25" />
-              </label>
-              <label class="timer-field">
-                <span class="timer-field-label">Break Minutes</span>
-                <input id="timer-custom-break-input" class="timer-field-input" type="number" min="0" max="999" value="5" />
-              </label>
-            </div>
           </div>
-          <div class="timer-panel-section">
-            <div class="account-section-title">What do you want to focus on?</div>
-            <div id="timer-focus-options">
-              <button class="timer-choice is-selected" type="button" data-focus-category="Study">
-                <span class="timer-choice-text">
-                  <span class="timer-choice-title">Study</span>
-                </span>
-              </button>
-              <button class="timer-choice" type="button" data-focus-category="Work">
-                <span class="timer-choice-text">
-                  <span class="timer-choice-title">Work</span>
-                </span>
-              </button>
-              <button class="timer-choice" type="button" data-focus-category="Creative">
-                <span class="timer-choice-text">
-                  <span class="timer-choice-title">Creative</span>
-                </span>
-              </button>
-              <button class="timer-choice" type="button" data-focus-category="Climb the Altai Mountains">
-                <span class="timer-choice-text">
-                  <span class="timer-choice-title">Climb the Altai Mountains</span>
-                </span>
-              </button>
-            </div>
-          </div>
-          <div id="timer-panel-status" aria-live="polite"></div>
-          <button id="timer-start-button" class="account-action is-primary" type="button">
-            Start Timer
-          </button>
         </div>
       </div>
       <div id="account-panel-backdrop" aria-hidden="true">
         <div id="account-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-display-name">
           <button id="account-panel-close" class="panel-close" type="button" aria-label="Close account">×</button>
-          <div id="account-panel-header">
-            <div id="account-panel-avatar-wrap">
-              <button id="account-panel-avatar-button" type="button" aria-label="Change profile photo">
-                <div id="account-panel-avatar">
-                  <span id="account-panel-avatar-fallback" class="account-panel-avatar-fallback">A</span>
+          <div id="account-panel-layout">
+            <div id="account-panel-main">
+              <div id="account-panel-header">
+                <div id="account-panel-avatar-wrap">
+                  <button id="account-panel-avatar-button" type="button" aria-label="Change profile photo">
+                    <div id="account-panel-avatar">
+                      <span id="account-panel-avatar-fallback" class="account-panel-avatar-fallback">A</span>
+                    </div>
+                    <span id="account-panel-avatar-overlay">Change Profile</span>
+                  </button>
+                  <input id="account-photo-file-input" type="file" accept="image/*" hidden />
                 </div>
-                <span id="account-panel-avatar-overlay">Change Profile</span>
-              </button>
-              <input id="account-photo-file-input" type="file" accept="image/*" hidden />
+                <div id="account-panel-identity">
+                  <div id="account-display-name">Account</div>
+                  <div id="account-email">Sign in with Google to open your account.</div>
+                  <div id="account-warrior-name" hidden></div>
+                </div>
+              </div>
+              <label class="account-field">
+                <span class="account-field-label">Username</span>
+                <input
+                  id="account-username-input"
+                  class="account-field-input"
+                  type="text"
+                  maxlength="40"
+                  placeholder="Uses your Gmail name if left blank"
+                />
+              </label>
+              <div id="account-status" aria-live="polite"></div>
+              <div id="account-actions">
+                <button id="account-save-button" class="account-action is-primary" type="button">
+                  Save
+                </button>
+                <button id="account-reset-photo-button" class="account-action" type="button">
+                  Reset Profile
+                </button>
+                <button id="account-sign-out-button" class="account-action" type="button">
+                  Sign Out
+                </button>
+              </div>
             </div>
-            <div id="account-panel-identity">
-              <div id="account-display-name">Account</div>
-              <div id="account-email">Sign in with Google to open your account.</div>
-              <div id="account-warrior-name" hidden></div>
+            <div id="account-panel-side">
+              <div id="account-warrior-section">
+                <div class="account-section-title">Altai Warriors</div>
+                <div id="account-warrior-grid" aria-live="polite"></div>
+              </div>
+              <div id="account-focus-summary">
+                <div class="account-section-title">Focus Summary</div>
+                <div id="account-focus-total">Total focus time: 0m</div>
+                <div id="account-focus-breakdown" aria-live="polite"></div>
+              </div>
             </div>
-          </div>
-          <label class="account-field">
-            <span class="account-field-label">Username</span>
-            <input
-              id="account-username-input"
-              class="account-field-input"
-              type="text"
-              maxlength="40"
-              placeholder="Uses your Gmail name if left blank"
-            />
-          </label>
-          <div id="account-status" aria-live="polite"></div>
-          <div id="account-actions">
-            <button id="account-save-button" class="account-action is-primary" type="button">
-              Save
-            </button>
-            <button id="account-reset-photo-button" class="account-action" type="button">
-              Reset Profile
-            </button>
-            <button id="account-sign-out-button" class="account-action" type="button">
-              Sign Out
-            </button>
-          </div>
-          <div id="account-warrior-section">
-            <div class="account-section-title">Altai Warriors</div>
-            <div id="account-warrior-grid" aria-live="polite"></div>
-          </div>
-          <div id="account-focus-summary">
-            <div class="account-section-title">Focus Summary</div>
-            <div id="account-focus-total">Total focus time: 0m</div>
-            <div id="account-focus-breakdown" aria-live="polite"></div>
           </div>
         </div>
       </div>
