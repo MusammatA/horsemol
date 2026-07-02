@@ -55,11 +55,13 @@
         height: 100vh;
         object-fit: cover;
         object-position: center;
-        transform: translate(-50%, -50%);
+        --image-base-transform: translate(-50%, -50%);
+        transform: var(--image-base-transform);
+        transform-origin: center center;
         background: #000000;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 520ms ease;
+        transition: opacity 520ms ease, transform 620ms ease;
         will-change: transform, opacity;
       }
 
@@ -70,7 +72,32 @@
       .background-image.is-rotated {
         width: 100vh;
         height: 100vw;
-        transform: translate(-50%, -50%) rotate(var(--rotation-angle, -90deg));
+      }
+
+      #background-switcher.is-water-waving .background-image.is-visible {
+        animation: background-water-wave 8.8s ease-in-out infinite;
+      }
+
+      @keyframes background-water-wave {
+        0% {
+          transform: var(--image-base-transform) translate3d(0px, 0px, 0) scale(1.028);
+        }
+
+        22% {
+          transform: var(--image-base-transform) translate3d(10px, -7px, 0) scale(1.04);
+        }
+
+        46% {
+          transform: var(--image-base-transform) translate3d(-7px, 8px, 0) scale(1.048);
+        }
+
+        68% {
+          transform: var(--image-base-transform) translate3d(8px, 5px, 0) scale(1.038);
+        }
+
+        100% {
+          transform: var(--image-base-transform) translate3d(0px, 0px, 0) scale(1.028);
+        }
       }
 
       #background-switcher:focus-visible,
@@ -2514,6 +2541,16 @@
         timerPanelStatus.textContent = message || "";
       }
 
+      function syncBackgroundWaveState() {
+        const shouldWave =
+          isTimerPanelOpen() ||
+          isAccountPanelOpen() ||
+          authGate.classList.contains("is-visible") ||
+          noteEditorBackdrop.classList.contains("is-open");
+
+        backgroundSwitcher.classList.toggle("is-water-waving", shouldWave);
+      }
+
       function isTimerPanelOpen() {
         return timerPanel.classList.contains("is-open");
       }
@@ -2526,6 +2563,7 @@
         timerPanel.classList.toggle("is-open", nextOpenState);
         timerPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
         timerTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+        syncBackgroundWaveState();
       }
 
       function closeTimerPanel() {
@@ -3006,6 +3044,7 @@
         activeNoteId = "";
         noteEditorBackdrop.classList.remove("is-open");
         noteEditorBackdrop.setAttribute("aria-hidden", "true");
+        syncBackgroundWaveState();
       }
 
       function syncTodoItemsState() {
@@ -3189,6 +3228,7 @@
       function setAuthGateVisibility(isVisible) {
         authGate.classList.toggle("is-visible", isVisible);
         authGate.setAttribute("aria-hidden", isVisible ? "false" : "true");
+        syncBackgroundWaveState();
       }
 
       function setAuthStatus(message) {
@@ -3287,6 +3327,7 @@
         accountPanel.classList.toggle("is-open", nextOpenState);
         accountPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
         accountTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+        syncBackgroundWaveState();
       }
 
       function closeAccountPanel() {
@@ -4494,6 +4535,7 @@
         syncStickyNoteSwatches(stickyNoteColors.includes(note.color) ? note.color : "yellow");
         noteEditorBackdrop.classList.add("is-open");
         noteEditorBackdrop.setAttribute("aria-hidden", "false");
+        syncBackgroundWaveState();
         if (focus) {
           window.requestAnimationFrame(() => {
             noteTitleInput.focus({ preventScroll: true });
@@ -5496,6 +5538,7 @@
       loadTodoItems();
       updateTodoDockPosition();
       loadStickyNotes();
+      syncBackgroundWaveState();
       syncTimerPresetUi();
       syncTimerFocusUi();
       renderAccountFocusStats();
