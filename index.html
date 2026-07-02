@@ -2553,7 +2553,7 @@
         },
         {
           id: "kogudei-mergen",
-          imagePath: "Kögüdei Mergen.jpg",
+          imagePath: "Kogudei Mergen.jpg",
           name: "Kogudei Mergen",
           objectPosition: "center 22%",
         },
@@ -4114,6 +4114,7 @@
           setAccountStatus(describeProfileError(error));
         } finally {
           accountSaveInFlight = false;
+          renderAccountWarriorOptions(accountProfile);
           syncAccountButtonsState();
         }
       }
