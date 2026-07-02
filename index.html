@@ -8,6 +8,9 @@
       :root {
         --page-gutter: clamp(0.75rem, 2vw, 1.25rem);
         --strip-height: clamp(3.1rem, 6vw, 3.8rem);
+        --todo-tool-width: clamp(10rem, calc(100vw - (var(--page-gutter) * 2) - 8.4rem), 20.5rem);
+        --desk-tool-width: clamp(8.9rem, 16vw, 11.25rem);
+        --modal-width: min(34rem, calc(100vw - 2rem));
         --scroll-distance: 0px;
         --scroll-duration: 12s;
         --strip-color-rgb: 82, 98, 111;
@@ -360,8 +363,9 @@
         right: var(--page-gutter);
         z-index: 9;
         display: flex;
+        width: var(--desk-tool-width);
         flex-direction: column;
-        align-items: flex-end;
+        align-items: stretch;
         gap: 0.62rem;
         pointer-events: none;
       }
@@ -371,21 +375,25 @@
         top: var(--page-gutter);
         left: 50%;
         z-index: 9;
+        width: var(--todo-tool-width);
         transform: translateX(-50%);
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
         gap: 0.58rem;
         pointer-events: auto;
       }
 
       #account-tab,
+      #timer-tab,
       #todo-tab,
       #sticky-note-tab {
         position: relative;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 0.62rem;
+        width: 100%;
         padding: 0.58rem 0.72rem 0.58rem 0.82rem;
         border: 1px solid rgba(255, 255, 255, 0.24);
         border-radius: 1rem;
@@ -400,6 +408,11 @@
       }
 
       #account-tab {
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
+      #timer-tab {
         cursor: pointer;
         touch-action: manipulation;
       }
@@ -419,6 +432,7 @@
       }
 
       #account-tab:focus-visible,
+      #timer-tab:focus-visible,
       #todo-tab:focus-visible,
       #sticky-note-tab:focus-visible,
       .sticky-note-card:focus-visible,
@@ -438,6 +452,38 @@
         letter-spacing: 0.08em;
         text-transform: uppercase;
         white-space: nowrap;
+      }
+
+      .timer-tab-glyph {
+        position: relative;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        flex: 0 0 auto;
+      }
+
+      .timer-tab-glyph::before,
+      .timer-tab-glyph::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 1px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        transform-origin: bottom center;
+      }
+
+      .timer-tab-glyph::before {
+        height: 0.34rem;
+        transform: translate(-50%, -100%) rotate(0deg);
+      }
+
+      .timer-tab-glyph::after {
+        height: 0.46rem;
+        transform: translate(-50%, -100%) rotate(58deg);
       }
 
       .account-tab-avatar {
@@ -530,10 +576,10 @@
       #todo-list-panel {
         position: absolute;
         top: calc(100% + 0.58rem);
-        left: 50%;
+        left: 0;
         right: auto;
-        transform: translateX(-50%);
-        width: clamp(10rem, calc(100vw - (var(--page-gutter) * 2) - 8.4rem), 20.5rem);
+        transform: none;
+        width: 100%;
         max-height: calc(100vh - (var(--page-gutter) * 2) - 3.8rem);
         padding: 0.5rem;
         border: 1px solid rgba(255, 255, 255, 0.22);
@@ -671,12 +717,31 @@
         background: rgba(255, 255, 255, 0.18);
       }
 
-      #account-panel {
+      #timer-panel-backdrop,
+      #account-panel-backdrop {
         position: fixed;
-        top: calc(var(--page-gutter) + 3.55rem);
-        right: var(--page-gutter);
         z-index: 11;
-        width: min(20.5rem, calc(100vw - (var(--page-gutter) * 2)));
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(7, 10, 17, 0.52);
+        backdrop-filter: blur(10px);
+        pointer-events: auto;
+      }
+
+      #timer-panel-backdrop.is-open,
+      #account-panel-backdrop.is-open {
+        display: flex;
+      }
+
+      #timer-panel,
+      #account-panel {
+        position: relative;
+        width: var(--modal-width);
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
         padding: 0.88rem;
         border: 1px solid rgba(255, 255, 255, 0.22);
         border-radius: 1.1rem;
@@ -690,8 +755,213 @@
         pointer-events: auto;
       }
 
+      #timer-panel.is-open,
       #account-panel.is-open {
         display: flex;
+      }
+
+      .panel-close {
+        position: absolute;
+        top: 0.7rem;
+        right: 0.7rem;
+        width: 2rem;
+        height: 2rem;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.88);
+        font: inherit;
+        font-size: 1.1rem;
+        line-height: 1;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+      }
+
+      .panel-close:hover {
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      #timer-panel-title,
+      .account-section-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      #timer-panel-heading {
+        padding-right: 2rem;
+      }
+
+      #timer-panel-name {
+        font-size: 1.12rem;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+      }
+
+      #timer-panel-copy {
+        font-size: 0.82rem;
+        line-height: 1.55;
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      .timer-panel-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.52rem;
+      }
+
+      #timer-preset-options,
+      #timer-focus-options {
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .timer-choice {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 0.95rem;
+        background: rgba(255, 255, 255, 0.08);
+        color: inherit;
+        font: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+        padding: 0.75rem 0.82rem;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .timer-choice.is-selected {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(255, 255, 255, 0.92);
+        color: rgba(17, 21, 28, 0.94);
+      }
+
+      .timer-choice-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+      }
+
+      .timer-choice-title {
+        font-size: 0.84rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .timer-choice-copy {
+        font-size: 0.72rem;
+        line-height: 1.45;
+        color: inherit;
+        opacity: 0.76;
+      }
+
+      #timer-custom-fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.62rem;
+      }
+
+      #timer-custom-fields[hidden] {
+        display: none;
+      }
+
+      .timer-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.34rem;
+      }
+
+      .timer-field-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      .timer-field-input {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 0.85rem;
+        background: rgba(255, 255, 255, 0.08);
+        color: inherit;
+        font: inherit;
+        font-size: 0.82rem;
+        line-height: 1.35;
+        padding: 0.72rem 0.78rem;
+        outline: none;
+      }
+
+      .timer-field-input:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.88);
+        outline-offset: 0.15rem;
+      }
+
+      #timer-panel-status {
+        min-height: 1.2rem;
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      #timer-start-button {
+        align-self: stretch;
+        justify-content: center;
+      }
+
+      #timer-display {
+        position: fixed;
+        right: var(--page-gutter);
+        bottom: var(--page-gutter);
+        z-index: 10;
+        min-width: 10rem;
+        padding: 0.82rem 0.95rem 0.88rem;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 1rem;
+        background: rgba(13, 17, 25, 0.5);
+        box-shadow: 0 0.9rem 2rem rgba(0, 0, 0, 0.22);
+        backdrop-filter: blur(14px);
+        color: rgba(255, 255, 255, 0.96);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.12rem;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(0.8rem);
+        transition: opacity 180ms ease, transform 180ms ease;
+      }
+
+      #timer-display.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      #timer-display[data-phase="break"] {
+        background: rgba(25, 31, 41, 0.56);
+      }
+
+      #timer-display-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      #timer-display-clock {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
       }
 
       #account-panel-header {
@@ -860,6 +1130,63 @@
         gap: 0.48rem;
       }
 
+      #account-focus-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 0.58rem;
+        padding-top: 0.16rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      #account-focus-total {
+        font-size: 0.8rem;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      #account-focus-breakdown {
+        display: grid;
+        gap: 0.52rem;
+      }
+
+      .account-focus-row {
+        display: grid;
+        gap: 0.24rem;
+      }
+
+      .account-focus-row-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.8rem;
+      }
+
+      .account-focus-row-label {
+        font-size: 0.78rem;
+        line-height: 1.3;
+      }
+
+      .account-focus-row-value {
+        flex: 0 0 auto;
+        font-size: 0.72rem;
+        line-height: 1.3;
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .account-focus-bar {
+        width: 100%;
+        height: 0.42rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+      }
+
+      .account-focus-bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: rgba(255, 255, 255, 0.88);
+      }
+
       .account-action {
         border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 999px;
@@ -896,8 +1223,9 @@
       }
 
       #auth-card {
-        width: min(24rem, calc(100vw - 2rem));
-        padding: 1.05rem 1rem 1rem;
+        position: relative;
+        width: var(--modal-width);
+        padding: 1.15rem 1rem 1rem;
         border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 1.2rem;
         background: rgba(255, 255, 255, 0.12);
@@ -1309,6 +1637,12 @@
       }
 
       @media (max-width: 640px) {
+        :root {
+          --todo-tool-width: clamp(9rem, calc(100vw - (var(--page-gutter) * 2) - 7rem), 15.75rem);
+          --desk-tool-width: clamp(8.3rem, 42vw, 10rem);
+          --modal-width: min(100vw - 1rem, 28rem);
+        }
+
         #music-strip {
           padding-left: 0.78rem;
           padding-right: 0.52rem;
@@ -1325,6 +1659,7 @@
           font-size: 0.6rem;
         }
 
+        #timer-tab,
         #todo-tab,
         #sticky-note-tab {
           padding: 0.54rem 0.62rem 0.54rem 0.68rem;
@@ -1334,8 +1669,11 @@
           font-size: 0.68rem;
         }
 
+        #timer-custom-fields {
+          grid-template-columns: 1fr;
+        }
+
         #todo-list-panel {
-          width: clamp(9rem, calc(100vw - (var(--page-gutter) * 2) - 7rem), 15.75rem);
           max-height: calc(100vh - (var(--page-gutter) * 2) - 3.5rem);
           padding: 0.42rem;
         }
@@ -1453,6 +1791,10 @@
         <div id="todo-list-panel" aria-live="polite" aria-hidden="true"></div>
       </div>
       <div id="desk-tools">
+        <button id="timer-tab" type="button" aria-label="Open start timer" aria-pressed="false">
+          <span class="sticky-tab-label">Start Timer</span>
+          <span class="timer-tab-glyph" aria-hidden="true"></span>
+        </button>
         <button id="account-tab" type="button" aria-label="Open account settings" aria-pressed="false">
           <span class="sticky-tab-label">Account</span>
           <span id="account-tab-avatar" class="account-tab-avatar" aria-hidden="true">
@@ -1467,50 +1809,144 @@
           </span>
         </button>
       </div>
-      <div id="account-panel" aria-hidden="true">
-        <div id="account-panel-header">
-          <div id="account-panel-avatar-wrap">
-            <button id="account-panel-avatar-button" type="button" aria-label="Change profile photo">
-              <div id="account-panel-avatar">
-                <span id="account-panel-avatar-fallback" class="account-panel-avatar-fallback">A</span>
-              </div>
-              <span id="account-panel-avatar-overlay">Change Profile</span>
-            </button>
-            <input id="account-photo-file-input" type="file" accept="image/*" hidden />
+      <div id="timer-panel-backdrop" aria-hidden="true">
+        <div id="timer-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="timer-panel-name">
+          <button id="timer-panel-close" class="panel-close" type="button" aria-label="Close timer">×</button>
+          <div id="timer-panel-heading">
+            <div id="timer-panel-title">Start Timer</div>
+            <div id="timer-panel-name">Set your focus cycle</div>
           </div>
-          <div id="account-panel-identity">
-            <div id="account-display-name">Account</div>
-            <div id="account-email">Sign in with Google to open your account.</div>
+          <div id="timer-panel-copy">
+            Pick a focus timer, choose what you want to work on, and start when you are ready.
           </div>
+          <div class="timer-panel-section">
+            <div class="account-section-title">Choose A Timer</div>
+            <div id="timer-preset-options">
+              <button class="timer-choice is-selected" type="button" data-preset-key="25-5">
+                <span class="timer-choice-text">
+                  <span class="timer-choice-title">25 / 5</span>
+                  <span class="timer-choice-copy">25 minutes focus, 5 minute break</span>
+                </span>
+              </button>
+              <button class="timer-choice" type="button" data-preset-key="50-15">
+                <span class="timer-choice-text">
+                  <span class="timer-choice-title">50 / 15</span>
+                  <span class="timer-choice-copy">50 minutes focus, 15 minute break</span>
+                </span>
+              </button>
+              <button class="timer-choice" type="button" data-preset-key="90-20">
+                <span class="timer-choice-text">
+                  <span class="timer-choice-title">90 / 20</span>
+                  <span class="timer-choice-copy">90 minutes focus, 20 minute break</span>
+                </span>
+              </button>
+              <button class="timer-choice" type="button" data-preset-key="custom">
+                <span class="timer-choice-text">
+                  <span class="timer-choice-title">Custom</span>
+                  <span class="timer-choice-copy">Set your own focus and break minutes</span>
+                </span>
+              </button>
+            </div>
+            <div id="timer-custom-fields" hidden>
+              <label class="timer-field">
+                <span class="timer-field-label">Focus Minutes</span>
+                <input id="timer-custom-focus-input" class="timer-field-input" type="number" min="1" max="999" value="25" />
+              </label>
+              <label class="timer-field">
+                <span class="timer-field-label">Break Minutes</span>
+                <input id="timer-custom-break-input" class="timer-field-input" type="number" min="0" max="999" value="5" />
+              </label>
+            </div>
+          </div>
+          <div class="timer-panel-section">
+            <div class="account-section-title">What do you want to focus on?</div>
+            <div id="timer-focus-options">
+              <button class="timer-choice is-selected" type="button" data-focus-category="Study">
+                <span class="timer-choice-text">
+                  <span class="timer-choice-title">Study</span>
+                </span>
+              </button>
+              <button class="timer-choice" type="button" data-focus-category="Work">
+                <span class="timer-choice-text">
+                  <span class="timer-choice-title">Work</span>
+                </span>
+              </button>
+              <button class="timer-choice" type="button" data-focus-category="Creative">
+                <span class="timer-choice-text">
+                  <span class="timer-choice-title">Creative</span>
+                </span>
+              </button>
+              <button class="timer-choice" type="button" data-focus-category="Climb the Altai Mountains">
+                <span class="timer-choice-text">
+                  <span class="timer-choice-title">Climb the Altai Mountains</span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div id="timer-panel-status" aria-live="polite"></div>
+          <button id="timer-start-button" class="account-action is-primary" type="button">
+            Start Timer
+          </button>
         </div>
-        <label class="account-field">
-          <span class="account-field-label">Username</span>
-          <input
-            id="account-username-input"
-            class="account-field-input"
-            type="text"
-            maxlength="40"
-            placeholder="Uses your Gmail name if left blank"
-          />
-        </label>
-        <div id="account-status" aria-live="polite"></div>
-        <div id="account-actions">
-          <button id="account-save-button" class="account-action is-primary" type="button">
-            Save
-          </button>
-          <button id="account-reset-photo-button" class="account-action" type="button">
-            Reset Profile
-          </button>
-          <button id="account-sign-out-button" class="account-action" type="button">
-            Sign Out
-          </button>
+      </div>
+      <div id="account-panel-backdrop" aria-hidden="true">
+        <div id="account-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-display-name">
+          <button id="account-panel-close" class="panel-close" type="button" aria-label="Close account">×</button>
+          <div id="account-panel-header">
+            <div id="account-panel-avatar-wrap">
+              <button id="account-panel-avatar-button" type="button" aria-label="Change profile photo">
+                <div id="account-panel-avatar">
+                  <span id="account-panel-avatar-fallback" class="account-panel-avatar-fallback">A</span>
+                </div>
+                <span id="account-panel-avatar-overlay">Change Profile</span>
+              </button>
+              <input id="account-photo-file-input" type="file" accept="image/*" hidden />
+            </div>
+            <div id="account-panel-identity">
+              <div id="account-display-name">Account</div>
+              <div id="account-email">Sign in with Google to open your account.</div>
+            </div>
+          </div>
+          <label class="account-field">
+            <span class="account-field-label">Username</span>
+            <input
+              id="account-username-input"
+              class="account-field-input"
+              type="text"
+              maxlength="40"
+              placeholder="Uses your Gmail name if left blank"
+            />
+          </label>
+          <div id="account-status" aria-live="polite"></div>
+          <div id="account-actions">
+            <button id="account-save-button" class="account-action is-primary" type="button">
+              Save
+            </button>
+            <button id="account-reset-photo-button" class="account-action" type="button">
+              Reset Profile
+            </button>
+            <button id="account-sign-out-button" class="account-action" type="button">
+              Sign Out
+            </button>
+          </div>
+          <div id="account-focus-summary">
+            <div class="account-section-title">Focus Summary</div>
+            <div id="account-focus-total">Total focus time: 0m</div>
+            <div id="account-focus-breakdown" aria-live="polite"></div>
+          </div>
         </div>
       </div>
       <div id="notes-canvas" aria-live="polite"></div>
     </div>
 
+    <div id="timer-display" aria-live="polite" aria-atomic="true" aria-hidden="true" data-phase="idle">
+      <div id="timer-display-label">Timer Ready</div>
+      <div id="timer-display-clock">00:00</div>
+    </div>
+
     <div id="auth-gate" aria-hidden="true">
       <div id="auth-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+        <button id="auth-close-button" class="panel-close" type="button" aria-label="Close sign in">×</button>
         <div id="auth-title">Sign In With Google</div>
         <div id="auth-copy"></div>
         <div id="auth-actions">
@@ -1804,10 +2240,26 @@
       const seekForwardButton = document.getElementById("seek-forward");
       const playerUnlockHint = document.getElementById("player-unlock-hint");
       const ytPlayerShell = document.getElementById("yt-player-shell");
+      const timerTab = document.getElementById("timer-tab");
+      const timerPanelBackdrop = document.getElementById("timer-panel-backdrop");
+      const timerPanel = document.getElementById("timer-panel");
+      const timerPanelCloseButton = document.getElementById("timer-panel-close");
+      const timerPresetButtons = Array.from(document.querySelectorAll("#timer-preset-options .timer-choice"));
+      const timerCustomFields = document.getElementById("timer-custom-fields");
+      const timerCustomFocusInput = document.getElementById("timer-custom-focus-input");
+      const timerCustomBreakInput = document.getElementById("timer-custom-break-input");
+      const timerFocusButtons = Array.from(document.querySelectorAll("#timer-focus-options .timer-choice"));
+      const timerPanelStatus = document.getElementById("timer-panel-status");
+      const timerStartButton = document.getElementById("timer-start-button");
+      const timerDisplay = document.getElementById("timer-display");
+      const timerDisplayLabel = document.getElementById("timer-display-label");
+      const timerDisplayClock = document.getElementById("timer-display-clock");
       const accountTab = document.getElementById("account-tab");
       const accountTabAvatar = document.getElementById("account-tab-avatar");
       const accountTabAvatarFallback = document.getElementById("account-tab-avatar-fallback");
+      const accountPanelBackdrop = document.getElementById("account-panel-backdrop");
       const accountPanel = document.getElementById("account-panel");
+      const accountPanelCloseButton = document.getElementById("account-panel-close");
       const accountPanelAvatarButton = document.getElementById("account-panel-avatar-button");
       const accountPanelAvatar = document.getElementById("account-panel-avatar");
       const accountPanelAvatarFallback = document.getElementById("account-panel-avatar-fallback");
@@ -1819,12 +2271,15 @@
       const accountSaveButton = document.getElementById("account-save-button");
       const accountResetPhotoButton = document.getElementById("account-reset-photo-button");
       const accountSignOutButton = document.getElementById("account-sign-out-button");
+      const accountFocusTotal = document.getElementById("account-focus-total");
+      const accountFocusBreakdown = document.getElementById("account-focus-breakdown");
       const authGate = document.getElementById("auth-gate");
       const authCard = document.getElementById("auth-card");
       const authTitle = document.getElementById("auth-title");
       const authCopy = document.getElementById("auth-copy");
       const authStatus = document.getElementById("auth-status");
       const authGoogleButton = document.getElementById("auth-google-button");
+      const authCloseButton = document.getElementById("auth-close-button");
       const authDismissButton = document.getElementById("auth-dismiss-button");
       const authSetupNote = document.getElementById("auth-setup-note");
       const todoDock = document.getElementById("todo-dock");
@@ -1854,6 +2309,26 @@
         messagingSenderId: "418675254085",
         appId: "1:418675254085:web:ca4250f4b76dba476ad42c",
         measurementId: "G-TLG7CXFY9N",
+      };
+      const focusCategories = [
+        "Study",
+        "Work",
+        "Creative",
+        "Climb the Altai Mountains",
+      ];
+      const timerPresetMap = {
+        "25-5": {
+          breakMinutes: 5,
+          focusMinutes: 25,
+        },
+        "50-15": {
+          breakMinutes: 15,
+          focusMinutes: 50,
+        },
+        "90-20": {
+          breakMinutes: 20,
+          focusMinutes: 90,
+        },
       };
       const firebaseProfileCollection = "profiles";
       const todoStorageKey = "horsemol-todo-items-v1";
@@ -1893,6 +2368,7 @@
       let authBusy = false;
       let accountUser = null;
       let accountProfile = {
+        focusStats: createEmptyFocusStats(),
         username: "",
         photoURL: "",
       };
@@ -1901,9 +2377,441 @@
       let guestSavePromptShown = false;
       let authPromptMode = "account";
       let authStateResolved = false;
+      let timerPresetKey = "25-5";
+      let timerFocusCategory = focusCategories[0];
+      let timerPhase = "idle";
+      let timerIntervalId = 0;
+      let timerEndAt = 0;
+      let timerVisible = false;
+      let activeTimerConfig = null;
+      let alarmAudioContext = null;
 
       function clamp(value, min, max) {
         return Math.min(max, Math.max(min, value));
+      }
+
+      function createEmptyFocusStats() {
+        const categories = {};
+
+        focusCategories.forEach((category) => {
+          categories[category] = 0;
+        });
+
+        return {
+          categories,
+          totalMs: 0,
+        };
+      }
+
+      function normalizeFocusStats(input) {
+        const normalized = createEmptyFocusStats();
+
+        if (!input || typeof input !== "object") {
+          return normalized;
+        }
+
+        const rawCategories =
+          input.categories && typeof input.categories === "object" ? input.categories : {};
+
+        focusCategories.forEach((category) => {
+          const value = Number(rawCategories[category]);
+
+          normalized.categories[category] = Number.isFinite(value) && value > 0 ? value : 0;
+        });
+
+        const explicitTotal = Number(input.totalMs);
+        const computedTotal = focusCategories.reduce(
+          (sum, category) => sum + normalized.categories[category],
+          0,
+        );
+
+        normalized.totalMs =
+          Number.isFinite(explicitTotal) && explicitTotal > computedTotal ? explicitTotal : computedTotal;
+
+        return normalized;
+      }
+
+      function cloneFocusStats(stats) {
+        const normalized = normalizeFocusStats(stats);
+
+        return {
+          categories: {
+            ...normalized.categories,
+          },
+          totalMs: normalized.totalMs,
+        };
+      }
+
+      function formatDurationCompact(totalMs) {
+        const roundedMinutes = Math.round(Math.max(0, Number(totalMs) || 0) / 60000);
+
+        if (!roundedMinutes) {
+          return "0m";
+        }
+
+        const hours = Math.floor(roundedMinutes / 60);
+        const minutes = roundedMinutes % 60;
+
+        if (!hours) {
+          return `${roundedMinutes}m`;
+        }
+
+        if (!minutes) {
+          return `${hours}h`;
+        }
+
+        return `${hours}h ${minutes}m`;
+      }
+
+      function formatTimerClock(remainingMs) {
+        const totalSeconds = Math.max(0, Math.ceil((Number(remainingMs) || 0) / 1000));
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        if (hours) {
+          return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+        }
+
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      }
+
+      function renderAccountFocusStats(stats = accountProfile.focusStats) {
+        const normalized = normalizeFocusStats(stats);
+
+        accountFocusTotal.textContent = `Total focus time: ${formatDurationCompact(normalized.totalMs)}`;
+        accountFocusBreakdown.replaceChildren();
+
+        focusCategories.forEach((category) => {
+          const categoryMs = normalized.categories[category];
+          const percent = normalized.totalMs ? Math.round((categoryMs / normalized.totalMs) * 100) : 0;
+          const row = document.createElement("div");
+          const rowTop = document.createElement("div");
+          const label = document.createElement("div");
+          const value = document.createElement("div");
+          const bar = document.createElement("div");
+          const fill = document.createElement("div");
+
+          row.className = "account-focus-row";
+          rowTop.className = "account-focus-row-top";
+          label.className = "account-focus-row-label";
+          value.className = "account-focus-row-value";
+          bar.className = "account-focus-bar";
+          fill.className = "account-focus-bar-fill";
+
+          label.textContent = category;
+          value.textContent = `${percent}% • ${formatDurationCompact(categoryMs)}`;
+          fill.style.width = `${percent}%`;
+
+          bar.append(fill);
+          rowTop.append(label, value);
+          row.append(rowTop, bar);
+          accountFocusBreakdown.append(row);
+        });
+      }
+
+      function setTimerPanelStatus(message) {
+        timerPanelStatus.textContent = message || "";
+      }
+
+      function isTimerPanelOpen() {
+        return timerPanel.classList.contains("is-open");
+      }
+
+      function setTimerPanelOpen(isOpen) {
+        const nextOpenState = Boolean(isOpen);
+
+        timerPanelBackdrop.classList.toggle("is-open", nextOpenState);
+        timerPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
+        timerPanel.classList.toggle("is-open", nextOpenState);
+        timerPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
+        timerTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+      }
+
+      function closeTimerPanel() {
+        setTimerPanelOpen(false);
+      }
+
+      function syncTimerPresetUi() {
+        timerPresetButtons.forEach((button) => {
+          button.classList.toggle("is-selected", button.dataset.presetKey === timerPresetKey);
+        });
+        timerCustomFields.hidden = timerPresetKey !== "custom";
+      }
+
+      function syncTimerFocusUi() {
+        timerFocusButtons.forEach((button) => {
+          button.classList.toggle("is-selected", button.dataset.focusCategory === timerFocusCategory);
+        });
+      }
+
+      function getSelectedTimerDurations() {
+        if (timerPresetKey !== "custom") {
+          return timerPresetMap[timerPresetKey] || timerPresetMap["25-5"];
+        }
+
+        const focusMinutes = Number.parseInt(timerCustomFocusInput.value, 10);
+        const breakMinutes = Number.parseInt(timerCustomBreakInput.value, 10);
+
+        if (!Number.isFinite(focusMinutes) || focusMinutes < 1) {
+          return null;
+        }
+
+        if (!Number.isFinite(breakMinutes) || breakMinutes < 0) {
+          return null;
+        }
+
+        return {
+          breakMinutes,
+          focusMinutes,
+        };
+      }
+
+      function getTimerDisplayLabel() {
+        if (timerPhase === "focus" && activeTimerConfig) {
+          return `${activeTimerConfig.focusCategory} Focus`;
+        }
+
+        if (timerPhase === "break") {
+          return "Break Time";
+        }
+
+        if (timerPhase === "complete") {
+          return "Timer Complete";
+        }
+
+        return "Timer Ready";
+      }
+
+      function updateTimerDisplay(remainingMs = 0) {
+        const shouldShow = timerVisible || timerPhase !== "idle" || timerPhase === "complete";
+
+        timerDisplay.classList.toggle("is-visible", shouldShow);
+        timerDisplay.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+        timerDisplay.dataset.phase = timerPhase;
+        timerDisplayLabel.textContent = getTimerDisplayLabel();
+        timerDisplayClock.textContent = formatTimerClock(remainingMs);
+      }
+
+      function clearTimerInterval() {
+        if (!timerIntervalId) {
+          return;
+        }
+
+        window.clearInterval(timerIntervalId);
+        timerIntervalId = 0;
+      }
+
+      async function ensureAlarmAudioReady() {
+        const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioContextConstructor) {
+          return null;
+        }
+
+        if (!alarmAudioContext) {
+          alarmAudioContext = new AudioContextConstructor();
+        }
+
+        if (alarmAudioContext.state === "suspended") {
+          try {
+            await Promise.race([
+              alarmAudioContext.resume(),
+              new Promise((resolve) => {
+                window.setTimeout(resolve, 450);
+              }),
+            ]);
+          } catch (error) {
+            return alarmAudioContext;
+          }
+        }
+
+        return alarmAudioContext;
+      }
+
+      async function playGentleAlarm() {
+        const audioContext = await ensureAlarmAudioReady();
+
+        if (!audioContext) {
+          return;
+        }
+
+        const notes = [
+          { delay: 0, duration: 0.18, frequency: 659.25 },
+          { delay: 0.26, duration: 0.22, frequency: 783.99 },
+          { delay: 0.56, duration: 0.28, frequency: 987.77 },
+        ];
+        const startAt = audioContext.currentTime + 0.02;
+
+        notes.forEach((note) => {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+
+          oscillator.type = "sine";
+          oscillator.frequency.setValueAtTime(note.frequency, startAt + note.delay);
+          gainNode.gain.setValueAtTime(0.0001, startAt + note.delay);
+          gainNode.gain.linearRampToValueAtTime(0.045, startAt + note.delay + 0.03);
+          gainNode.gain.exponentialRampToValueAtTime(
+            0.0001,
+            startAt + note.delay + note.duration,
+          );
+
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          oscillator.start(startAt + note.delay);
+          oscillator.stop(startAt + note.delay + note.duration + 0.04);
+        });
+
+        const finalNote = notes[notes.length - 1];
+        const totalDuration = finalNote.delay + finalNote.duration + 0.08;
+
+        await new Promise((resolve) => {
+          window.setTimeout(resolve, totalDuration * 1000);
+        });
+      }
+
+      function pauseMusicForTimer() {
+        shouldPlayWhenReady = false;
+        playerNeedsManualStart = false;
+        updatePlayerUnlockUi();
+
+        if (player && playerReady && typeof player.pauseVideo === "function") {
+          updatePlayerDebug({
+            action: "pauseMusicForTimer",
+            command: "pauseVideo",
+          });
+          player.pauseVideo();
+          return;
+        }
+
+        isPlaying = false;
+        updateToggleState();
+      }
+
+      async function persistFocusStatsToProfile(focusStats) {
+        if (!accountUser || !firestoreDb) {
+          return;
+        }
+
+        const profileRef = getAccountProfileRef();
+
+        if (!profileRef) {
+          return;
+        }
+
+        try {
+          await profileRef.set(
+            {
+              email: accountUser.email || "",
+              focusStats: cloneFocusStats(focusStats),
+              googleDisplayName: accountUser.displayName || "",
+              googlePhotoURL: accountUser.photoURL || "",
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+          );
+        } catch (error) {
+          if (isAccountPanelOpen()) {
+            setAccountStatus(describeProfileError(error));
+          }
+        }
+      }
+
+      function recordFocusSession(category, durationMs) {
+        if (!accountUser || !category || durationMs <= 0) {
+          return;
+        }
+
+        const nextStats = cloneFocusStats(accountProfile.focusStats);
+
+        nextStats.categories[category] = (nextStats.categories[category] || 0) + durationMs;
+        nextStats.totalMs += durationMs;
+        accountProfile = {
+          ...accountProfile,
+          focusStats: nextStats,
+        };
+        renderAccountFocusStats(nextStats);
+        void persistFocusStatsToProfile(nextStats);
+      }
+
+      async function handleTimerPhaseComplete() {
+        const completedPhase = timerPhase;
+        const completedConfig = activeTimerConfig;
+
+        clearTimerInterval();
+        timerEndAt = 0;
+
+        if (!completedConfig) {
+          timerPhase = "complete";
+          timerVisible = true;
+          updateTimerDisplay(0);
+          return;
+        }
+
+        if (completedPhase === "focus") {
+          pauseMusicForTimer();
+          await playGentleAlarm();
+          recordFocusSession(
+            completedConfig.focusCategory,
+            Math.round(completedConfig.focusMinutes * 60000),
+          );
+
+          if (completedConfig.breakMinutes > 0) {
+            setTimerPanelStatus(`Break started for ${completedConfig.breakMinutes} minutes.`);
+            startTimerPhase("break", completedConfig.breakMinutes * 60000);
+            return;
+          }
+        } else if (completedPhase === "break") {
+          await playGentleAlarm();
+          setTimerPanelStatus("Break finished.");
+        }
+
+        timerPhase = "complete";
+        activeTimerConfig = null;
+        timerVisible = true;
+        updateTimerDisplay(0);
+      }
+
+      function runTimerTick() {
+        const remainingMs = timerEndAt - Date.now();
+
+        if (remainingMs <= 0) {
+          void handleTimerPhaseComplete();
+          return;
+        }
+
+        updateTimerDisplay(remainingMs);
+      }
+
+      function startTimerPhase(phase, durationMs) {
+        timerPhase = phase;
+        timerVisible = true;
+        timerEndAt = Date.now() + durationMs;
+        updateTimerDisplay(durationMs);
+        clearTimerInterval();
+        timerIntervalId = window.setInterval(runTimerTick, 250);
+      }
+
+      async function startTimerSession() {
+        const selectedDurations = getSelectedTimerDurations();
+
+        if (!selectedDurations) {
+          setTimerPanelStatus("Enter a valid focus time and break time.");
+          return;
+        }
+
+        void ensureAlarmAudioReady();
+        clearTimerInterval();
+        activeTimerConfig = {
+          breakMinutes: selectedDurations.breakMinutes,
+          focusCategory: timerFocusCategory,
+          focusMinutes: selectedDurations.focusMinutes,
+        };
+        setTimerPanelStatus(
+          `${selectedDurations.focusMinutes} minute focus timer started for ${timerFocusCategory}.`,
+        );
+        closeTimerPanel();
+        startTimerPhase("focus", selectedDurations.focusMinutes * 60000);
       }
 
       function updatePlayerDebug(patch = {}) {
@@ -2368,6 +3276,8 @@
       function setAccountPanelOpen(isOpen) {
         const nextOpenState = Boolean(isOpen) && Boolean(accountUser);
 
+        accountPanelBackdrop.classList.toggle("is-open", nextOpenState);
+        accountPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
         accountPanel.classList.toggle("is-open", nextOpenState);
         accountPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
         accountTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
@@ -2382,6 +3292,7 @@
         const canEditProfile = isSignedIn && !accountSaveInFlight && Boolean(firestoreDb);
 
         authGoogleButton.disabled = !authConfigured || authBusy;
+        authCloseButton.disabled = authBusy;
         authDismissButton.disabled = authBusy;
         accountUsernameInput.disabled = !canEditProfile;
         accountPanelAvatarButton.disabled = !canEditProfile;
@@ -2418,6 +3329,7 @@
           displayName,
           displayPhotoUrl,
         );
+        renderAccountFocusStats(accountProfile.focusStats);
         syncAccountButtonsState();
       }
 
@@ -2491,6 +3403,7 @@
           return {
             errorMessage: "",
             profile: {
+              focusStats: createEmptyFocusStats(),
               username: "",
               photoURL: "",
             },
@@ -2507,6 +3420,7 @@
                 email: user.email || "",
                 googleDisplayName: user.displayName || "",
                 googlePhotoURL: user.photoURL || "",
+                focusStats: createEmptyFocusStats(),
                 photoURL: "",
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 username: "",
@@ -2518,6 +3432,7 @@
           return {
             errorMessage: "",
             profile: {
+              focusStats: normalizeFocusStats(data.focusStats),
               username: typeof data.username === "string" ? data.username : "",
               photoURL: typeof data.photoURL === "string" ? data.photoURL : "",
             },
@@ -2526,6 +3441,7 @@
           return {
             errorMessage: describeProfileError(error),
             profile: {
+              focusStats: createEmptyFocusStats(),
               username: "",
               photoURL: "",
             },
@@ -2539,6 +3455,7 @@
 
         accountUser = user;
         accountProfile = {
+          focusStats: createEmptyFocusStats(),
           username: "",
           photoURL: "",
         };
@@ -2767,6 +3684,7 @@
           await profileRef.set(
             {
               email: accountUser.email || "",
+              focusStats: cloneFocusStats(accountProfile.focusStats),
               googleDisplayName: accountUser.displayName || "",
               googlePhotoURL: accountUser.photoURL || "",
               photoURL: normalizedPhotoUrl,
@@ -2776,6 +3694,7 @@
             { merge: true },
           );
           accountProfile = {
+            ...accountProfile,
             username,
             photoURL: normalizedPhotoUrl,
           };
@@ -2857,6 +3776,51 @@
         }
       }
 
+      function onTimerTabClick() {
+        if (isTimerPanelOpen()) {
+          closeTimerPanel();
+          return;
+        }
+
+        setTimerPanelOpen(true);
+        window.requestAnimationFrame(() => {
+          const preferredButton =
+            timerPresetButtons.find((button) => button.dataset.presetKey === timerPresetKey) ||
+            timerPresetButtons[0];
+
+          preferredButton?.focus({ preventScroll: true });
+        });
+      }
+
+      function onTimerPresetClick(event) {
+        const presetKey = event.currentTarget.dataset.presetKey;
+
+        if (!presetKey) {
+          return;
+        }
+
+        timerPresetKey = presetKey;
+        syncTimerPresetUi();
+        setTimerPanelStatus("");
+
+        if (presetKey === "custom") {
+          window.requestAnimationFrame(() => {
+            timerCustomFocusInput.focus({ preventScroll: true });
+          });
+        }
+      }
+
+      function onTimerFocusClick(event) {
+        const focusCategory = event.currentTarget.dataset.focusCategory;
+
+        if (!focusCategory) {
+          return;
+        }
+
+        timerFocusCategory = focusCategory;
+        syncTimerFocusUi();
+      }
+
       function onAccountTabClick() {
         if (!accountUser) {
           openAuthPrompt("account");
@@ -2875,7 +3839,7 @@
 
         setAccountPanelOpen(true);
         window.requestAnimationFrame(() => {
-          accountUsernameInput.focus({ preventScroll: true });
+          accountPanelCloseButton.focus({ preventScroll: true });
         });
       }
 
@@ -2893,21 +3857,28 @@
           return;
         }
 
-        if (!isAccountPanelOpen()) {
+        if (isTimerPanelOpen() && event.target === timerPanelBackdrop) {
+          closeTimerPanel();
           return;
         }
 
-        if (accountPanel.contains(event.target) || accountTab.contains(event.target)) {
+        if (isAccountPanelOpen() && event.target === accountPanelBackdrop) {
+          closeAccountPanel();
           return;
         }
-
-        closeAccountPanel();
       }
 
       function isWithinAccountUi(target) {
         return (
           target instanceof Node &&
-          (accountPanel.contains(target) || authGate.contains(target) || accountTab.contains(target))
+          (
+            timerPanelBackdrop.contains(target) ||
+            timerPanel.contains(target) ||
+            accountPanelBackdrop.contains(target) ||
+            accountPanel.contains(target) ||
+            authGate.contains(target) ||
+            accountTab.contains(target)
+          )
         );
       }
 
@@ -4405,6 +5376,18 @@
       };
 
       accountTab.addEventListener("click", onAccountTabClick);
+      timerTab.addEventListener("click", onTimerTabClick);
+      timerPanelCloseButton.addEventListener("click", closeTimerPanel);
+      timerPresetButtons.forEach((button) => {
+        button.addEventListener("click", onTimerPresetClick);
+      });
+      timerFocusButtons.forEach((button) => {
+        button.addEventListener("click", onTimerFocusClick);
+      });
+      timerStartButton.addEventListener("click", () => {
+        void startTimerSession();
+      });
+      accountPanelCloseButton.addEventListener("click", closeAccountPanel);
       accountUsernameInput.addEventListener("input", onAccountFieldInput);
       accountPanelAvatarButton.addEventListener("click", onAccountAvatarButtonClick);
       accountPhotoFileInput.addEventListener("change", (event) => {
@@ -4422,6 +5405,7 @@
       authGoogleButton.addEventListener("click", () => {
         void signInWithGoogle();
       });
+      authCloseButton.addEventListener("click", closeAuthPrompt);
       authDismissButton.addEventListener("click", closeAuthPrompt);
       backgroundSwitcher.addEventListener("click", showNextBackgroundWithUndoCapture);
       backgroundSwitcher.addEventListener("keydown", (event) => {
@@ -4488,6 +5472,11 @@
           return;
         }
 
+        if (event.key === "Escape" && isTimerPanelOpen()) {
+          closeTimerPanel();
+          return;
+        }
+
         if (event.key === "Escape" && authGate.classList.contains("is-visible")) {
           closeAuthPrompt();
           return;
@@ -4501,13 +5490,17 @@
       loadTodoItems();
       updateTodoDockPosition();
       loadStickyNotes();
+      syncTimerPresetUi();
+      syncTimerFocusUi();
+      renderAccountFocusStats();
+      updateTimerDisplay(0);
       void initializeAccountAuth();
       void renderBackground({ immediate: true });
       setTrackTitle(getTrackTitleAt(currentTrackIndex));
-        renderUpcomingTracks();
-        updateStripColorForVideo(firstVideoId);
-        updatePlayerUnlockUi();
-        loadYouTubeApi();
+      renderUpcomingTracks();
+      updateStripColorForVideo(firstVideoId);
+      updatePlayerUnlockUi();
+      loadYouTubeApi();
     </script>
   </body>
 </html>
