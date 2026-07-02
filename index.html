@@ -2641,29 +2641,35 @@
           { delay: 0.26, duration: 0.22, frequency: 783.99 },
           { delay: 0.56, duration: 0.28, frequency: 987.77 },
         ];
+        const repeatCount = 3;
+        const repeatGap = 0.38;
+        const patternDuration = notes[notes.length - 1].delay + notes[notes.length - 1].duration;
+        const repeatDuration = patternDuration + repeatGap;
         const startAt = audioContext.currentTime + 0.02;
 
-        notes.forEach((note) => {
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
+        for (let repeatIndex = 0; repeatIndex < repeatCount; repeatIndex += 1) {
+          const repeatOffset = repeatIndex * repeatDuration;
 
-          oscillator.type = "sine";
-          oscillator.frequency.setValueAtTime(note.frequency, startAt + note.delay);
-          gainNode.gain.setValueAtTime(0.0001, startAt + note.delay);
-          gainNode.gain.linearRampToValueAtTime(0.045, startAt + note.delay + 0.03);
-          gainNode.gain.exponentialRampToValueAtTime(
-            0.0001,
-            startAt + note.delay + note.duration,
-          );
+          notes.forEach((note) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const noteStart = startAt + repeatOffset + note.delay;
+            const peakGain = repeatIndex === repeatCount - 1 ? 0.1 : 0.082;
 
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          oscillator.start(startAt + note.delay);
-          oscillator.stop(startAt + note.delay + note.duration + 0.04);
-        });
+            oscillator.type = "triangle";
+            oscillator.frequency.setValueAtTime(note.frequency, noteStart);
+            gainNode.gain.setValueAtTime(0.0001, noteStart);
+            gainNode.gain.linearRampToValueAtTime(peakGain, noteStart + 0.03);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, noteStart + note.duration);
 
-        const finalNote = notes[notes.length - 1];
-        const totalDuration = finalNote.delay + finalNote.duration + 0.08;
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.start(noteStart);
+            oscillator.stop(noteStart + note.duration + 0.04);
+          });
+        }
+
+        const totalDuration = repeatDuration * repeatCount;
 
         await new Promise((resolve) => {
           window.setTimeout(resolve, totalDuration * 1000);
