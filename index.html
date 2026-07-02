@@ -61,7 +61,7 @@
         background: #000000;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 520ms ease, transform 620ms ease;
+        transition: opacity 520ms ease;
         will-change: transform, opacity;
       }
 
@@ -1837,14 +1837,10 @@
         </button>
       </div>
       <div id="timer-panel-backdrop" aria-hidden="true">
-        <div id="timer-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="timer-panel-name">
+        <div id="timer-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="timer-panel-title">
           <button id="timer-panel-close" class="panel-close" type="button" aria-label="Close timer">×</button>
           <div id="timer-panel-heading">
             <div id="timer-panel-title">Start Timer</div>
-            <div id="timer-panel-name">Set your focus cycle</div>
-          </div>
-          <div id="timer-panel-copy">
-            Pick a focus timer, choose what you want to work on, and start when you are ready.
           </div>
           <div class="timer-panel-section">
             <div class="account-section-title">Choose A Timer</div>
@@ -2807,7 +2803,7 @@
           }
         } else if (completedPhase === "break") {
           await playGentleAlarm();
-          setTimerPanelStatus("Break finished.");
+          setTimerPanelStatus("");
         }
 
         timerPhase = "complete";
@@ -2962,10 +2958,10 @@
           : `translate(-50%, calc(-50% + ${offsetY}))`;
 
         element.style.setProperty("--rotation-angle", rotationAngle);
+        element.style.setProperty("--image-base-transform", transform);
         element.style.width = width;
         element.style.height = height;
         element.style.objectPosition = framing.objectPosition || "center";
-        element.style.transform = transform;
         element.classList.toggle("is-rotated", shouldRotate);
         element.src = `${encodeURI(imagePath)}?v=${imageAssetVersion}`;
       }
