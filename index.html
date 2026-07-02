@@ -700,9 +700,33 @@
         gap: 0.72rem;
       }
 
+      #account-panel-avatar-wrap {
+        flex: 0 0 auto;
+      }
+
+      #account-panel-avatar-button {
+        position: relative;
+        width: 3.4rem;
+        height: 3.4rem;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      #account-panel-avatar-button:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.88);
+        outline-offset: 0.16rem;
+      }
+
+      #account-panel-avatar-button:disabled {
+        cursor: not-allowed;
+      }
+
       #account-panel-avatar {
-        width: 3rem;
-        height: 3rem;
+        width: 100%;
+        height: 100%;
         border: 1px solid rgba(255, 255, 255, 0.32);
         border-radius: 999px;
         background:
@@ -714,11 +738,48 @@
         display: grid;
         place-items: center;
         overflow: hidden;
-        flex: 0 0 auto;
+        transition:
+          filter 180ms ease,
+          border-color 180ms ease;
       }
 
       #account-panel-avatar.is-photo {
         border-color: rgba(255, 255, 255, 0.48);
+      }
+
+      #account-panel-avatar-button:hover #account-panel-avatar,
+      #account-panel-avatar-button:focus-visible #account-panel-avatar {
+        filter: brightness(0.78);
+      }
+
+      #account-panel-avatar-overlay {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.4rem;
+        background: rgba(11, 15, 24, 0.58);
+        color: rgba(255, 255, 255, 0.96);
+        font-size: 0.52rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        line-height: 1.2;
+        text-transform: uppercase;
+        text-align: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease;
+      }
+
+      #account-panel-avatar-button:hover #account-panel-avatar-overlay,
+      #account-panel-avatar-button:focus-visible #account-panel-avatar-overlay {
+        opacity: 1;
+      }
+
+      #account-panel-avatar-button:disabled #account-panel-avatar-overlay {
+        display: none;
       }
 
       .account-panel-avatar-fallback {
@@ -1408,8 +1469,14 @@
       </div>
       <div id="account-panel" aria-hidden="true">
         <div id="account-panel-header">
-          <div id="account-panel-avatar">
-            <span id="account-panel-avatar-fallback" class="account-panel-avatar-fallback">A</span>
+          <div id="account-panel-avatar-wrap">
+            <button id="account-panel-avatar-button" type="button" aria-label="Change profile photo">
+              <div id="account-panel-avatar">
+                <span id="account-panel-avatar-fallback" class="account-panel-avatar-fallback">A</span>
+              </div>
+              <span id="account-panel-avatar-overlay">Change Profile</span>
+            </button>
+            <input id="account-photo-file-input" type="file" accept="image/*" hidden />
           </div>
           <div id="account-panel-identity">
             <div id="account-display-name">Account</div>
@@ -1426,23 +1493,13 @@
             placeholder="Uses your Gmail name if left blank"
           />
         </label>
-        <label class="account-field">
-          <span class="account-field-label">Profile Photo URL</span>
-          <input
-            id="account-photo-input"
-            class="account-field-input"
-            type="url"
-            maxlength="600"
-            placeholder="Leave blank to use your Google profile photo"
-          />
-        </label>
         <div id="account-status" aria-live="polite"></div>
         <div id="account-actions">
           <button id="account-save-button" class="account-action is-primary" type="button">
             Save
           </button>
-          <button id="account-google-photo-button" class="account-action" type="button">
-            Use Google Profile
+          <button id="account-reset-photo-button" class="account-action" type="button">
+            Reset Profile
           </button>
           <button id="account-sign-out-button" class="account-action" type="button">
             Sign Out
@@ -1521,6 +1578,7 @@
         "9.jpg",
         "10.jpg",
       ];
+      const imageAssetVersion = "20260701-2";
       const primaryPlaylistId = "PLi3vi3tWSp047q5lgf8g0LSLGmInym5N1";
       const secondaryPlaylistId = "PLCyGuU5GsBfhG1f1ywho5lcnaRkDM_3AC";
       const primaryPlaylistVideoIds = [
@@ -1750,15 +1808,16 @@
       const accountTabAvatar = document.getElementById("account-tab-avatar");
       const accountTabAvatarFallback = document.getElementById("account-tab-avatar-fallback");
       const accountPanel = document.getElementById("account-panel");
+      const accountPanelAvatarButton = document.getElementById("account-panel-avatar-button");
       const accountPanelAvatar = document.getElementById("account-panel-avatar");
       const accountPanelAvatarFallback = document.getElementById("account-panel-avatar-fallback");
       const accountDisplayName = document.getElementById("account-display-name");
       const accountEmail = document.getElementById("account-email");
       const accountUsernameInput = document.getElementById("account-username-input");
-      const accountPhotoInput = document.getElementById("account-photo-input");
+      const accountPhotoFileInput = document.getElementById("account-photo-file-input");
       const accountStatus = document.getElementById("account-status");
       const accountSaveButton = document.getElementById("account-save-button");
-      const accountGooglePhotoButton = document.getElementById("account-google-photo-button");
+      const accountResetPhotoButton = document.getElementById("account-reset-photo-button");
       const accountSignOutButton = document.getElementById("account-sign-out-button");
       const authGate = document.getElementById("auth-gate");
       const authCard = document.getElementById("auth-card");
@@ -1786,6 +1845,7 @@
       const imageRotations = {
         "1.jpg": "90deg",
       };
+      const imageFraming = {};
       const firebaseConfig = window.HORSEMOL_FIREBASE_CONFIG || {
         apiKey: "AIzaSyDBwvmdmyn2kCXa0H_HbZ1twhYC4OiPDoM",
         authDomain: "horsemol-6d0ef.firebaseapp.com",
@@ -1840,6 +1900,7 @@
       let accountSaveInFlight = false;
       let guestSavePromptShown = false;
       let authPromptMode = "account";
+      let authStateResolved = false;
 
       function clamp(value, min, max) {
         return Math.min(max, Math.max(min, value));
@@ -1930,7 +1991,7 @@
 
           loader.onload = () => resolve(loader);
           loader.onerror = reject;
-          loader.src = encodeURI(imagePath);
+          loader.src = `${encodeURI(imagePath)}?v=${imageAssetVersion}`;
         });
 
         backgroundCache.set(imagePath, request);
@@ -1938,12 +1999,23 @@
       }
 
       function applyBackgroundImage(element, imagePath, loadedImage) {
+        const framing = imageFraming[imagePath] || {};
         const rotationAngle = imageRotations[imagePath] || "-90deg";
         const shouldRotate = loadedImage.naturalHeight > loadedImage.naturalWidth;
+        const width = shouldRotate ? framing.rotatedWidth || "100vh" : framing.width || "100vw";
+        const height = shouldRotate ? framing.rotatedHeight || "100vw" : framing.height || "100vh";
+        const offsetY = framing.offsetY || "0px";
+        const transform = shouldRotate
+          ? `translate(-50%, calc(-50% + ${offsetY})) rotate(${rotationAngle})`
+          : `translate(-50%, calc(-50% + ${offsetY}))`;
 
         element.style.setProperty("--rotation-angle", rotationAngle);
+        element.style.width = width;
+        element.style.height = height;
+        element.style.objectPosition = framing.objectPosition || "center";
+        element.style.transform = transform;
         element.classList.toggle("is-rotated", shouldRotate);
-        element.src = encodeURI(imagePath);
+        element.src = `${encodeURI(imagePath)}?v=${imageAssetVersion}`;
       }
 
       function cloneTodoItem(item) {
@@ -2228,8 +2300,8 @@
         authDismissButton.textContent = "Not Now";
       }
 
-      function closeAuthPrompt() {
-        if (authBusy) {
+      function closeAuthPrompt({ force = false } = {}) {
+        if (authBusy && !force) {
           return;
         }
 
@@ -2237,12 +2309,17 @@
       }
 
       function openAuthPrompt(mode = "account") {
+        if (accountUser) {
+          closeAuthPrompt({ force: true });
+          return;
+        }
+
         setAuthPromptMode(mode);
         setAuthGateVisibility(true);
       }
 
       function promptGuestToSaveWork() {
-        if (accountUser || guestSavePromptShown) {
+        if (!authStateResolved || authBusy || accountUser || guestSavePromptShown) {
           return;
         }
 
@@ -2282,6 +2359,12 @@
         return accountPanel.classList.contains("is-open");
       }
 
+      function hasCustomAccountPhoto(profile = accountProfile) {
+        return Boolean(
+          profile && typeof profile.photoURL === "string" && profile.photoURL.trim(),
+        );
+      }
+
       function setAccountPanelOpen(isOpen) {
         const nextOpenState = Boolean(isOpen) && Boolean(accountUser);
 
@@ -2296,13 +2379,15 @@
 
       function syncAccountButtonsState() {
         const isSignedIn = Boolean(accountUser);
+        const canEditProfile = isSignedIn && !accountSaveInFlight && Boolean(firestoreDb);
 
         authGoogleButton.disabled = !authConfigured || authBusy;
         authDismissButton.disabled = authBusy;
-        accountUsernameInput.disabled = !isSignedIn || accountSaveInFlight;
-        accountPhotoInput.disabled = !isSignedIn || accountSaveInFlight;
-        accountSaveButton.disabled = !isSignedIn || accountSaveInFlight || !firestoreDb;
-        accountGooglePhotoButton.disabled = !isSignedIn || accountSaveInFlight;
+        accountUsernameInput.disabled = !canEditProfile;
+        accountPanelAvatarButton.disabled = !canEditProfile;
+        accountPhotoFileInput.disabled = !canEditProfile;
+        accountSaveButton.disabled = !canEditProfile;
+        accountResetPhotoButton.disabled = !canEditProfile || !hasCustomAccountPhoto();
         accountSignOutButton.disabled = !isSignedIn || authBusy;
       }
 
@@ -2317,16 +2402,15 @@
         accountUsernameInput.placeholder = accountUser
           ? `Uses ${getGmailFallbackName(accountUser) || "your Gmail name"} if left blank`
           : "Uses your Gmail name if left blank";
-        accountPhotoInput.placeholder =
-          accountUser && accountUser.photoURL
-            ? "Leave blank to use your Google profile photo"
-            : "Paste an image URL";
 
         if (!preserveInputs) {
           accountUsernameInput.value = accountUser ? accountProfile.username : "";
-          accountPhotoInput.value = accountUser ? accountProfile.photoURL : "";
         }
 
+        accountPanelAvatarButton.setAttribute(
+          "aria-label",
+          accountUser ? "Change profile photo" : "Profile photo unavailable",
+        );
         syncAvatarElement(accountTabAvatar, accountTabAvatarFallback, displayName, displayPhotoUrl);
         syncAvatarElement(
           accountPanelAvatar,
@@ -2335,20 +2419,6 @@
           displayPhotoUrl,
         );
         syncAccountButtonsState();
-      }
-
-      function isValidProfilePhotoUrl(photoUrl) {
-        if (!photoUrl) {
-          return true;
-        }
-
-        try {
-          const parsedUrl = new URL(photoUrl);
-
-          return parsedUrl.protocol === "https:" || parsedUrl.protocol === "http:";
-        } catch (error) {
-          return false;
-        }
       }
 
       function getAccountProfileRef(user = accountUser) {
@@ -2406,8 +2476,9 @@
       function setAuthUnavailable(setupMessage, statusMessage) {
         authConfigured = false;
         authBusy = false;
+        authStateResolved = true;
         closeAccountPanel();
-        closeAuthPrompt();
+        closeAuthPrompt({ force: true });
         setAuthStatus(statusMessage || "Google sign-in is not ready yet.");
         authSetupNote.textContent = setupMessage || "";
         syncAccountUi();
@@ -2464,6 +2535,7 @@
 
       async function handleAccountAuthStateChange(user) {
         const loadToken = ++accountProfileLoadToken;
+        authStateResolved = true;
 
         accountUser = user;
         accountProfile = {
@@ -2474,7 +2546,7 @@
         if (!user) {
           closeAccountPanel();
           syncAccountUi();
-          closeAuthPrompt();
+          closeAuthPrompt({ force: true });
           setAuthStatus(
             authConfigured
               ? "Sign in with your Google account to save your work."
@@ -2485,7 +2557,7 @@
         }
 
         guestSavePromptShown = false;
-        closeAuthPrompt();
+        closeAuthPrompt({ force: true });
         setAuthStatus(user.email ? `Signed in as ${user.email}.` : "Signed in with Google.");
         syncAccountUi();
         setAccountStatus("Loading your account...");
@@ -2602,7 +2674,77 @@
         }
       }
 
-      async function saveAccountProfile({ useGooglePhoto = false } = {}) {
+      function loadImageFromFile(file) {
+        return new Promise((resolve, reject) => {
+          const objectUrl = URL.createObjectURL(file);
+          const image = new Image();
+
+          image.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+            resolve(image);
+          };
+
+          image.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error("That image could not be opened."));
+          };
+
+          image.src = objectUrl;
+        });
+      }
+
+      async function createProfilePhotoDataUrl(file) {
+        if (!(file instanceof File) || !file.type.startsWith("image/")) {
+          throw new Error("Choose an image file for your profile.");
+        }
+
+        const image = await loadImageFromFile(file);
+        const sourceWidth = image.naturalWidth || image.width;
+        const sourceHeight = image.naturalHeight || image.height;
+
+        if (!sourceWidth || !sourceHeight) {
+          throw new Error("That image could not be read.");
+        }
+
+        const maxDimension = 720;
+        const scale = Math.min(1, maxDimension / Math.max(sourceWidth, sourceHeight));
+        const width = Math.max(1, Math.round(sourceWidth * scale));
+        const height = Math.max(1, Math.round(sourceHeight * scale));
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        if (!context) {
+          throw new Error("Your browser could not process that image.");
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        context.clearRect(0, 0, width, height);
+        context.drawImage(image, 0, 0, width, height);
+
+        let outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
+        let quality = 0.9;
+        let dataUrl = canvas.toDataURL(outputType, quality);
+
+        if (dataUrl.length > 520000) {
+          outputType = "image/jpeg";
+          quality = 0.88;
+          dataUrl = canvas.toDataURL(outputType, quality);
+
+          while (dataUrl.length > 520000 && quality > 0.5) {
+            quality -= 0.08;
+            dataUrl = canvas.toDataURL(outputType, quality);
+          }
+        }
+
+        if (dataUrl.length > 700000) {
+          throw new Error("That photo is too large. Choose a smaller image.");
+        }
+
+        return dataUrl;
+      }
+
+      async function saveAccountProfile({ photoURL = accountProfile.photoURL, statusMessage = "Account saved." } = {}) {
         if (!accountUser || !firestoreDb || accountSaveInFlight) {
           return;
         }
@@ -2615,14 +2757,7 @@
         }
 
         const username = accountUsernameInput.value.trim();
-        const photoURL = useGooglePhoto ? "" : accountPhotoInput.value.trim();
-
-        if (!isValidProfilePhotoUrl(photoURL)) {
-          setAccountStatus(
-            "Use a full http:// or https:// image URL, or leave the field blank to use your Google photo.",
-          );
-          return;
-        }
+        const normalizedPhotoUrl = typeof photoURL === "string" ? photoURL.trim() : "";
 
         accountSaveInFlight = true;
         syncAccountButtonsState();
@@ -2634,7 +2769,7 @@
               email: accountUser.email || "",
               googleDisplayName: accountUser.displayName || "",
               googlePhotoURL: accountUser.photoURL || "",
-              photoURL,
+              photoURL: normalizedPhotoUrl,
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
               username,
             },
@@ -2642,16 +2777,65 @@
           );
           accountProfile = {
             username,
-            photoURL,
+            photoURL: normalizedPhotoUrl,
           };
           syncAccountUi();
-          setAccountStatus(useGooglePhoto ? "Using your Google profile photo." : "Account saved.");
+          setAccountStatus(statusMessage);
         } catch (error) {
           setAccountStatus(describeProfileError(error));
         } finally {
           accountSaveInFlight = false;
           syncAccountButtonsState();
         }
+      }
+
+      function onAccountAvatarButtonClick() {
+        if (!accountUser || accountSaveInFlight || !firestoreDb) {
+          return;
+        }
+
+        accountPhotoFileInput.value = "";
+        accountPhotoFileInput.click();
+      }
+
+      async function onAccountPhotoFileChange(event) {
+        if (!accountUser || !firestoreDb || accountSaveInFlight) {
+          return;
+        }
+
+        const [file] = Array.from(event.currentTarget.files || []);
+
+        if (!file) {
+          return;
+        }
+
+        try {
+          setAccountStatus("Uploading profile...");
+          const photoURL = await createProfilePhotoDataUrl(file);
+          await saveAccountProfile({
+            photoURL,
+            statusMessage: "Profile updated.",
+          });
+        } catch (error) {
+          setAccountStatus(
+            error && typeof error.message === "string" && error.message.trim()
+              ? error.message.trim()
+              : "That photo could not be saved right now.",
+          );
+        } finally {
+          event.currentTarget.value = "";
+        }
+      }
+
+      async function resetAccountProfilePhoto() {
+        if (!accountUser || !hasCustomAccountPhoto() || accountSaveInFlight) {
+          return;
+        }
+
+        await saveAccountProfile({
+          photoURL: "",
+          statusMessage: "Profile reset.",
+        });
       }
 
       async function signOutAccount() {
@@ -4222,13 +4406,15 @@
 
       accountTab.addEventListener("click", onAccountTabClick);
       accountUsernameInput.addEventListener("input", onAccountFieldInput);
-      accountPhotoInput.addEventListener("input", onAccountFieldInput);
+      accountPanelAvatarButton.addEventListener("click", onAccountAvatarButtonClick);
+      accountPhotoFileInput.addEventListener("change", (event) => {
+        void onAccountPhotoFileChange(event);
+      });
       accountSaveButton.addEventListener("click", () => {
         void saveAccountProfile();
       });
-      accountGooglePhotoButton.addEventListener("click", () => {
-        accountPhotoInput.value = "";
-        void saveAccountProfile({ useGooglePhoto: true });
+      accountResetPhotoButton.addEventListener("click", () => {
+        void resetAccountProfilePhoto();
       });
       accountSignOutButton.addEventListener("click", () => {
         void signOutAccount();
