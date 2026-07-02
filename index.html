@@ -1157,6 +1157,24 @@
         word-break: break-word;
       }
 
+      #account-warrior-name {
+        align-self: flex-start;
+        padding: 0.28rem 0.56rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 0.64rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        line-height: 1.2;
+        text-transform: uppercase;
+      }
+
+      #account-warrior-name[hidden] {
+        display: none;
+      }
+
       .account-field {
         display: flex;
         flex-direction: column;
@@ -1204,6 +1222,58 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.48rem;
+      }
+
+      #account-warrior-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.58rem;
+      }
+
+      #account-warrior-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.56rem;
+      }
+
+      .account-warrior-option {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.08);
+        color: inherit;
+        font: inherit;
+        display: grid;
+        gap: 0.48rem;
+        padding: 0.48rem;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .account-warrior-option.is-selected {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(255, 255, 255, 0.96);
+        color: rgba(18, 22, 30, 0.94);
+      }
+
+      .account-warrior-option:disabled {
+        cursor: not-allowed;
+        opacity: 0.62;
+      }
+
+      .account-warrior-thumb {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border-radius: 0.82rem;
+        object-fit: cover;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .account-warrior-option-name {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        line-height: 1.35;
       }
 
       #account-focus-summary {
@@ -1982,6 +2052,7 @@
             <div id="account-panel-identity">
               <div id="account-display-name">Account</div>
               <div id="account-email">Sign in with Google to open your account.</div>
+              <div id="account-warrior-name" hidden></div>
             </div>
           </div>
           <label class="account-field">
@@ -2005,6 +2076,10 @@
             <button id="account-sign-out-button" class="account-action" type="button">
               Sign Out
             </button>
+          </div>
+          <div id="account-warrior-section">
+            <div class="account-section-title">Altai Warriors</div>
+            <div id="account-warrior-grid" aria-live="polite"></div>
           </div>
           <div id="account-focus-summary">
             <div class="account-section-title">Focus Summary</div>
@@ -2342,12 +2417,14 @@
       const accountPanelAvatarFallback = document.getElementById("account-panel-avatar-fallback");
       const accountDisplayName = document.getElementById("account-display-name");
       const accountEmail = document.getElementById("account-email");
+      const accountWarriorName = document.getElementById("account-warrior-name");
       const accountUsernameInput = document.getElementById("account-username-input");
       const accountPhotoFileInput = document.getElementById("account-photo-file-input");
       const accountStatus = document.getElementById("account-status");
       const accountSaveButton = document.getElementById("account-save-button");
       const accountResetPhotoButton = document.getElementById("account-reset-photo-button");
       const accountSignOutButton = document.getElementById("account-sign-out-button");
+      const accountWarriorGrid = document.getElementById("account-warrior-grid");
       const accountFocusTotal = document.getElementById("account-focus-total");
       const accountFocusBreakdown = document.getElementById("account-focus-breakdown");
       const authGate = document.getElementById("auth-gate");
@@ -2392,6 +2469,43 @@
         "Work",
         "Creative",
         "Climb the Altai Mountains",
+      ];
+      const warriorProfiles = [
+        {
+          id: "altai-buchai",
+          imagePath: "Altai-Buchai.jpg",
+          name: "Altai-Buchai",
+        },
+        {
+          id: "alpamysh",
+          imagePath: "Alpamysh.jpg",
+          name: "Alpamysh",
+        },
+        {
+          id: "bogenbay-batyr",
+          imagePath: "Bogenbay Batyr.webp",
+          name: "Bogenbay Batyr",
+        },
+        {
+          id: "kogudei-mergen",
+          imagePath: "Kögüdei Mergen.jpg",
+          name: "Kogudei Mergen",
+        },
+        {
+          id: "ospan-batyr",
+          imagePath: "Ospan Batyr.jpg",
+          name: "Ospan Batyr",
+        },
+        {
+          id: "raiymbek-batyr",
+          imagePath: "Raiymbek Batyr.jpg",
+          name: "Raiymbek Batyr",
+        },
+        {
+          id: "ukok-princess",
+          imagePath: "The Ukok Princess.jpg",
+          name: "The Ukok Princess",
+        },
       ];
       const timerPresetMap = {
         "25-5": {
@@ -2444,11 +2558,7 @@
       let authConfigured = false;
       let authBusy = false;
       let accountUser = null;
-      let accountProfile = {
-        focusStats: createEmptyFocusStats(),
-        username: "",
-        photoURL: "",
-      };
+      let accountProfile = createEmptyAccountProfile();
       let accountProfileLoadToken = 0;
       let accountSaveInFlight = false;
       let guestSavePromptShown = false;
@@ -2517,6 +2627,71 @@
           },
           totalMs: normalized.totalMs,
         };
+      }
+
+      function createEmptyAccountProfile() {
+        return {
+          focusStats: createEmptyFocusStats(),
+          photoURL: "",
+          username: "",
+          warriorName: "",
+        };
+      }
+
+      function getNormalizedPhotoPath(photoURL) {
+        if (typeof photoURL !== "string" || !photoURL.trim()) {
+          return "";
+        }
+
+        const trimmedPhotoUrl = photoURL.trim();
+        const withoutQuery = trimmedPhotoUrl.split("?")[0].split("#")[0];
+        const fileName = withoutQuery.split("/").pop() || withoutQuery;
+
+        try {
+          return decodeURIComponent(fileName);
+        } catch (error) {
+          return fileName;
+        }
+      }
+
+      function getWarriorProfileById(warriorId) {
+        return warriorProfiles.find((warrior) => warrior.id === warriorId) || null;
+      }
+
+      function getWarriorProfileByName(warriorName) {
+        const normalizedWarriorName =
+          typeof warriorName === "string" ? warriorName.trim().toLowerCase() : "";
+
+        if (!normalizedWarriorName) {
+          return null;
+        }
+
+        return (
+          warriorProfiles.find(
+            (warrior) => warrior.name.trim().toLowerCase() === normalizedWarriorName,
+          ) || null
+        );
+      }
+
+      function getWarriorProfileByPhotoUrl(photoURL) {
+        const normalizedPhotoPath = getNormalizedPhotoPath(photoURL);
+
+        if (!normalizedPhotoPath) {
+          return null;
+        }
+
+        return (
+          warriorProfiles.find(
+            (warrior) => getNormalizedPhotoPath(warrior.imagePath) === normalizedPhotoPath,
+          ) || null
+        );
+      }
+
+      function getSelectedWarriorProfile(profile = accountProfile) {
+        return (
+          getWarriorProfileByName(profile && profile.warriorName) ||
+          getWarriorProfileByPhotoUrl(profile && profile.photoURL)
+        );
       }
 
       function formatDurationCompact(totalMs) {
@@ -3275,6 +3450,44 @@
         fallbackElement.textContent = getAvatarInitials(label);
       }
 
+      function renderAccountWarriorOptions(profile = accountProfile) {
+        const selectedWarrior = getSelectedWarriorProfile(profile);
+        const canPickWarrior = Boolean(accountUser) && !accountSaveInFlight && Boolean(firestoreDb);
+        const fragment = document.createDocumentFragment();
+
+        warriorProfiles.forEach((warrior) => {
+          const button = document.createElement("button");
+          const image = document.createElement("img");
+          const name = document.createElement("span");
+          const isSelected = Boolean(selectedWarrior && selectedWarrior.id === warrior.id);
+
+          button.className = "account-warrior-option";
+          if (isSelected) {
+            button.classList.add("is-selected");
+          }
+          button.type = "button";
+          button.disabled = !canPickWarrior;
+          button.dataset.warriorId = warrior.id;
+          button.setAttribute("aria-label", `Use ${warrior.name} as your profile photo`);
+          button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+          button.addEventListener("click", () => {
+            void selectAccountWarriorProfile(warrior.id);
+          });
+
+          image.className = "account-warrior-thumb";
+          image.src = encodeURI(warrior.imagePath);
+          image.alt = "";
+
+          name.className = "account-warrior-option-name";
+          name.textContent = warrior.name;
+
+          button.append(image, name);
+          fragment.append(button);
+        });
+
+        accountWarriorGrid.replaceChildren(fragment);
+      }
+
       function setAuthGateVisibility(isVisible) {
         authGate.classList.toggle("is-visible", isVisible);
         authGate.setAttribute("aria-hidden", isVisible ? "false" : "true");
@@ -3402,11 +3615,14 @@
       function syncAccountUi({ preserveInputs = false } = {}) {
         const displayName = getPreferredAccountName();
         const displayPhotoUrl = getPreferredAccountPhoto();
+        const selectedWarrior = getSelectedWarriorProfile(accountProfile);
         const signedOutCopy = "Sign in with Google to open your account.";
 
         accountDisplayName.textContent = accountUser ? displayName : "Account";
         accountEmail.textContent =
           accountUser && accountUser.email ? accountUser.email : signedOutCopy;
+        accountWarriorName.hidden = !accountUser || !selectedWarrior;
+        accountWarriorName.textContent = accountUser && selectedWarrior ? selectedWarrior.name : "";
         accountUsernameInput.placeholder = accountUser
           ? `Uses ${getGmailFallbackName(accountUser) || "your Gmail name"} if left blank`
           : "Uses your Gmail name if left blank";
@@ -3426,6 +3642,7 @@
           displayName,
           displayPhotoUrl,
         );
+        renderAccountWarriorOptions(accountProfile);
         renderAccountFocusStats(accountProfile.focusStats);
         syncAccountButtonsState();
       }
@@ -3499,11 +3716,7 @@
         if (!profileRef) {
           return {
             errorMessage: "",
-            profile: {
-              focusStats: createEmptyFocusStats(),
-              username: "",
-              photoURL: "",
-            },
+            profile: createEmptyAccountProfile(),
           };
         }
 
@@ -3519,6 +3732,7 @@
                 googlePhotoURL: user.photoURL || "",
                 focusStats: createEmptyFocusStats(),
                 photoURL: "",
+                warriorName: "",
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 username: "",
               },
@@ -3526,22 +3740,25 @@
             );
           }
 
+          const savedPhotoUrl = typeof data.photoURL === "string" ? data.photoURL : "";
+          const savedWarriorName =
+            typeof data.warriorName === "string" ? data.warriorName : "";
+          const inferredWarriorProfile =
+            getWarriorProfileByName(savedWarriorName) || getWarriorProfileByPhotoUrl(savedPhotoUrl);
+
           return {
             errorMessage: "",
             profile: {
               focusStats: normalizeFocusStats(data.focusStats),
+              photoURL: savedPhotoUrl,
               username: typeof data.username === "string" ? data.username : "",
-              photoURL: typeof data.photoURL === "string" ? data.photoURL : "",
+              warriorName: inferredWarriorProfile ? inferredWarriorProfile.name : "",
             },
           };
         } catch (error) {
           return {
             errorMessage: describeProfileError(error),
-            profile: {
-              focusStats: createEmptyFocusStats(),
-              username: "",
-              photoURL: "",
-            },
+            profile: createEmptyAccountProfile(),
           };
         }
       }
@@ -3551,11 +3768,7 @@
         authStateResolved = true;
 
         accountUser = user;
-        accountProfile = {
-          focusStats: createEmptyFocusStats(),
-          username: "",
-          photoURL: "",
-        };
+        accountProfile = createEmptyAccountProfile();
 
         if (!user) {
           closeAccountPanel();
@@ -3758,7 +3971,11 @@
         return dataUrl;
       }
 
-      async function saveAccountProfile({ photoURL = accountProfile.photoURL, statusMessage = "Account saved." } = {}) {
+      async function saveAccountProfile({
+        photoURL = accountProfile.photoURL,
+        statusMessage = "Account saved.",
+        warriorName = accountProfile.warriorName,
+      } = {}) {
         if (!accountUser || !firestoreDb || accountSaveInFlight) {
           return;
         }
@@ -3772,6 +3989,7 @@
 
         const username = accountUsernameInput.value.trim();
         const normalizedPhotoUrl = typeof photoURL === "string" ? photoURL.trim() : "";
+        const normalizedWarriorName = typeof warriorName === "string" ? warriorName.trim() : "";
 
         accountSaveInFlight = true;
         syncAccountButtonsState();
@@ -3787,13 +4005,15 @@
               photoURL: normalizedPhotoUrl,
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
               username,
+              warriorName: normalizedWarriorName,
             },
             { merge: true },
           );
           accountProfile = {
             ...accountProfile,
-            username,
             photoURL: normalizedPhotoUrl,
+            username,
+            warriorName: normalizedWarriorName,
           };
           syncAccountUi();
           setAccountStatus(statusMessage);
@@ -3803,6 +4023,24 @@
           accountSaveInFlight = false;
           syncAccountButtonsState();
         }
+      }
+
+      async function selectAccountWarriorProfile(warriorId) {
+        if (!accountUser || !firestoreDb || accountSaveInFlight) {
+          return;
+        }
+
+        const warrior = getWarriorProfileById(warriorId);
+
+        if (!warrior) {
+          return;
+        }
+
+        await saveAccountProfile({
+          photoURL: warrior.imagePath,
+          statusMessage: `${warrior.name} selected.`,
+          warriorName: warrior.name,
+        });
       }
 
       function onAccountAvatarButtonClick() {
@@ -3831,6 +4069,7 @@
           await saveAccountProfile({
             photoURL,
             statusMessage: "Profile updated.",
+            warriorName: "",
           });
         } catch (error) {
           setAccountStatus(
@@ -3851,6 +4090,7 @@
         await saveAccountProfile({
           photoURL: "",
           statusMessage: "Profile reset.",
+          warriorName: "",
         });
       }
 
