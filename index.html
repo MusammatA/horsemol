@@ -121,6 +121,55 @@
         user-select: none;
       }
 
+      #griff-runner-lane {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: clamp(6.4rem, 16vw, 9.5rem);
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      #griff-runner-track {
+        position: absolute;
+        left: 0;
+        bottom: 0.1rem;
+        animation: griff-run-across 18s linear infinite;
+        will-change: transform;
+      }
+
+      #griff-runner {
+        display: block;
+        width: clamp(7.6rem, 17vw, 12.5rem);
+        height: auto;
+        filter: drop-shadow(0 0.55rem 0.9rem rgba(0, 0, 0, 0.28));
+        animation: griff-run-bob 1.08s ease-in-out infinite;
+        will-change: transform;
+      }
+
+      @keyframes griff-run-across {
+        0% {
+          transform: translate3d(calc(100vw + 2rem), 0, 0);
+        }
+
+        100% {
+          transform: translate3d(-18rem, 0, 0);
+        }
+      }
+
+      @keyframes griff-run-bob {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+
+        50% {
+          transform: translateY(-0.34rem);
+        }
+      }
+
       #music-stack {
         position: fixed;
         top: var(--page-gutter);
@@ -1737,6 +1786,11 @@
       <img class="background-image" alt="" />
     </div>
     <div id="background-hint" aria-hidden="true">Click to Change the Background</div>
+    <div id="griff-runner-lane" aria-hidden="true">
+      <div id="griff-runner-track">
+        <img id="griff-runner" src="griff-runner.gif" alt="" />
+      </div>
+    </div>
 
     <div id="music-stack">
       <div id="music-strip">
