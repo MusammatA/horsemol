@@ -332,6 +332,822 @@
         white-space: nowrap;
       }
 
+      #notes-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 8;
+        pointer-events: none;
+      }
+
+      #desk-tools {
+        position: fixed;
+        top: var(--page-gutter);
+        right: var(--page-gutter);
+        z-index: 9;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.62rem;
+        pointer-events: none;
+      }
+
+      #todo-dock {
+        position: fixed;
+        top: var(--page-gutter);
+        left: 50%;
+        z-index: 9;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.58rem;
+        pointer-events: auto;
+      }
+
+      #account-tab,
+      #todo-tab,
+      #sticky-note-tab {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.62rem;
+        padding: 0.58rem 0.72rem 0.58rem 0.82rem;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0.7rem 1.8rem rgba(0, 0, 0, 0.16);
+        backdrop-filter: blur(14px);
+        color: rgba(255, 255, 255, 0.94);
+        font: inherit;
+        pointer-events: auto;
+        user-select: none;
+        appearance: none;
+      }
+
+      #account-tab {
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
+      #todo-tab {
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
+      #sticky-note-tab {
+        cursor: grab;
+        touch-action: none;
+      }
+
+      #sticky-note-tab:active {
+        cursor: grabbing;
+      }
+
+      #account-tab:focus-visible,
+      #todo-tab:focus-visible,
+      #sticky-note-tab:focus-visible,
+      .sticky-note-card:focus-visible,
+      .sticky-swatch:focus-visible,
+      #note-title-input:focus-visible,
+      #note-body-input:focus-visible,
+      .todo-toggle:focus-visible,
+      .todo-input:focus-visible,
+      .todo-delete:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.88);
+        outline-offset: 0.2rem;
+      }
+
+      .sticky-tab-label {
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .account-tab-avatar {
+        width: 1.42rem;
+        height: 1.42rem;
+        border: 1px solid rgba(255, 255, 255, 0.32);
+        border-radius: 999px;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)),
+          rgba(255, 255, 255, 0.08);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+
+      .account-tab-avatar.is-photo {
+        border-color: rgba(255, 255, 255, 0.46);
+      }
+
+      .account-tab-avatar-fallback {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.94);
+      }
+
+      .sticky-tab-glyphs {
+        display: flex;
+        align-items: center;
+        gap: 0.42rem;
+      }
+
+      .sticky-tab-badge {
+        position: relative;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 0.45rem;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+
+      .sticky-tab-badge::before {
+        content: "";
+        position: absolute;
+        inset: 0.18rem;
+        border-radius: 0.28rem;
+        background: repeating-linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.28) 0 2px,
+          rgba(255, 255, 255, 0.08) 2px 6px
+        );
+      }
+
+      .sticky-tab-pencil {
+        position: relative;
+        width: 1rem;
+        height: 0.22rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        transform: rotate(-36deg);
+        transform-origin: center;
+      }
+
+      .sticky-tab-pencil::before {
+        content: "";
+        position: absolute;
+        left: -0.28rem;
+        top: -0.08rem;
+        border-style: solid;
+        border-width: 0.19rem 0.28rem 0.19rem 0;
+        border-color: transparent rgba(255, 255, 255, 0.72) transparent transparent;
+      }
+
+      .sticky-tab-pencil::after {
+        content: "";
+        position: absolute;
+        right: -0.14rem;
+        top: 0;
+        width: 0.2rem;
+        height: 0.22rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.34);
+      }
+
+      #todo-list-panel {
+        position: absolute;
+        top: calc(100% + 0.58rem);
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: clamp(10rem, calc(100vw - (var(--page-gutter) * 2) - 8.4rem), 20.5rem);
+        max-height: calc(100vh - (var(--page-gutter) * 2) - 3.8rem);
+        padding: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0.7rem 1.8rem rgba(0, 0, 0, 0.14);
+        backdrop-filter: blur(14px);
+        display: none;
+        flex-direction: column;
+        gap: 0.42rem;
+        overflow-y: auto;
+        pointer-events: auto;
+        scrollbar-gutter: stable;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.72) rgba(255, 255, 255, 0.08);
+      }
+
+      #todo-list-panel.is-visible {
+        display: flex;
+      }
+
+      #todo-list-panel::-webkit-scrollbar {
+        width: 0.7rem;
+      }
+
+      #todo-list-panel::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+      }
+
+      #todo-list-panel::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.72);
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .todo-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.54rem;
+        min-height: 2.65rem;
+        padding: 0.42rem 2rem 0.42rem 0.48rem;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 0.95rem;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.94);
+      }
+
+      .todo-item.is-complete {
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .todo-toggle {
+        position: relative;
+        width: 1.1rem;
+        height: 1.1rem;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 0.28rem;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 0;
+        flex: 0 0 auto;
+        cursor: pointer;
+      }
+
+      .todo-toggle.is-complete {
+        background: rgba(255, 255, 255, 0.86);
+        border-color: rgba(255, 255, 255, 0.86);
+      }
+
+      .todo-toggle.is-complete::after {
+        content: "";
+        position: absolute;
+        left: 0.28rem;
+        top: 0.08rem;
+        width: 0.26rem;
+        height: 0.52rem;
+        border-right: 2px solid rgba(19, 23, 30, 0.92);
+        border-bottom: 2px solid rgba(19, 23, 30, 0.92);
+        transform: rotate(42deg);
+      }
+
+      .todo-input {
+        flex: 1 1 auto;
+        min-width: 0;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-size: 0.82rem;
+        line-height: 1.35;
+        outline: none;
+      }
+
+      .todo-input::placeholder {
+        color: rgba(255, 255, 255, 0.54);
+      }
+
+      .todo-item.is-complete .todo-input {
+        text-decoration: line-through;
+        opacity: 0.62;
+      }
+
+      .todo-delete {
+        position: absolute;
+        top: 50%;
+        right: 0.42rem;
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.84);
+        display: grid;
+        place-items: center;
+        padding: 0;
+        font: inherit;
+        font-size: 0.92rem;
+        line-height: 1;
+        opacity: 0;
+        cursor: pointer;
+        pointer-events: none;
+        transform: translateY(-50%);
+        transition: opacity 160ms ease, background 160ms ease;
+      }
+
+      .todo-item:hover .todo-delete,
+      .todo-item:focus-within .todo-delete {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .todo-delete:hover {
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      #account-panel {
+        position: fixed;
+        top: calc(var(--page-gutter) + 3.55rem);
+        right: var(--page-gutter);
+        z-index: 11;
+        width: min(20.5rem, calc(100vw - (var(--page-gutter) * 2)));
+        padding: 0.88rem;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 1.1rem;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur(16px);
+        color: rgba(255, 255, 255, 0.94);
+        display: none;
+        flex-direction: column;
+        gap: 0.75rem;
+        pointer-events: auto;
+      }
+
+      #account-panel.is-open {
+        display: flex;
+      }
+
+      #account-panel-header {
+        display: flex;
+        align-items: center;
+        gap: 0.72rem;
+      }
+
+      #account-panel-avatar {
+        width: 3rem;
+        height: 3rem;
+        border: 1px solid rgba(255, 255, 255, 0.32);
+        border-radius: 999px;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)),
+          rgba(255, 255, 255, 0.08);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        flex: 0 0 auto;
+      }
+
+      #account-panel-avatar.is-photo {
+        border-color: rgba(255, 255, 255, 0.48);
+      }
+
+      .account-panel-avatar-fallback {
+        font-size: 0.86rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.94);
+      }
+
+      #account-panel-identity {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.16rem;
+      }
+
+      #account-display-name {
+        font-size: 0.92rem;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+      }
+
+      #account-email {
+        font-size: 0.74rem;
+        line-height: 1.35;
+        color: rgba(255, 255, 255, 0.74);
+        word-break: break-word;
+      }
+
+      .account-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.34rem;
+      }
+
+      .account-field-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      .account-field-input {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 0.85rem;
+        background: rgba(255, 255, 255, 0.08);
+        color: inherit;
+        font: inherit;
+        font-size: 0.82rem;
+        line-height: 1.35;
+        padding: 0.7rem 0.78rem;
+        outline: none;
+      }
+
+      .account-field-input::placeholder {
+        color: rgba(255, 255, 255, 0.54);
+      }
+
+      .account-field-input:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.88);
+        outline-offset: 0.15rem;
+      }
+
+      #account-status {
+        min-height: 1.2rem;
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      #account-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.48rem;
+      }
+
+      .account-action {
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        color: inherit;
+        font: inherit;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.64rem 0.86rem;
+        cursor: pointer;
+      }
+
+      .account-action.is-primary {
+        background: rgba(255, 255, 255, 0.88);
+        color: rgba(18, 22, 30, 0.94);
+      }
+
+      #auth-gate {
+        position: fixed;
+        inset: 0;
+        z-index: 14;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(7, 10, 17, 0.52);
+        backdrop-filter: blur(10px);
+      }
+
+      #auth-gate.is-visible {
+        display: flex;
+      }
+
+      #auth-card {
+        width: min(24rem, calc(100vw - 2rem));
+        padding: 1.05rem 1rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 1.2rem;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 1rem 2.6rem rgba(0, 0, 0, 0.24);
+        backdrop-filter: blur(18px);
+        color: rgba(255, 255, 255, 0.96);
+        display: flex;
+        flex-direction: column;
+        gap: 0.86rem;
+      }
+
+      #auth-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+      }
+
+      #auth-title {
+        font-size: 1.06rem;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+      }
+
+      #auth-copy {
+        font-size: 0.82rem;
+        line-height: 1.55;
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      #auth-status {
+        min-height: 1.2rem;
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      #auth-google-button {
+        align-self: flex-start;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        color: rgba(18, 22, 30, 0.94);
+        font: inherit;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.78rem 1rem;
+        cursor: pointer;
+      }
+
+      #auth-dismiss-button {
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: inherit;
+        font: inherit;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.78rem 1rem;
+        cursor: pointer;
+      }
+
+      #auth-google-button:disabled,
+      #auth-dismiss-button:disabled,
+      .account-action:disabled {
+        opacity: 0.58;
+        cursor: not-allowed;
+      }
+
+      #auth-setup-note {
+        font-size: 0.72rem;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      #notes-canvas {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .sticky-note-card {
+        position: absolute;
+        width: 10rem;
+        min-width: 7rem;
+        min-height: 7rem;
+        padding: 1.9rem 0.84rem 0.86rem;
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 1rem 2.4rem rgba(0, 0, 0, 0.18);
+        color: #29251d;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        overflow: hidden;
+        pointer-events: auto;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        text-align: left;
+        font: inherit;
+        transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+      }
+
+      .sticky-note-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 2.1rem;
+        height: 2.1rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
+        clip-path: polygon(100% 0, 0 0, 100% 100%);
+        pointer-events: none;
+      }
+
+      .sticky-note-card:hover {
+        transform: translateY(-0.12rem);
+        box-shadow: 0 1.1rem 2.7rem rgba(0, 0, 0, 0.22);
+      }
+
+      .sticky-note-card.is-dragging {
+        transition: none;
+        transform: scale(1.02);
+        box-shadow: 0 1.4rem 3rem rgba(0, 0, 0, 0.28);
+        cursor: grabbing;
+      }
+
+      .sticky-note-card.is-resizing {
+        transition: none;
+        transform: none;
+        box-shadow: 0 1.4rem 3rem rgba(0, 0, 0, 0.28);
+        cursor: nwse-resize;
+      }
+
+      .sticky-note-card-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.01em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .sticky-note-card-body {
+        font-size: 0.82rem;
+        line-height: 1.35;
+        white-space: pre-wrap;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        opacity: 0.8;
+      }
+
+      .sticky-note-card-body.is-placeholder {
+        font-style: italic;
+        opacity: 0.58;
+      }
+
+      .sticky-note-delete {
+        position: absolute;
+        top: 0.48rem;
+        left: 0.48rem;
+        width: 1.22rem;
+        height: 1.22rem;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.34);
+        color: rgba(41, 37, 29, 0.72);
+        display: grid;
+        place-items: center;
+        padding: 0;
+        font: inherit;
+        font-size: 0.92rem;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
+      .sticky-note-delete:hover {
+        background: rgba(255, 255, 255, 0.52);
+        color: rgba(41, 37, 29, 0.92);
+      }
+
+      .sticky-note-resize-handle {
+        position: absolute;
+        right: 0.5rem;
+        bottom: 0.5rem;
+        width: 1.15rem;
+        height: 1.15rem;
+        border: 0;
+        border-radius: 0.48rem;
+        background:
+          linear-gradient(135deg, transparent 0 42%, rgba(41, 37, 29, 0.22) 42% 50%, transparent 50% 58%, rgba(41, 37, 29, 0.22) 58% 66%, transparent 66% 100%),
+          rgba(255, 255, 255, 0.2);
+        box-shadow: inset 0 0 0 1px rgba(41, 37, 29, 0.16);
+        cursor: nwse-resize;
+        touch-action: none;
+      }
+
+      .sticky-note-card[data-color="yellow"],
+      #note-editor[data-color="yellow"] {
+        background: #fff3ab;
+      }
+
+      .sticky-note-card[data-color="pink"],
+      #note-editor[data-color="pink"] {
+        background: #ffd9e6;
+      }
+
+      .sticky-note-card[data-color="blue"],
+      #note-editor[data-color="blue"] {
+        background: #dcefff;
+      }
+
+      .sticky-note-card[data-color="green"],
+      #note-editor[data-color="green"] {
+        background: #ddf4d9;
+      }
+
+      #note-editor-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(10, 12, 18, 0.18);
+        backdrop-filter: blur(5px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease;
+      }
+
+      #note-editor-backdrop.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      #note-editor {
+        width: min(24rem, calc(100vw - 2rem));
+        min-height: min(29rem, calc(100vh - 2rem));
+        padding: 1rem 1rem 1.08rem;
+        border-radius: 1.2rem;
+        box-shadow: 0 1.4rem 3rem rgba(0, 0, 0, 0.25);
+        color: #29251d;
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+        transform: translateY(0.6rem) scale(0.96);
+        transition: transform 180ms ease, opacity 180ms ease;
+      }
+
+      #note-editor-backdrop.is-open #note-editor {
+        transform: translateY(0) scale(1);
+      }
+
+      #note-editor-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      #note-title-input {
+        flex: 1 1 auto;
+        min-width: 0;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-size: 1.08rem;
+        font-weight: 700;
+        outline: none;
+      }
+
+      #note-body-input {
+        flex: 1 1 auto;
+        min-height: 16rem;
+        width: 100%;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-size: 0.98rem;
+        line-height: 1.45;
+        resize: none;
+        outline: none;
+      }
+
+      #note-title-input::placeholder,
+      #note-body-input::placeholder {
+        color: rgba(31, 31, 31, 0.52);
+      }
+
+      #note-color-picker {
+        display: flex;
+        align-items: center;
+        gap: 0.42rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .sticky-swatch {
+        width: 1.32rem;
+        height: 1.32rem;
+        border: 1px solid rgba(24, 24, 24, 0.16);
+        border-radius: 999px;
+        background: var(--swatch-color);
+        padding: 0;
+        cursor: pointer;
+      }
+
+      .sticky-swatch.is-selected {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 0 4px rgba(24, 24, 24, 0.22);
+      }
+
       #yt-player-shell {
         position: fixed;
         width: 240px;
@@ -381,6 +1197,36 @@
           min-width: 2.4rem;
           padding: 0 0.52rem;
           font-size: 0.6rem;
+        }
+
+        #todo-tab,
+        #sticky-note-tab {
+          padding: 0.54rem 0.62rem 0.54rem 0.68rem;
+        }
+
+        .sticky-tab-label {
+          font-size: 0.68rem;
+        }
+
+        #todo-list-panel {
+          width: clamp(9rem, calc(100vw - (var(--page-gutter) * 2) - 7rem), 15.75rem);
+          max-height: calc(100vh - (var(--page-gutter) * 2) - 3.5rem);
+          padding: 0.42rem;
+        }
+
+        .todo-item {
+          min-height: 2.5rem;
+          padding-right: 1.8rem;
+        }
+
+        .sticky-note-card {
+          width: 8.85rem;
+          min-width: 6.5rem;
+          min-height: 6.5rem;
+        }
+
+        #note-editor {
+          min-height: calc(100vh - 2rem);
         }
 
         .up-next-item:nth-child(n) {
@@ -471,9 +1317,136 @@
       </div>
     </div>
 
+    <div id="notes-layer">
+      <div id="todo-dock">
+        <button id="todo-tab" type="button" aria-label="Add a to-do item">
+          <span class="sticky-tab-label">TO DO</span>
+        </button>
+        <div id="todo-list-panel" aria-live="polite" aria-hidden="true"></div>
+      </div>
+      <div id="desk-tools">
+        <button id="account-tab" type="button" aria-label="Open account settings" aria-pressed="false">
+          <span class="sticky-tab-label">Account</span>
+          <span id="account-tab-avatar" class="account-tab-avatar" aria-hidden="true">
+            <span id="account-tab-avatar-fallback" class="account-tab-avatar-fallback">A</span>
+          </span>
+        </button>
+        <button id="sticky-note-tab" type="button" aria-label="Drag to create a sticky note">
+          <span class="sticky-tab-label">Sticky Note</span>
+          <span class="sticky-tab-glyphs" aria-hidden="true">
+            <span class="sticky-tab-badge"></span>
+            <span class="sticky-tab-pencil"></span>
+          </span>
+        </button>
+      </div>
+      <div id="account-panel" aria-hidden="true">
+        <div id="account-panel-header">
+          <div id="account-panel-avatar">
+            <span id="account-panel-avatar-fallback" class="account-panel-avatar-fallback">A</span>
+          </div>
+          <div id="account-panel-identity">
+            <div id="account-display-name">Account</div>
+            <div id="account-email">Sign in with Google to open your account.</div>
+          </div>
+        </div>
+        <label class="account-field">
+          <span class="account-field-label">Username</span>
+          <input
+            id="account-username-input"
+            class="account-field-input"
+            type="text"
+            maxlength="40"
+            placeholder="Uses your Gmail name if left blank"
+          />
+        </label>
+        <label class="account-field">
+          <span class="account-field-label">Profile Photo URL</span>
+          <input
+            id="account-photo-input"
+            class="account-field-input"
+            type="url"
+            maxlength="600"
+            placeholder="Leave blank to use your Google profile photo"
+          />
+        </label>
+        <div id="account-status" aria-live="polite"></div>
+        <div id="account-actions">
+          <button id="account-save-button" class="account-action is-primary" type="button">
+            Save
+          </button>
+          <button id="account-google-photo-button" class="account-action" type="button">
+            Use Google Profile
+          </button>
+          <button id="account-sign-out-button" class="account-action" type="button">
+            Sign Out
+          </button>
+        </div>
+      </div>
+      <div id="notes-canvas" aria-live="polite"></div>
+    </div>
+
+    <div id="auth-gate" aria-hidden="true">
+      <div id="auth-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+        <div id="auth-title">Sign In With Google</div>
+        <div id="auth-copy">
+          Sign in with your Google account to enter Horsemol and carry your account settings with
+          you on any device.
+        </div>
+        <div id="auth-actions">
+          <button id="auth-google-button" type="button">Continue With Google</button>
+          <button id="auth-dismiss-button" type="button">Not Now</button>
+        </div>
+        <div id="auth-status" aria-live="polite">Checking sign-in...</div>
+        <div id="auth-setup-note"></div>
+      </div>
+    </div>
+
+    <div id="note-editor-backdrop" aria-hidden="true">
+      <div id="note-editor" data-color="yellow" role="dialog" aria-modal="true" aria-label="Edit sticky note">
+        <div id="note-editor-header">
+          <input id="note-title-input" type="text" maxlength="80" placeholder="Note name" />
+          <div id="note-color-picker" aria-label="Note colors">
+            <button
+              class="sticky-swatch is-selected"
+              type="button"
+              data-color="yellow"
+              aria-label="Baby yellow note"
+              style="--swatch-color: #fff3ab"
+            ></button>
+            <button
+              class="sticky-swatch"
+              type="button"
+              data-color="pink"
+              aria-label="Pink note"
+              style="--swatch-color: #ffd9e6"
+            ></button>
+            <button
+              class="sticky-swatch"
+              type="button"
+              data-color="blue"
+              aria-label="Blue note"
+              style="--swatch-color: #dcefff"
+            ></button>
+            <button
+              class="sticky-swatch"
+              type="button"
+              data-color="green"
+              aria-label="Green note"
+              style="--swatch-color: #ddf4d9"
+            ></button>
+          </div>
+        </div>
+        <textarea id="note-body-input" placeholder="Write here..."></textarea>
+      </div>
+    </div>
+
     <div id="yt-player-shell" aria-hidden="true">
       <div id="yt-player"></div>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore-compat.js"></script>
 
     <script>
       const images = [
@@ -585,12 +1558,45 @@
 
       const backgroundSwitcher = document.getElementById("background-switcher");
       const backgroundImages = Array.from(document.querySelectorAll(".background-image"));
+      const musicStack = document.getElementById("music-stack");
       const musicStrip = document.getElementById("music-strip");
       const playerToggle = document.getElementById("player-toggle");
       const previousTrackButton = document.getElementById("previous-track");
       const nextTrackButton = document.getElementById("next-track");
       const seekBackButton = document.getElementById("seek-back");
       const seekForwardButton = document.getElementById("seek-forward");
+      const accountTab = document.getElementById("account-tab");
+      const accountTabAvatar = document.getElementById("account-tab-avatar");
+      const accountTabAvatarFallback = document.getElementById("account-tab-avatar-fallback");
+      const accountPanel = document.getElementById("account-panel");
+      const accountPanelAvatar = document.getElementById("account-panel-avatar");
+      const accountPanelAvatarFallback = document.getElementById("account-panel-avatar-fallback");
+      const accountDisplayName = document.getElementById("account-display-name");
+      const accountEmail = document.getElementById("account-email");
+      const accountUsernameInput = document.getElementById("account-username-input");
+      const accountPhotoInput = document.getElementById("account-photo-input");
+      const accountStatus = document.getElementById("account-status");
+      const accountSaveButton = document.getElementById("account-save-button");
+      const accountGooglePhotoButton = document.getElementById("account-google-photo-button");
+      const accountSignOutButton = document.getElementById("account-sign-out-button");
+      const authGate = document.getElementById("auth-gate");
+      const authCard = document.getElementById("auth-card");
+      const authTitle = document.getElementById("auth-title");
+      const authCopy = document.getElementById("auth-copy");
+      const authStatus = document.getElementById("auth-status");
+      const authGoogleButton = document.getElementById("auth-google-button");
+      const authDismissButton = document.getElementById("auth-dismiss-button");
+      const authSetupNote = document.getElementById("auth-setup-note");
+      const todoDock = document.getElementById("todo-dock");
+      const todoTab = document.getElementById("todo-tab");
+      const todoListPanel = document.getElementById("todo-list-panel");
+      const stickyNoteTab = document.getElementById("sticky-note-tab");
+      const notesCanvas = document.getElementById("notes-canvas");
+      const noteEditorBackdrop = document.getElementById("note-editor-backdrop");
+      const noteEditor = document.getElementById("note-editor");
+      const noteTitleInput = document.getElementById("note-title-input");
+      const noteBodyInput = document.getElementById("note-body-input");
+      const noteSwatches = Array.from(document.querySelectorAll(".sticky-swatch"));
       const trackWindow = document.getElementById("track-window");
       const trackTitle = document.getElementById("track-title");
       const trackTitleClone = document.getElementById("track-title-clone");
@@ -599,8 +1605,30 @@
       const imageRotations = {
         "1.jpg": "90deg",
       };
+      const firebaseConfig = window.HORSEMOL_FIREBASE_CONFIG || {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID",
+      };
+      const firebaseProfileCollection = "profiles";
+      const todoStorageKey = "horsemol-todo-items-v1";
+      const stickyNoteStorageKey = "horsemol-sticky-notes-v1";
+      const stickyNoteColors = ["yellow", "pink", "blue", "green"];
+      const undoHistoryLimit = 120;
+      const todoElements = new Map();
+      const noteElements = new Map();
       const backgroundCache = new Map();
       const thumbnailColorCache = new Map();
+      let todoItems = [];
+      let stickyNotes = [];
+      let undoHistory = [];
+      let isRestoringUndo = false;
+      let activeNoteId = "";
+      let noteDragState = null;
+      let nextStickyNoteNumber = 1;
       let activeBackgroundLayerIndex = -1;
       let backgroundRenderToken = 0;
       let currentImageIndex = 0;
@@ -614,6 +1642,21 @@
       let hasQueuedPlaylist = false;
       let marqueeFrame = 0;
       let titleSyncInterval = 0;
+      let firebaseApp = null;
+      let firebaseAuth = null;
+      let firestoreDb = null;
+      let googleAuthProvider = null;
+      let authConfigured = false;
+      let authBusy = false;
+      let accountUser = null;
+      let accountProfile = {
+        username: "",
+        photoURL: "",
+      };
+      let accountProfileLoadToken = 0;
+      let accountSaveInFlight = false;
+      let guestSavePromptShown = false;
+      let authPromptMode = "account";
 
       function clamp(value, min, max) {
         return Math.min(max, Math.max(min, value));
@@ -643,6 +1686,1692 @@
         element.style.setProperty("--rotation-angle", rotationAngle);
         element.classList.toggle("is-rotated", shouldRotate);
         element.src = encodeURI(imagePath);
+      }
+
+      function cloneTodoItem(item) {
+        return {
+          id: item.id,
+          text: item.text,
+          completed: Boolean(item.completed),
+        };
+      }
+
+      function cloneStickyNote(note) {
+        return {
+          id: note.id,
+          title: note.title,
+          body: note.body,
+          color: note.color,
+          x: note.x,
+          y: note.y,
+          width: note.width,
+          height: note.height,
+        };
+      }
+
+      function buildUndoSnapshot() {
+        return {
+          activeNoteId,
+          currentImageIndex,
+          nextStickyNoteNumber,
+          todoScrollTop: todoListPanel.scrollTop,
+          todoItems: todoItems.map(cloneTodoItem),
+          stickyNotes: stickyNotes.map(cloneStickyNote),
+        };
+      }
+
+      function pushUndoSnapshot(snapshot) {
+        if (isRestoringUndo || !snapshot) {
+          return;
+        }
+
+        const signature = JSON.stringify(snapshot);
+        const previousEntry = undoHistory[undoHistory.length - 1];
+
+        if (previousEntry && previousEntry.signature === signature) {
+          return;
+        }
+
+        undoHistory.push({ signature, snapshot });
+
+        if (undoHistory.length > undoHistoryLimit) {
+          undoHistory.shift();
+        }
+      }
+
+      function captureUndoSnapshot() {
+        pushUndoSnapshot(buildUndoSnapshot());
+      }
+
+      function stopStickyNoteInteraction() {
+        if (!noteDragState) {
+          return;
+        }
+
+        const noteElement = noteElements.get(noteDragState.noteId);
+
+        if (noteElement) {
+          noteElement.classList.remove("is-dragging");
+          noteElement.classList.remove("is-resizing");
+        }
+
+        noteDragState = null;
+      }
+
+      function setStickyNoteEditorClosed() {
+        activeNoteId = "";
+        noteEditorBackdrop.classList.remove("is-open");
+        noteEditorBackdrop.setAttribute("aria-hidden", "true");
+      }
+
+      function syncTodoItemsState() {
+        const validIds = new Set(todoItems.map((item) => item.id));
+
+        Array.from(todoElements.entries()).forEach(([itemId, element]) => {
+          if (validIds.has(itemId)) {
+            return;
+          }
+
+          element.remove();
+          todoElements.delete(itemId);
+        });
+
+        todoItems.forEach((item) => {
+          syncTodoItemElement(item);
+        });
+        syncTodoPanelVisibility();
+      }
+
+      function syncStickyNotesState() {
+        const validIds = new Set(stickyNotes.map((note) => note.id));
+
+        Array.from(noteElements.entries()).forEach(([noteId, element]) => {
+          if (validIds.has(noteId)) {
+            return;
+          }
+
+          element.remove();
+          noteElements.delete(noteId);
+        });
+
+        stickyNotes.forEach((note) => {
+          normalizeStickyNoteLayout(note);
+          syncStickyNoteElement(note);
+        });
+        updateStickyNoteZIndices();
+      }
+
+      function restoreUndoSnapshot(snapshot) {
+        if (!snapshot) {
+          return;
+        }
+
+        isRestoringUndo = true;
+        stopStickyNoteInteraction();
+
+        todoItems = Array.isArray(snapshot.todoItems) ? snapshot.todoItems.map(cloneTodoItem) : [];
+        stickyNotes = Array.isArray(snapshot.stickyNotes) ? snapshot.stickyNotes.map(cloneStickyNote) : [];
+        const snapshotImageIndex = Number.isFinite(snapshot.currentImageIndex) ? snapshot.currentImageIndex : 0;
+
+        currentImageIndex = images.length
+          ? ((snapshotImageIndex % images.length) + images.length) % images.length
+          : 0;
+        nextStickyNoteNumber = Number.isFinite(snapshot.nextStickyNoteNumber)
+          ? snapshot.nextStickyNoteNumber
+          : stickyNotes.length + 1;
+        activeNoteId = typeof snapshot.activeNoteId === "string" ? snapshot.activeNoteId : "";
+
+        syncTodoItemsState();
+        if (todoItems.length) {
+          todoListPanel.scrollTop = Number.isFinite(snapshot.todoScrollTop) ? snapshot.todoScrollTop : 0;
+        } else {
+          todoListPanel.scrollTop = 0;
+        }
+
+        syncStickyNotesState();
+        persistTodoItems();
+        persistStickyNotes();
+
+        if (activeNoteId && findStickyNote(activeNoteId)) {
+          openStickyNoteEditor(activeNoteId, { focus: false });
+        } else {
+          setStickyNoteEditorClosed();
+        }
+
+        void renderBackground({ immediate: true });
+        isRestoringUndo = false;
+      }
+
+      function undoLastUserAction() {
+        const previousEntry = undoHistory.pop();
+
+        if (!previousEntry) {
+          return false;
+        }
+
+        restoreUndoSnapshot(previousEntry.snapshot);
+        return true;
+      }
+
+      function isUndoShortcut(event) {
+        if (typeof event.key !== "string") {
+          return false;
+        }
+
+        if (event.key.toLowerCase() !== "z" || event.altKey || event.shiftKey) {
+          return false;
+        }
+
+        return event.metaKey || event.ctrlKey;
+      }
+
+      function getGmailFallbackName(user = accountUser) {
+        if (!user || typeof user.email !== "string") {
+          return "";
+        }
+
+        return user.email.split("@")[0].trim();
+      }
+
+      function getPreferredAccountName(user = accountUser, profile = accountProfile) {
+        const customUsername =
+          profile && typeof profile.username === "string" ? profile.username.trim() : "";
+
+        if (customUsername) {
+          return customUsername;
+        }
+
+        const gmailFallbackName = getGmailFallbackName(user);
+
+        if (gmailFallbackName) {
+          return gmailFallbackName;
+        }
+
+        if (user && typeof user.displayName === "string" && user.displayName.trim()) {
+          return user.displayName.trim();
+        }
+
+        return "Account";
+      }
+
+      function getPreferredAccountPhoto(user = accountUser, profile = accountProfile) {
+        const customPhotoUrl =
+          profile && typeof profile.photoURL === "string" ? profile.photoURL.trim() : "";
+
+        if (customPhotoUrl) {
+          return customPhotoUrl;
+        }
+
+        return user && typeof user.photoURL === "string" ? user.photoURL.trim() : "";
+      }
+
+      function getAvatarInitials(label) {
+        const sanitizedLabel = String(label || "")
+          .replace(/[^a-z0-9 ]+/gi, " ")
+          .trim();
+
+        if (!sanitizedLabel) {
+          return "A";
+        }
+
+        const parts = sanitizedLabel.split(/\s+/).filter(Boolean);
+
+        if (parts.length === 1) {
+          return parts[0].slice(0, 2).toUpperCase();
+        }
+
+        return `${parts[0][0] || ""}${parts[parts.length - 1][0] || ""}`.toUpperCase();
+      }
+
+      function getCssUrlValue(url) {
+        return `url("${encodeURI(String(url || "")).replace(/"/g, "%22")}")`;
+      }
+
+      function syncAvatarElement(avatarElement, fallbackElement, label, photoUrl) {
+        const trimmedPhotoUrl = typeof photoUrl === "string" ? photoUrl.trim() : "";
+
+        if (trimmedPhotoUrl) {
+          avatarElement.style.backgroundImage = getCssUrlValue(trimmedPhotoUrl);
+          avatarElement.classList.add("is-photo");
+          fallbackElement.textContent = "";
+          return;
+        }
+
+        avatarElement.style.backgroundImage = "";
+        avatarElement.classList.remove("is-photo");
+        fallbackElement.textContent = getAvatarInitials(label);
+      }
+
+      function setAuthGateVisibility(isVisible) {
+        authGate.classList.toggle("is-visible", isVisible);
+        authGate.setAttribute("aria-hidden", isVisible ? "false" : "true");
+      }
+
+      function setAuthStatus(message) {
+        authStatus.textContent = message || "";
+      }
+
+      function setAccountStatus(message) {
+        accountStatus.textContent = message || "";
+      }
+
+      function setAuthPromptMode(mode = "account") {
+        authPromptMode = mode;
+
+        if (mode === "save") {
+          authTitle.textContent = "Sign In To Save";
+          authCopy.textContent =
+            "Sign in to save your sticky notes and TO DOs. You can keep using the page without signing in, but your work will not be saved.";
+          authDismissButton.textContent = "Keep Editing";
+          return;
+        }
+
+        authTitle.textContent = "Sign In With Google";
+        authCopy.textContent =
+          "Sign in with your Google account to set your username and profile photo.";
+        authDismissButton.textContent = "Not Now";
+      }
+
+      function closeAuthPrompt() {
+        if (authBusy) {
+          return;
+        }
+
+        setAuthGateVisibility(false);
+      }
+
+      function openAuthPrompt(mode = "account") {
+        setAuthPromptMode(mode);
+        setAuthGateVisibility(true);
+      }
+
+      function promptGuestToSaveWork() {
+        if (accountUser || guestSavePromptShown) {
+          return;
+        }
+
+        guestSavePromptShown = true;
+        openAuthPrompt("save");
+      }
+
+      function shouldPromptForGuestSave(inputType) {
+        return typeof inputType === "string" && inputType.startsWith("insert");
+      }
+
+      function isFirebaseConfigReady(config) {
+        const requiredKeys = ["apiKey", "authDomain", "projectId", "appId"];
+
+        return requiredKeys.every((key) => {
+          const value = config && typeof config[key] === "string" ? config[key].trim() : "";
+
+          return Boolean(value) && !value.includes("YOUR_");
+        });
+      }
+
+      function isHostedAuthContext() {
+        if (window.location.protocol === "https:") {
+          return true;
+        }
+
+        return (
+          window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        );
+      }
+
+      function getAuthorizedDomainHint() {
+        return window.location.hostname || "your deployed domain";
+      }
+
+      function isAccountPanelOpen() {
+        return accountPanel.classList.contains("is-open");
+      }
+
+      function setAccountPanelOpen(isOpen) {
+        const nextOpenState = Boolean(isOpen) && Boolean(accountUser);
+
+        accountPanel.classList.toggle("is-open", nextOpenState);
+        accountPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
+        accountTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+      }
+
+      function closeAccountPanel() {
+        setAccountPanelOpen(false);
+      }
+
+      function syncAccountButtonsState() {
+        const isSignedIn = Boolean(accountUser);
+
+        authGoogleButton.disabled = !authConfigured || authBusy;
+        authDismissButton.disabled = authBusy;
+        accountUsernameInput.disabled = !isSignedIn || accountSaveInFlight;
+        accountPhotoInput.disabled = !isSignedIn || accountSaveInFlight;
+        accountSaveButton.disabled = !isSignedIn || accountSaveInFlight || !firestoreDb;
+        accountGooglePhotoButton.disabled = !isSignedIn || accountSaveInFlight;
+        accountSignOutButton.disabled = !isSignedIn || authBusy;
+      }
+
+      function syncAccountUi({ preserveInputs = false } = {}) {
+        const displayName = getPreferredAccountName();
+        const displayPhotoUrl = getPreferredAccountPhoto();
+        const signedOutCopy = "Sign in with Google to open your account.";
+
+        accountDisplayName.textContent = accountUser ? displayName : "Account";
+        accountEmail.textContent =
+          accountUser && accountUser.email ? accountUser.email : signedOutCopy;
+        accountUsernameInput.placeholder = accountUser
+          ? `Uses ${getGmailFallbackName(accountUser) || "your Gmail name"} if left blank`
+          : "Uses your Gmail name if left blank";
+        accountPhotoInput.placeholder =
+          accountUser && accountUser.photoURL
+            ? "Leave blank to use your Google profile photo"
+            : "Paste an image URL";
+
+        if (!preserveInputs) {
+          accountUsernameInput.value = accountUser ? accountProfile.username : "";
+          accountPhotoInput.value = accountUser ? accountProfile.photoURL : "";
+        }
+
+        syncAvatarElement(accountTabAvatar, accountTabAvatarFallback, displayName, displayPhotoUrl);
+        syncAvatarElement(
+          accountPanelAvatar,
+          accountPanelAvatarFallback,
+          displayName,
+          displayPhotoUrl,
+        );
+        syncAccountButtonsState();
+      }
+
+      function isValidProfilePhotoUrl(photoUrl) {
+        if (!photoUrl) {
+          return true;
+        }
+
+        try {
+          const parsedUrl = new URL(photoUrl);
+
+          return parsedUrl.protocol === "https:" || parsedUrl.protocol === "http:";
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function getAccountProfileRef(user = accountUser) {
+        if (!firestoreDb || !user) {
+          return null;
+        }
+
+        return firestoreDb.collection(firebaseProfileCollection).doc(user.uid);
+      }
+
+      function describeAuthError(error) {
+        const errorCode = error && typeof error.code === "string" ? error.code : "";
+
+        if (errorCode === "auth/unauthorized-domain") {
+          return `Add ${getAuthorizedDomainHint()} to Firebase Authentication authorized domains.`;
+        }
+
+        if (errorCode === "auth/operation-not-allowed") {
+          return "Enable Google as a sign-in provider in Firebase Authentication.";
+        }
+
+        if (errorCode === "auth/popup-blocked") {
+          return "The Google sign-in popup was blocked. Allow popups or try again.";
+        }
+
+        if (errorCode === "auth/popup-closed-by-user") {
+          return "The Google sign-in window was closed before finishing.";
+        }
+
+        if (errorCode === "auth/network-request-failed") {
+          return "A network problem interrupted Google sign-in.";
+        }
+
+        if (error && typeof error.message === "string" && error.message.trim()) {
+          return error.message.trim();
+        }
+
+        return "Google sign-in could not be completed right now.";
+      }
+
+      function describeProfileError(error) {
+        const errorCode = error && typeof error.code === "string" ? error.code : "";
+
+        if (errorCode === "permission-denied") {
+          return "Firestore rules blocked this save. Let each signed-in user read and write their own profile document.";
+        }
+
+        if (error && typeof error.message === "string" && error.message.trim()) {
+          return error.message.trim();
+        }
+
+        return "Your account changes could not be saved right now.";
+      }
+
+      function setAuthUnavailable(setupMessage, statusMessage) {
+        authConfigured = false;
+        authBusy = false;
+        closeAccountPanel();
+        closeAuthPrompt();
+        setAuthStatus(statusMessage || "Google sign-in is not ready yet.");
+        authSetupNote.textContent = setupMessage || "";
+        syncAccountUi();
+      }
+
+      async function loadAccountProfile(user) {
+        const profileRef = getAccountProfileRef(user);
+
+        if (!profileRef) {
+          return {
+            errorMessage: "",
+            profile: {
+              username: "",
+              photoURL: "",
+            },
+          };
+        }
+
+        try {
+          const snapshot = await profileRef.get();
+          const data = snapshot.exists ? snapshot.data() : {};
+
+          if (!snapshot.exists) {
+            void profileRef.set(
+              {
+                email: user.email || "",
+                googleDisplayName: user.displayName || "",
+                googlePhotoURL: user.photoURL || "",
+                photoURL: "",
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                username: "",
+              },
+              { merge: true },
+            );
+          }
+
+          return {
+            errorMessage: "",
+            profile: {
+              username: typeof data.username === "string" ? data.username : "",
+              photoURL: typeof data.photoURL === "string" ? data.photoURL : "",
+            },
+          };
+        } catch (error) {
+          return {
+            errorMessage: describeProfileError(error),
+            profile: {
+              username: "",
+              photoURL: "",
+            },
+          };
+        }
+      }
+
+      async function handleAccountAuthStateChange(user) {
+        const loadToken = ++accountProfileLoadToken;
+
+        accountUser = user;
+        accountProfile = {
+          username: "",
+          photoURL: "",
+        };
+
+        if (!user) {
+          closeAccountPanel();
+          syncAccountUi();
+          closeAuthPrompt();
+          setAuthStatus(
+            authConfigured
+              ? "Sign in with your Google account to save your work."
+              : authStatus.textContent || "Google sign-in is not ready yet.",
+          );
+          setAccountStatus("");
+          return;
+        }
+
+        guestSavePromptShown = false;
+        closeAuthPrompt();
+        setAuthStatus(user.email ? `Signed in as ${user.email}.` : "Signed in with Google.");
+        syncAccountUi();
+        setAccountStatus("Loading your account...");
+
+        const profileResult = await loadAccountProfile(user);
+
+        if (loadToken !== accountProfileLoadToken) {
+          return;
+        }
+
+        accountProfile = profileResult.profile;
+        syncAccountUi();
+        setAccountStatus(profileResult.errorMessage || "Account ready.");
+      }
+
+      async function initializeAccountAuth() {
+        syncAccountUi();
+        closeAuthPrompt();
+        setAuthPromptMode("account");
+        setAuthStatus("Checking sign-in...");
+        authSetupNote.textContent = "";
+
+        if (!isHostedAuthContext()) {
+          setAuthUnavailable(
+            "Google sign-in only works from localhost or an authorized HTTPS domain. Open your deployed site instead of file://.",
+            "Google sign-in is unavailable on this local file.",
+          );
+          return;
+        }
+
+        if (!window.firebase) {
+          setAuthUnavailable(
+            "Firebase could not load from the CDN. Check your connection or deployment settings.",
+            "Google sign-in libraries did not load.",
+          );
+          return;
+        }
+
+        if (!isFirebaseConfigReady(firebaseConfig)) {
+          setAuthUnavailable(
+            `Add your Firebase web config, enable Google sign-in, and authorize ${getAuthorizedDomainHint()} in Firebase Authentication.`,
+            "Google sign-in still needs Firebase setup.",
+          );
+          return;
+        }
+
+        try {
+          firebaseApp = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
+          firebaseAuth = firebase.auth();
+          firestoreDb = firebase.firestore();
+          googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+          googleAuthProvider.setCustomParameters({ prompt: "select_account" });
+          authConfigured = true;
+          authSetupNote.textContent = `If Google blocks sign-in, add ${getAuthorizedDomainHint()} to Firebase Authentication authorized domains.`;
+          syncAccountButtonsState();
+
+          try {
+            await firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+          } catch (error) {
+            // Keep Firebase's default persistence if overriding it fails.
+          }
+
+          firebaseAuth.onAuthStateChanged((user) => {
+            void handleAccountAuthStateChange(user);
+          });
+
+          try {
+            await firebaseAuth.getRedirectResult();
+          } catch (error) {
+            setAuthStatus(describeAuthError(error));
+          }
+        } catch (error) {
+          setAuthUnavailable(
+            "Double-check the Firebase project settings and make sure Authentication and Firestore are enabled.",
+            "Firebase could not be initialized.",
+          );
+        }
+      }
+
+      async function signInWithGoogle() {
+        if (!authConfigured || !firebaseAuth || !googleAuthProvider || authBusy) {
+          return;
+        }
+
+        authBusy = true;
+        syncAccountButtonsState();
+        setAuthStatus("Opening Google sign-in...");
+
+        try {
+          const shouldUseRedirect =
+            window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 768;
+
+          if (shouldUseRedirect) {
+            setAuthStatus("Redirecting to Google sign-in...");
+            await firebaseAuth.signInWithRedirect(googleAuthProvider);
+            return;
+          }
+
+          await firebaseAuth.signInWithPopup(googleAuthProvider);
+        } catch (error) {
+          if (
+            error &&
+            (error.code === "auth/popup-blocked" || error.code === "auth/web-storage-unsupported")
+          ) {
+            setAuthStatus("Popup blocked. Redirecting to Google sign-in...");
+            await firebaseAuth.signInWithRedirect(googleAuthProvider);
+            return;
+          }
+
+          setAuthStatus(describeAuthError(error));
+        } finally {
+          authBusy = false;
+          syncAccountButtonsState();
+        }
+      }
+
+      async function saveAccountProfile({ useGooglePhoto = false } = {}) {
+        if (!accountUser || !firestoreDb || accountSaveInFlight) {
+          return;
+        }
+
+        const profileRef = getAccountProfileRef();
+
+        if (!profileRef) {
+          setAccountStatus("Your account storage is not ready yet.");
+          return;
+        }
+
+        const username = accountUsernameInput.value.trim();
+        const photoURL = useGooglePhoto ? "" : accountPhotoInput.value.trim();
+
+        if (!isValidProfilePhotoUrl(photoURL)) {
+          setAccountStatus(
+            "Use a full http:// or https:// image URL, or leave the field blank to use your Google photo.",
+          );
+          return;
+        }
+
+        accountSaveInFlight = true;
+        syncAccountButtonsState();
+        setAccountStatus("Saving account...");
+
+        try {
+          await profileRef.set(
+            {
+              email: accountUser.email || "",
+              googleDisplayName: accountUser.displayName || "",
+              googlePhotoURL: accountUser.photoURL || "",
+              photoURL,
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              username,
+            },
+            { merge: true },
+          );
+          accountProfile = {
+            username,
+            photoURL,
+          };
+          syncAccountUi();
+          setAccountStatus(useGooglePhoto ? "Using your Google profile photo." : "Account saved.");
+        } catch (error) {
+          setAccountStatus(describeProfileError(error));
+        } finally {
+          accountSaveInFlight = false;
+          syncAccountButtonsState();
+        }
+      }
+
+      async function signOutAccount() {
+        if (!firebaseAuth || authBusy) {
+          return;
+        }
+
+        authBusy = true;
+        syncAccountButtonsState();
+        setAccountStatus("Signing out...");
+
+        try {
+          await firebaseAuth.signOut();
+        } catch (error) {
+          setAccountStatus(describeAuthError(error));
+        } finally {
+          authBusy = false;
+          syncAccountButtonsState();
+        }
+      }
+
+      function onAccountTabClick() {
+        if (!accountUser) {
+          openAuthPrompt("account");
+          setAuthStatus(
+            authConfigured
+              ? "Sign in with your Google account to save your work."
+              : authStatus.textContent || "Google sign-in is not ready yet.",
+          );
+          return;
+        }
+
+        if (isAccountPanelOpen()) {
+          closeAccountPanel();
+          return;
+        }
+
+        setAccountPanelOpen(true);
+        window.requestAnimationFrame(() => {
+          accountUsernameInput.focus({ preventScroll: true });
+        });
+      }
+
+      function onAccountFieldInput() {
+        if (!accountUser) {
+          return;
+        }
+
+        setAccountStatus("Unsaved changes.");
+      }
+
+      function onGlobalPointerDown(event) {
+        if (authGate.classList.contains("is-visible") && event.target === authGate) {
+          closeAuthPrompt();
+          return;
+        }
+
+        if (!isAccountPanelOpen()) {
+          return;
+        }
+
+        if (accountPanel.contains(event.target) || accountTab.contains(event.target)) {
+          return;
+        }
+
+        closeAccountPanel();
+      }
+
+      function isWithinAccountUi(target) {
+        return (
+          target instanceof Node &&
+          (accountPanel.contains(target) || authGate.contains(target) || accountTab.contains(target))
+        );
+      }
+
+      function createTodoItemId() {
+        return `todo-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+
+      function findTodoItem(itemId) {
+        return todoItems.find((item) => item.id === itemId) || null;
+      }
+
+      function syncTodoPanelVisibility() {
+        const hasItems = todoItems.length > 0;
+
+        todoListPanel.classList.toggle("is-visible", hasItems);
+        todoListPanel.setAttribute("aria-hidden", hasItems ? "false" : "true");
+      }
+
+      function persistTodoItems() {
+        try {
+          const serializableItems = todoItems.map((item) => ({
+            id: item.id,
+            text: item.text,
+            completed: item.completed,
+          }));
+
+          window.localStorage.setItem(todoStorageKey, JSON.stringify(serializableItems));
+        } catch (error) {
+          // Ignore storage failures and keep to-do state in memory.
+        }
+      }
+
+      function syncTodoItemElement(item) {
+        let element = todoElements.get(item.id);
+
+        if (!element) {
+          element = document.createElement("div");
+          element.className = "todo-item";
+          element.dataset.id = item.id;
+          element.innerHTML =
+            '<button class="todo-toggle" type="button" aria-label="Mark to-do complete" aria-pressed="false"></button><input class="todo-input" type="text" maxlength="120" placeholder="Write a short note" /><button class="todo-delete" type="button" aria-label="Delete to-do item">×</button>';
+          element.querySelector(".todo-toggle").addEventListener("click", onTodoToggleClick);
+          element.querySelector(".todo-input").addEventListener("beforeinput", onTodoBeforeInput);
+          element.querySelector(".todo-input").addEventListener("keydown", onTodoInputKeyDown);
+          element.querySelector(".todo-input").addEventListener("input", onTodoInput);
+          element.querySelector(".todo-delete").addEventListener("click", onTodoDeleteClick);
+          todoListPanel.append(element);
+          todoElements.set(item.id, element);
+        }
+
+        const toggleButton = element.querySelector(".todo-toggle");
+        const input = element.querySelector(".todo-input");
+
+        element.classList.toggle("is-complete", item.completed);
+        toggleButton.classList.toggle("is-complete", item.completed);
+        toggleButton.setAttribute("aria-pressed", item.completed ? "true" : "false");
+        toggleButton.setAttribute("aria-label", item.completed ? "Mark to-do incomplete" : "Mark to-do complete");
+
+        if (input.value !== item.text) {
+          input.value = item.text;
+        }
+
+        syncTodoPanelVisibility();
+      }
+
+      function deleteTodoItem(itemId) {
+        const itemIndex = todoItems.findIndex((item) => item.id === itemId);
+
+        if (itemIndex < 0) {
+          return;
+        }
+
+        todoItems.splice(itemIndex, 1);
+
+        const element = todoElements.get(itemId);
+
+        if (element) {
+          element.remove();
+          todoElements.delete(itemId);
+        }
+
+        syncTodoPanelVisibility();
+        persistTodoItems();
+      }
+
+      function addTodoItem() {
+        const item = {
+          id: createTodoItemId(),
+          text: "",
+          completed: false,
+        };
+
+        todoItems.push(item);
+        syncTodoItemElement(item);
+        persistTodoItems();
+
+        const element = todoElements.get(item.id);
+
+        if (!element) {
+          return;
+        }
+
+        const input = element.querySelector(".todo-input");
+
+        element.scrollIntoView({ block: "nearest" });
+        window.requestAnimationFrame(() => {
+          input.focus({ preventScroll: true });
+        });
+      }
+
+      function onTodoTabClick() {
+        captureUndoSnapshot();
+        addTodoItem();
+      }
+
+      function onTodoToggleClick(event) {
+        const itemElement = event.currentTarget.closest(".todo-item");
+
+        if (!itemElement) {
+          return;
+        }
+
+        const item = findTodoItem(itemElement.dataset.id);
+
+        if (!item) {
+          return;
+        }
+
+        captureUndoSnapshot();
+        item.completed = !item.completed;
+        syncTodoItemElement(item);
+        persistTodoItems();
+      }
+
+      function onTodoBeforeInput(event) {
+        if (event.inputType === "historyRedo" || event.inputType === "historyUndo") {
+          return;
+        }
+
+        if (shouldPromptForGuestSave(event.inputType)) {
+          promptGuestToSaveWork();
+        }
+        captureUndoSnapshot();
+      }
+
+      function onEditableKeyDown(event) {
+        if (isUndoShortcut(event) || event.metaKey || event.ctrlKey || event.altKey) {
+          return;
+        }
+
+        if (event.key.length === 1 || event.key === "Backspace" || event.key === "Delete") {
+          captureUndoSnapshot();
+        }
+      }
+
+      function onTodoInputKeyDown(event) {
+        if (
+          event.key === "Enter" &&
+          !event.metaKey &&
+          !event.ctrlKey &&
+          !event.altKey &&
+          !event.shiftKey
+        ) {
+          event.preventDefault();
+          event.currentTarget.blur();
+          return;
+        }
+
+        onEditableKeyDown(event);
+      }
+
+      function onTodoInput(event) {
+        const itemElement = event.currentTarget.closest(".todo-item");
+
+        if (!itemElement) {
+          return;
+        }
+
+        const item = findTodoItem(itemElement.dataset.id);
+
+        if (!item) {
+          return;
+        }
+
+        item.text = event.currentTarget.value;
+        if (item.text.trim()) {
+          promptGuestToSaveWork();
+        }
+        persistTodoItems();
+      }
+
+      function onTodoDeleteClick(event) {
+        const itemElement = event.currentTarget.closest(".todo-item");
+
+        if (!itemElement) {
+          return;
+        }
+
+        event.preventDefault();
+        captureUndoSnapshot();
+        deleteTodoItem(itemElement.dataset.id);
+      }
+
+      function loadTodoItems() {
+        try {
+          const storedItems = JSON.parse(window.localStorage.getItem(todoStorageKey) || "[]");
+
+          if (!Array.isArray(storedItems)) {
+            syncTodoPanelVisibility();
+            return;
+          }
+
+          todoItems = storedItems
+            .map((item) => ({
+              id: typeof item.id === "string" ? item.id : createTodoItemId(),
+              text: typeof item.text === "string" ? item.text : "",
+              completed: Boolean(item.completed),
+            }))
+            .filter((item) => item.id);
+
+          syncTodoItemsState();
+          persistTodoItems();
+        } catch (error) {
+          todoItems = [];
+          syncTodoPanelVisibility();
+        }
+      }
+
+      function createStickyNoteId() {
+        return `note-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+
+      function getFallbackNoteSize() {
+        const baseSize = window.innerWidth <= 640 ? 142 : 160;
+        const minimumWidth = Math.max(108, window.innerWidth - 24);
+        const minimumHeight = Math.max(108, window.innerHeight - 24);
+
+        return {
+          width: Math.min(baseSize, minimumWidth),
+          height: Math.min(baseSize, minimumHeight),
+        };
+      }
+
+      function getMinimumStickyNoteSize() {
+        const baseSize = window.innerWidth <= 640 ? 104 : 112;
+        const minimumWidth = Math.max(80, window.innerWidth - 24);
+        const minimumHeight = Math.max(80, window.innerHeight - 24);
+
+        return {
+          width: Math.min(baseSize, minimumWidth),
+          height: Math.min(baseSize, minimumHeight),
+        };
+      }
+
+      function getNoteSize(noteId) {
+        const note = findStickyNote(noteId);
+        const element = noteElements.get(noteId);
+
+        if (note && Number.isFinite(note.width) && Number.isFinite(note.height)) {
+          return { width: note.width, height: note.height };
+        }
+
+        if (element) {
+          return {
+            width: element.offsetWidth || getFallbackNoteSize().width,
+            height: element.offsetHeight || getFallbackNoteSize().height,
+          };
+        }
+
+        return getFallbackNoteSize();
+      }
+
+      function getMusicObstacleRect() {
+        const rect = musicStack.getBoundingClientRect();
+        const clearance = 12;
+
+        return {
+          left: Math.max(0, rect.left - clearance),
+          top: Math.max(0, rect.top - clearance),
+          right: Math.min(window.innerWidth, rect.right + clearance),
+          bottom: Math.min(window.innerHeight, rect.bottom + clearance),
+        };
+      }
+
+      function getTodoDockMetrics() {
+        const rootFontSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
+        const horizontalInset = window.innerWidth <= 640 ? 7 * rootFontSize : 8.4 * rootFontSize;
+        const minimumWidth = (window.innerWidth <= 640 ? 9 : 10) * rootFontSize;
+        const maximumWidth = (window.innerWidth <= 640 ? 15.75 : 20.5) * rootFontSize;
+        const maximumHeightInset = (window.innerWidth <= 640 ? 3.5 : 3.8) * rootFontSize;
+        const stickyRect = stickyNoteTab.getBoundingClientRect();
+        const pageGutter = Math.max(12, window.innerWidth - stickyRect.right);
+        const preferredWidth = window.innerWidth - pageGutter * 2 - horizontalInset;
+        const panelWidth = clamp(preferredWidth, minimumWidth, maximumWidth);
+        const panelMaxHeight = Math.max(0, window.innerHeight - pageGutter * 2 - maximumHeightInset);
+        const topGap = 0.58 * rootFontSize;
+
+        return {
+          pageGutter,
+          panelMaxHeight,
+          panelWidth,
+          topGap,
+        };
+      }
+
+      function updateTodoDockPosition() {
+        const musicRect = musicStack.getBoundingClientRect();
+        const stickyRect = stickyNoteTab.getBoundingClientRect();
+        const { pageGutter, panelWidth } = getTodoDockMetrics();
+        const minimumCenter = pageGutter + panelWidth / 2;
+        const maximumCenter = window.innerWidth - pageGutter - panelWidth / 2;
+        const desiredCenter = (musicRect.right + stickyRect.left) / 2;
+        const fallbackCenter = window.innerWidth / 2;
+        const centerX = clamp(
+          Number.isFinite(desiredCenter) ? desiredCenter : fallbackCenter,
+          minimumCenter,
+          maximumCenter,
+        );
+
+        todoDock.style.left = `${centerX}px`;
+      }
+
+      function getTodoListObstacleRect() {
+        const todoTabRect = todoTab.getBoundingClientRect();
+        const dockRect = todoDock.getBoundingClientRect();
+        const panelRect = todoListPanel.getBoundingClientRect();
+        const { pageGutter, panelMaxHeight, panelWidth, topGap } = getTodoDockMetrics();
+        const clearance = 12;
+        const centerX = todoTabRect.left + todoTabRect.width / 2;
+        const reservedTop = dockRect.bottom + topGap;
+        const reservedBottom = Math.min(
+          window.innerHeight,
+          Math.max(panelRect.bottom, reservedTop + panelMaxHeight),
+        );
+
+        return {
+          left: clamp(centerX - panelWidth / 2 - clearance, 0, window.innerWidth),
+          top: clamp(reservedTop - clearance, 0, window.innerHeight),
+          right: clamp(centerX + panelWidth / 2 + clearance, 0, window.innerWidth),
+          bottom: clamp(reservedBottom + clearance, 0, window.innerHeight),
+        };
+      }
+
+      function rectanglesIntersect(firstRect, secondRect) {
+        return (
+          firstRect.left < secondRect.right &&
+          firstRect.right > secondRect.left &&
+          firstRect.top < secondRect.bottom &&
+          firstRect.bottom > secondRect.top
+        );
+      }
+
+      function isStickyNotePositionClear(x, y, width, height, obstacleRects) {
+        const noteRect = {
+          left: x,
+          top: y,
+          right: x + width,
+          bottom: y + height,
+        };
+
+        return obstacleRects.every((obstacleRect) => !rectanglesIntersect(noteRect, obstacleRect));
+      }
+
+      function clampStickyNotePosition(x, y, width, height, margin) {
+        return {
+          x: clamp(x, margin, Math.max(margin, window.innerWidth - width - margin)),
+          y: clamp(y, margin, Math.max(margin, window.innerHeight - height - margin)),
+        };
+      }
+
+      function resolveStickyNotePosition(x, y, width, height) {
+        const margin = 12;
+        const obstacleRects = [getMusicObstacleRect(), getTodoListObstacleRect()];
+        const clampedPosition = clampStickyNotePosition(x, y, width, height, margin);
+
+        if (isStickyNotePositionClear(clampedPosition.x, clampedPosition.y, width, height, obstacleRects)) {
+          return clampedPosition;
+        }
+
+        const candidatePositions = [];
+
+        obstacleRects.forEach((obstacleRect) => {
+          candidatePositions.push(
+            { x: clampedPosition.x, y: obstacleRect.bottom + margin },
+            { x: obstacleRect.right + margin, y: clampedPosition.y },
+            { x: obstacleRect.left - width - margin, y: clampedPosition.y },
+            { x: clampedPosition.x, y: obstacleRect.top - height - margin },
+            { x: obstacleRect.left - width - margin, y: obstacleRect.bottom + margin },
+            { x: obstacleRect.right + margin, y: obstacleRect.bottom + margin },
+            { x: obstacleRect.left - width - margin, y: obstacleRect.top - height - margin },
+            { x: obstacleRect.right + margin, y: obstacleRect.top - height - margin },
+          );
+        });
+
+        const seenPositions = new Set();
+        const viablePositions = candidatePositions
+          .map((candidatePosition) => clampStickyNotePosition(candidatePosition.x, candidatePosition.y, width, height, margin))
+          .filter((candidatePosition) => {
+            const positionKey = `${Math.round(candidatePosition.x)}:${Math.round(candidatePosition.y)}`;
+
+            if (seenPositions.has(positionKey)) {
+              return false;
+            }
+
+            seenPositions.add(positionKey);
+            return isStickyNotePositionClear(candidatePosition.x, candidatePosition.y, width, height, obstacleRects);
+          });
+
+        if (!viablePositions.length) {
+          return clampedPosition;
+        }
+
+        return viablePositions.reduce((bestPosition, candidatePosition) => {
+          const bestDistance = Math.hypot(bestPosition.x - clampedPosition.x, bestPosition.y - clampedPosition.y);
+          const candidateDistance = Math.hypot(
+            candidatePosition.x - clampedPosition.x,
+            candidatePosition.y - clampedPosition.y,
+          );
+
+          return candidateDistance < bestDistance ? candidatePosition : bestPosition;
+        });
+      }
+
+      function findStickyNote(noteId) {
+        return stickyNotes.find((note) => note.id === noteId) || null;
+      }
+
+      function normalizeStickyNoteLayout(note) {
+        const margin = 12;
+        const minimumSize = getMinimumStickyNoteSize();
+        const defaultSize = getFallbackNoteSize();
+        const maxX = Math.max(margin, window.innerWidth - minimumSize.width - margin);
+        const maxY = Math.max(margin, window.innerHeight - minimumSize.height - margin);
+        const startingWidth = Number.isFinite(note.width) ? note.width : defaultSize.width;
+        const startingHeight = Number.isFinite(note.height) ? note.height : defaultSize.height;
+
+        note.x = clamp(Number.isFinite(note.x) ? note.x : margin, margin, maxX);
+        note.y = clamp(Number.isFinite(note.y) ? note.y : margin, margin, maxY);
+
+        const initialMaxWidth = Math.max(minimumSize.width, window.innerWidth - note.x - margin);
+        const initialMaxHeight = Math.max(minimumSize.height, window.innerHeight - note.y - margin);
+
+        note.width = clamp(startingWidth, minimumSize.width, initialMaxWidth);
+        note.height = clamp(startingHeight, minimumSize.height, initialMaxHeight);
+
+        const resolvedPosition = resolveStickyNotePosition(note.x, note.y, note.width, note.height);
+
+        note.x = resolvedPosition.x;
+        note.y = resolvedPosition.y;
+
+        const resolvedMaxWidth = Math.max(minimumSize.width, window.innerWidth - note.x - margin);
+        const resolvedMaxHeight = Math.max(minimumSize.height, window.innerHeight - note.y - margin);
+
+        note.width = clamp(note.width, minimumSize.width, resolvedMaxWidth);
+        note.height = clamp(note.height, minimumSize.height, resolvedMaxHeight);
+      }
+
+      function persistStickyNotes() {
+        try {
+          const serializableNotes = stickyNotes.map((note) => ({
+            id: note.id,
+            title: note.title,
+            body: note.body,
+            color: note.color,
+            x: note.x,
+            y: note.y,
+            width: note.width,
+            height: note.height,
+          }));
+
+          window.localStorage.setItem(stickyNoteStorageKey, JSON.stringify(serializableNotes));
+        } catch (error) {
+          // Ignore storage failures and keep note state in memory.
+        }
+      }
+
+      function getDisplayedStickyNoteTitle(note) {
+        return note.title.trim() || "Untitled note";
+      }
+
+      function getDisplayedStickyNoteBody(note) {
+        return note.body.trim() || "Tap to write";
+      }
+
+      function updateStickyNoteZIndices() {
+        stickyNotes.forEach((note, index) => {
+          const element = noteElements.get(note.id);
+
+          if (element) {
+            element.style.zIndex = String(index + 1);
+          }
+        });
+      }
+
+      function deleteStickyNote(noteId) {
+        const noteIndex = stickyNotes.findIndex((note) => note.id === noteId);
+
+        if (noteIndex < 0) {
+          return;
+        }
+
+        if (activeNoteId === noteId) {
+          setStickyNoteEditorClosed();
+        }
+
+        if (noteDragState && noteDragState.noteId === noteId) {
+          stopStickyNoteInteraction();
+        }
+
+        stickyNotes.splice(noteIndex, 1);
+
+        const element = noteElements.get(noteId);
+
+        if (element) {
+          element.remove();
+          noteElements.delete(noteId);
+        }
+
+        updateStickyNoteZIndices();
+        persistStickyNotes();
+      }
+
+      function syncStickyNoteElement(note) {
+        let element = noteElements.get(note.id);
+
+        if (!element) {
+          element = document.createElement("div");
+          element.className = "sticky-note-card";
+          element.dataset.id = note.id;
+          element.tabIndex = 0;
+          element.setAttribute("role", "button");
+          element.innerHTML =
+            '<button class="sticky-note-delete" type="button" aria-label="Delete sticky note">×</button><span class="sticky-note-card-title"></span><span class="sticky-note-card-body"></span><span class="sticky-note-resize-handle" aria-hidden="true"></span>';
+          element.addEventListener("pointerdown", onStickyNotePointerDown);
+          element.addEventListener("keydown", onStickyNoteKeyDown);
+          element.querySelector(".sticky-note-delete").addEventListener("click", onStickyNoteDeleteClick);
+          notesCanvas.append(element);
+          noteElements.set(note.id, element);
+        }
+
+        const titleElement = element.querySelector(".sticky-note-card-title");
+        const bodyElement = element.querySelector(".sticky-note-card-body");
+        const displayedBody = getDisplayedStickyNoteBody(note);
+        const isBodyPlaceholder = !note.body.trim();
+
+        element.dataset.color = stickyNoteColors.includes(note.color) ? note.color : "yellow";
+        element.style.left = `${note.x}px`;
+        element.style.top = `${note.y}px`;
+        element.style.width = `${note.width}px`;
+        element.style.height = `${note.height}px`;
+        element.setAttribute("aria-label", `Open sticky note ${getDisplayedStickyNoteTitle(note)}`);
+        titleElement.textContent = getDisplayedStickyNoteTitle(note);
+        bodyElement.textContent = displayedBody;
+        bodyElement.classList.toggle("is-placeholder", isBodyPlaceholder);
+        updateStickyNoteZIndices();
+      }
+
+      function syncStickyNoteSwatches(color) {
+        noteEditor.dataset.color = color;
+        noteSwatches.forEach((swatch) => {
+          swatch.classList.toggle("is-selected", swatch.dataset.color === color);
+        });
+      }
+
+      function syncActiveStickyNoteFromEditor() {
+        if (!activeNoteId) {
+          return;
+        }
+
+        const note = findStickyNote(activeNoteId);
+
+        if (!note) {
+          return;
+        }
+
+        note.title = noteTitleInput.value;
+        note.body = noteBodyInput.value;
+        if (note.title.trim() || note.body.trim()) {
+          promptGuestToSaveWork();
+        }
+        note.color = stickyNoteColors.includes(noteEditor.dataset.color) ? noteEditor.dataset.color : "yellow";
+        syncStickyNoteElement(note);
+        persistStickyNotes();
+      }
+
+      function onStickyNoteEditorBeforeInput(event) {
+        if (event.inputType === "historyRedo" || event.inputType === "historyUndo") {
+          return;
+        }
+
+        if (shouldPromptForGuestSave(event.inputType)) {
+          promptGuestToSaveWork();
+        }
+        captureUndoSnapshot();
+      }
+
+      function openStickyNoteEditor(noteId, { focus = true } = {}) {
+        const note = findStickyNote(noteId);
+
+        if (!note) {
+          return;
+        }
+
+        activeNoteId = noteId;
+        noteTitleInput.value = note.title;
+        noteBodyInput.value = note.body;
+        syncStickyNoteSwatches(stickyNoteColors.includes(note.color) ? note.color : "yellow");
+        noteEditorBackdrop.classList.add("is-open");
+        noteEditorBackdrop.setAttribute("aria-hidden", "false");
+        if (focus) {
+          window.requestAnimationFrame(() => {
+            noteTitleInput.focus({ preventScroll: true });
+          });
+        }
+      }
+
+      function closeStickyNoteEditor() {
+        syncActiveStickyNoteFromEditor();
+        setStickyNoteEditorClosed();
+      }
+
+      function moveStickyNoteToFront(noteId) {
+        const noteIndex = stickyNotes.findIndex((note) => note.id === noteId);
+
+        if (noteIndex < 0 || noteIndex === stickyNotes.length - 1) {
+          return;
+        }
+
+        const [note] = stickyNotes.splice(noteIndex, 1);
+
+        stickyNotes.push(note);
+        updateStickyNoteZIndices();
+      }
+
+      function createStickyNoteAtPointer(clientX, clientY) {
+        const noteSize = getFallbackNoteSize();
+        const note = {
+          id: createStickyNoteId(),
+          title: `Sticky Note ${nextStickyNoteNumber}`,
+          body: "",
+          color: "yellow",
+          x: clientX,
+          y: clientY,
+          width: noteSize.width,
+          height: noteSize.height,
+        };
+
+        nextStickyNoteNumber += 1;
+        stickyNotes.push(note);
+        note.x = clientX - note.width / 2;
+        note.y = clientY - note.height / 2;
+        normalizeStickyNoteLayout(note);
+        syncStickyNoteElement(note);
+        persistStickyNotes();
+
+        return note;
+      }
+
+      function startStickyNoteDrag(noteId, pointerId, clientX, clientY, fromLauncher = false) {
+        const note = findStickyNote(noteId);
+        const noteElement = noteElements.get(noteId);
+
+        if (!note || !noteElement) {
+          return;
+        }
+
+        const undoSnapshot = fromLauncher ? null : buildUndoSnapshot();
+
+        moveStickyNoteToFront(noteId);
+
+        const noteRect = noteElement.getBoundingClientRect();
+
+        noteDragState = {
+          noteId,
+          pointerId,
+          mode: "drag",
+          capturedUndo: Boolean(fromLauncher),
+          fromLauncher,
+          moved: false,
+          undoSnapshot,
+          startPointerX: clientX,
+          startPointerY: clientY,
+          offsetX: fromLauncher ? noteRect.width / 2 : clientX - noteRect.left,
+          offsetY: fromLauncher ? noteRect.height / 2 : clientY - noteRect.top,
+        };
+
+        noteElement.classList.add("is-dragging");
+      }
+
+      function startStickyNoteResize(noteId, pointerId, clientX, clientY) {
+        const note = findStickyNote(noteId);
+        const noteElement = noteElements.get(noteId);
+
+        if (!note || !noteElement) {
+          return;
+        }
+
+        const undoSnapshot = buildUndoSnapshot();
+
+        moveStickyNoteToFront(noteId);
+
+        const noteSize = getNoteSize(noteId);
+
+        noteDragState = {
+          noteId,
+          pointerId,
+          mode: "resize",
+          capturedUndo: false,
+          fromLauncher: false,
+          moved: false,
+          undoSnapshot,
+          startPointerX: clientX,
+          startPointerY: clientY,
+          startWidth: noteSize.width,
+          startHeight: noteSize.height,
+        };
+
+        noteElement.classList.add("is-resizing");
+      }
+
+      function stopStickyNoteDrag(pointerId) {
+        if (!noteDragState || pointerId !== noteDragState.pointerId) {
+          return;
+        }
+
+        const finishedDragState = noteDragState;
+        const note = findStickyNote(finishedDragState.noteId);
+        const noteElement = noteElements.get(finishedDragState.noteId);
+
+        if (noteElement) {
+          noteElement.classList.remove("is-dragging");
+          noteElement.classList.remove("is-resizing");
+        }
+
+        if (note) {
+          normalizeStickyNoteLayout(note);
+          syncStickyNoteElement(note);
+          persistStickyNotes();
+        }
+
+        noteDragState = null;
+
+        if (
+          finishedDragState.mode === "drag" &&
+          !finishedDragState.moved &&
+          !finishedDragState.fromLauncher
+        ) {
+          openStickyNoteEditor(finishedDragState.noteId);
+        }
+      }
+
+      function onStickyNotePointerMove(event) {
+        if (!noteDragState || event.pointerId !== noteDragState.pointerId) {
+          return;
+        }
+
+        const note = findStickyNote(noteDragState.noteId);
+
+        if (!note) {
+          return;
+        }
+
+        if (
+          !noteDragState.moved &&
+          (noteDragState.fromLauncher ||
+            Math.hypot(event.clientX - noteDragState.startPointerX, event.clientY - noteDragState.startPointerY) > 5)
+        ) {
+          noteDragState.moved = true;
+        }
+
+        if (!noteDragState.moved) {
+          return;
+        }
+
+        if (!noteDragState.capturedUndo && !noteDragState.fromLauncher) {
+          pushUndoSnapshot(noteDragState.undoSnapshot);
+          noteDragState.capturedUndo = true;
+        }
+
+        if (noteDragState.mode === "resize") {
+          note.width = noteDragState.startWidth + (event.clientX - noteDragState.startPointerX);
+          note.height = noteDragState.startHeight + (event.clientY - noteDragState.startPointerY);
+          normalizeStickyNoteLayout(note);
+          syncStickyNoteElement(note);
+          return;
+        }
+
+        note.x = event.clientX - noteDragState.offsetX;
+        note.y = event.clientY - noteDragState.offsetY;
+        normalizeStickyNoteLayout(note);
+        syncStickyNoteElement(note);
+      }
+
+      function onStickyNotePointerUp(event) {
+        stopStickyNoteDrag(event.pointerId);
+      }
+
+      function onStickyNotePointerDown(event) {
+        if (event.button !== 0) {
+          return;
+        }
+
+        const noteElement = event.currentTarget;
+        const noteId = noteElement.dataset.id;
+        const deleteButton = event.target.closest(".sticky-note-delete");
+        const resizeHandle = event.target.closest(".sticky-note-resize-handle");
+
+        if (deleteButton) {
+          event.stopPropagation();
+          return;
+        }
+
+        if (resizeHandle) {
+          event.preventDefault();
+          event.stopPropagation();
+          startStickyNoteResize(noteId, event.pointerId, event.clientX, event.clientY);
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        startStickyNoteDrag(noteId, event.pointerId, event.clientX, event.clientY);
+      }
+
+      function onStickyNoteKeyDown(event) {
+        if (event.target !== event.currentTarget) {
+          return;
+        }
+
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+
+        event.preventDefault();
+        openStickyNoteEditor(event.currentTarget.dataset.id);
+      }
+
+      function onStickyNoteDeleteClick(event) {
+        const noteElement = event.currentTarget.closest(".sticky-note-card");
+
+        if (!noteElement) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        captureUndoSnapshot();
+        deleteStickyNote(noteElement.dataset.id);
+      }
+
+      function onStickyNoteTabPointerDown(event) {
+        if (event.button !== 0) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        captureUndoSnapshot();
+
+        if (activeNoteId) {
+          closeStickyNoteEditor();
+        }
+
+        const note = createStickyNoteAtPointer(event.clientX, event.clientY);
+
+        startStickyNoteDrag(note.id, event.pointerId, event.clientX, event.clientY, true);
+      }
+
+      function loadStickyNotes() {
+        try {
+          const storedNotes = JSON.parse(window.localStorage.getItem(stickyNoteStorageKey) || "[]");
+
+          if (!Array.isArray(storedNotes)) {
+            return;
+          }
+
+          stickyNotes = storedNotes
+            .map((note) => ({
+              id: typeof note.id === "string" ? note.id : createStickyNoteId(),
+              title: typeof note.title === "string" ? note.title : "",
+              body: typeof note.body === "string" ? note.body : "",
+              color: stickyNoteColors.includes(note.color) ? note.color : "yellow",
+              x: Number.isFinite(note.x) ? note.x : 24,
+              y: Number.isFinite(note.y) ? note.y : 24,
+              width: Number.isFinite(note.width) ? note.width : getFallbackNoteSize().width,
+              height: Number.isFinite(note.height) ? note.height : getFallbackNoteSize().height,
+            }))
+            .filter((note) => note.id);
+          nextStickyNoteNumber = stickyNotes.length + 1;
+          syncStickyNotesState();
+          persistStickyNotes();
+          window.requestAnimationFrame(reflowStickyNotes);
+        } catch (error) {
+          stickyNotes = [];
+          nextStickyNoteNumber = 1;
+        }
+      }
+
+      function reflowStickyNotes() {
+        stickyNotes.forEach((note) => {
+          normalizeStickyNoteLayout(note);
+          syncStickyNoteElement(note);
+        });
+        persistStickyNotes();
       }
 
       function rgbToLuminance(channel) {
@@ -958,6 +3687,11 @@
         void renderBackground();
       }
 
+      function showNextBackgroundWithUndoCapture() {
+        captureUndoSnapshot();
+        showNextBackground();
+      }
+
       function onPlayerReady(event) {
         playerReady = true;
         currentTrackIndex = 0;
@@ -1154,14 +3888,60 @@
         });
       };
 
-      backgroundSwitcher.addEventListener("click", showNextBackground);
+      accountTab.addEventListener("click", onAccountTabClick);
+      accountUsernameInput.addEventListener("input", onAccountFieldInput);
+      accountPhotoInput.addEventListener("input", onAccountFieldInput);
+      accountSaveButton.addEventListener("click", () => {
+        void saveAccountProfile();
+      });
+      accountGooglePhotoButton.addEventListener("click", () => {
+        accountPhotoInput.value = "";
+        void saveAccountProfile({ useGooglePhoto: true });
+      });
+      accountSignOutButton.addEventListener("click", () => {
+        void signOutAccount();
+      });
+      authGoogleButton.addEventListener("click", () => {
+        void signInWithGoogle();
+      });
+      authDismissButton.addEventListener("click", closeAuthPrompt);
+      backgroundSwitcher.addEventListener("click", showNextBackgroundWithUndoCapture);
       backgroundSwitcher.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          showNextBackground();
+          showNextBackgroundWithUndoCapture();
         }
       });
 
+      todoTab.addEventListener("click", onTodoTabClick);
+      stickyNoteTab.addEventListener("pointerdown", onStickyNoteTabPointerDown);
+      window.addEventListener("pointerdown", onGlobalPointerDown, true);
+      window.addEventListener("pointermove", onStickyNotePointerMove);
+      window.addEventListener("pointerup", onStickyNotePointerUp);
+      window.addEventListener("pointercancel", onStickyNotePointerUp);
+      noteEditorBackdrop.addEventListener("pointerdown", (event) => {
+        if (event.target === noteEditorBackdrop) {
+          closeStickyNoteEditor();
+        }
+      });
+      noteEditor.addEventListener("pointerdown", (event) => {
+        event.stopPropagation();
+      });
+      noteTitleInput.addEventListener("beforeinput", onStickyNoteEditorBeforeInput);
+      noteBodyInput.addEventListener("beforeinput", onStickyNoteEditorBeforeInput);
+      noteTitleInput.addEventListener("keydown", onEditableKeyDown);
+      noteBodyInput.addEventListener("keydown", onEditableKeyDown);
+      noteTitleInput.addEventListener("input", syncActiveStickyNoteFromEditor);
+      noteBodyInput.addEventListener("input", syncActiveStickyNoteFromEditor);
+      noteSwatches.forEach((swatch) => {
+        swatch.addEventListener("click", () => {
+          if (noteEditor.dataset.color !== swatch.dataset.color) {
+            captureUndoSnapshot();
+          }
+          syncStickyNoteSwatches(swatch.dataset.color);
+          syncActiveStickyNoteFromEditor();
+        });
+      });
       playerToggle.addEventListener("click", togglePlayback);
       previousTrackButton.addEventListener("click", () => changeTrack(-1));
       nextTrackButton.addEventListener("click", () => changeTrack(1));
@@ -1171,8 +3951,39 @@
       window.addEventListener("resize", () => {
         window.cancelAnimationFrame(marqueeFrame);
         marqueeFrame = window.requestAnimationFrame(updateMarqueeState);
+        updateTodoDockPosition();
+        reflowStickyNotes();
+      });
+      window.addEventListener("keydown", (event) => {
+        if (isUndoShortcut(event) && isWithinAccountUi(event.target)) {
+          return;
+        }
+
+        if (isUndoShortcut(event) && undoLastUserAction()) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+
+        if (event.key === "Escape" && isAccountPanelOpen()) {
+          closeAccountPanel();
+          return;
+        }
+
+        if (event.key === "Escape" && authGate.classList.contains("is-visible")) {
+          closeAuthPrompt();
+          return;
+        }
+
+        if (event.key === "Escape" && activeNoteId) {
+          closeStickyNoteEditor();
+        }
       });
 
+      loadTodoItems();
+      updateTodoDockPosition();
+      loadStickyNotes();
+      void initializeAccountAuth();
       void renderBackground({ immediate: true });
       setTrackTitle(getTrackTitleAt(currentTrackIndex));
       renderUpcomingTracks();
