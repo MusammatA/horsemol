@@ -862,12 +862,14 @@
       }
 
       #auth-copy {
+        display: none;
         font-size: 0.82rem;
         line-height: 1.55;
         color: rgba(255, 255, 255, 0.76);
       }
 
       #auth-status {
+        display: none;
         min-height: 1.2rem;
         font-size: 0.72rem;
         line-height: 1.4;
@@ -911,6 +913,7 @@
       }
 
       #auth-setup-note {
+        display: none;
         font-size: 0.72rem;
         line-height: 1.5;
         color: rgba(255, 255, 255, 0.7);
@@ -1452,15 +1455,12 @@
     <div id="auth-gate" aria-hidden="true">
       <div id="auth-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
         <div id="auth-title">Sign In With Google</div>
-        <div id="auth-copy">
-          Sign in with your Google account to enter Horsemol and carry your account settings with
-          you on any device.
-        </div>
+        <div id="auth-copy"></div>
         <div id="auth-actions">
           <button id="auth-google-button" type="button">Continue With Google</button>
           <button id="auth-dismiss-button" type="button">Not Now</button>
         </div>
-        <div id="auth-status" aria-live="polite">Checking sign-in...</div>
+        <div id="auth-status" aria-live="polite"></div>
         <div id="auth-setup-note"></div>
       </div>
     </div>
@@ -1787,12 +1787,13 @@
         "1.jpg": "90deg",
       };
       const firebaseConfig = window.HORSEMOL_FIREBASE_CONFIG || {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_STORAGE_BUCKET",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID",
+        apiKey: "AIzaSyDBwvmdmyn2kCXa0H_HbZ1twhYC4OiPDoM",
+        authDomain: "horsemol-6d0ef.firebaseapp.com",
+        projectId: "horsemol-6d0ef",
+        storageBucket: "horsemol-6d0ef.firebasestorage.app",
+        messagingSenderId: "418675254085",
+        appId: "1:418675254085:web:ca4250f4b76dba476ad42c",
+        measurementId: "G-TLG7CXFY9N",
       };
       const firebaseProfileCollection = "profiles";
       const todoStorageKey = "horsemol-todo-items-v1";
@@ -2216,16 +2217,14 @@
         authPromptMode = mode;
 
         if (mode === "save") {
-          authTitle.textContent = "Sign In To Save";
-          authCopy.textContent =
-            "Sign in to save your sticky notes and TO DOs. You can keep using the page without signing in, but your work will not be saved.";
+          authTitle.textContent = "Sign In With Google To Save Your Work";
+          authCopy.textContent = "";
           authDismissButton.textContent = "Keep Editing";
           return;
         }
 
         authTitle.textContent = "Sign In With Google";
-        authCopy.textContent =
-          "Sign in with your Google account to set your username and profile photo.";
+        authCopy.textContent = "";
         authDismissButton.textContent = "Not Now";
       }
 
