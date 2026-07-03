@@ -14,6 +14,7 @@
         --timer-panel-width: min(56rem, calc(100vw - 2rem));
         --account-panel-width: min(64rem, calc(100vw - 2rem));
         --ornament-frame-inset: 0.48rem;
+        --up-next-visible-count: 5;
         --altai-blue-rgb: 51, 153, 255;
         --scroll-distance: 0px;
         --scroll-duration: 12s;
@@ -395,7 +396,30 @@
       #up-next-list {
         display: grid;
         gap: 0.34rem;
-        pointer-events: none;
+        max-height: calc(
+          (2.45rem * var(--up-next-visible-count)) + (0.34rem * (var(--up-next-visible-count) - 1))
+        );
+        overflow-y: auto;
+        padding-right: 0.3rem;
+        pointer-events: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(var(--strip-foreground-rgb), 0.34) rgba(0, 0, 0, 0.12);
+      }
+
+      #up-next-list::-webkit-scrollbar {
+        width: 0.38rem;
+      }
+
+      #up-next-list::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.12);
+        border-radius: 999px;
+      }
+
+      #up-next-list::-webkit-scrollbar-thumb {
+        background: rgba(var(--strip-foreground-rgb), 0.34);
+        border-radius: 999px;
       }
 
       .up-next-item {
@@ -411,28 +435,29 @@
         backdrop-filter: blur(12px);
         box-shadow: 0 0.5rem 1.4rem rgba(0, 0, 0, 0.16);
         transition: background 220ms ease, border-color 220ms ease, color 220ms ease;
+        opacity: 0.52;
       }
 
-      .up-next-item:nth-child(1) {
+      .up-next-item.depth-1 {
         opacity: 0.8;
       }
 
-      .up-next-item:nth-child(2) {
+      .up-next-item.depth-2 {
         opacity: 0.68;
         transform: translateX(0.35rem);
       }
 
-      .up-next-item:nth-child(3) {
+      .up-next-item.depth-3 {
         opacity: 0.56;
         transform: translateX(0.7rem);
       }
 
-      .up-next-item:nth-child(4) {
+      .up-next-item.depth-4 {
         opacity: 0.44;
         transform: translateX(1.05rem);
       }
 
-      .up-next-item:nth-child(5) {
+      .up-next-item.depth-5 {
         opacity: 0.32;
         transform: translateX(1.4rem);
       }
@@ -2173,28 +2198,7 @@
         </div>
       </div>
 
-      <div id="up-next-list" aria-hidden="true">
-        <div class="up-next-item">
-          <span class="up-next-position">02</span>
-          <span class="up-next-title">Intro</span>
-        </div>
-        <div class="up-next-item">
-          <span class="up-next-position">03</span>
-          <span class="up-next-title">Warrior's Words</span>
-        </div>
-        <div class="up-next-item">
-          <span class="up-next-position">04</span>
-          <span class="up-next-title">Bai Terek</span>
-        </div>
-        <div class="up-next-item">
-          <span class="up-next-position">05</span>
-          <span class="up-next-title">Kai Kozhong</span>
-        </div>
-        <div class="up-next-item">
-          <span class="up-next-position">06</span>
-          <span class="up-next-title">Kadyn bazhy</span>
-        </div>
-      </div>
+      <div id="up-next-list" aria-label="Upcoming songs" role="list"></div>
     </div>
     <div id="player-unlock-hint" aria-hidden="true">Tap the video once to start the music</div>
 
@@ -2723,8 +2727,7 @@
       const trackWindow = document.getElementById("track-window");
       const trackTitle = document.getElementById("track-title");
       const trackTitleClone = document.getElementById("track-title-clone");
-      const upNextPositions = Array.from(document.querySelectorAll(".up-next-position"));
-      const upNextTitles = Array.from(document.querySelectorAll(".up-next-title"));
+      const upNextList = document.getElementById("up-next-list");
       const imageRotations = {
         "1.jpg": "90deg",
       };
@@ -5692,13 +5695,38 @@
 
       function renderUpcomingTracks() {
         const playlistLength = getPlaylistLength();
+        const upcomingTracksFragment = document.createDocumentFragment();
 
-        upNextTitles.forEach((titleNode, itemIndex) => {
-          const upcomingIndex = normalizePlaylistIndex(currentTrackIndex + itemIndex + 1, playlistLength);
+        if (!playlistLength || playlistLength === 1) {
+          upNextList.replaceChildren();
+          return;
+        }
 
-          upNextPositions[itemIndex].textContent = String(upcomingIndex + 1).padStart(2, "0");
-          titleNode.textContent = getTrackTitleAt(upcomingIndex);
-        });
+        for (let offset = 1; offset < playlistLength; offset += 1) {
+          const upcomingIndex = normalizePlaylistIndex(currentTrackIndex + offset, playlistLength);
+          const upcomingItem = document.createElement("div");
+          const upcomingPosition = document.createElement("span");
+          const upcomingTitle = document.createElement("span");
+
+          upcomingItem.className = "up-next-item";
+          upcomingItem.setAttribute("role", "listitem");
+
+          if (offset <= 5) {
+            upcomingItem.classList.add(`depth-${offset}`);
+          }
+
+          upcomingPosition.className = "up-next-position";
+          upcomingPosition.textContent = String(upcomingIndex + 1).padStart(2, "0");
+
+          upcomingTitle.className = "up-next-title";
+          upcomingTitle.textContent = getTrackTitleAt(upcomingIndex);
+
+          upcomingItem.append(upcomingPosition, upcomingTitle);
+          upcomingTracksFragment.append(upcomingItem);
+        }
+
+        upNextList.replaceChildren(upcomingTracksFragment);
+        upNextList.scrollTop = 0;
       }
 
       function updateMarqueeState() {
