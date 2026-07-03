@@ -916,25 +916,32 @@
 
       .panel-close {
         position: absolute;
-        top: 1rem;
-        right: 1rem;
-        width: 2rem;
-        height: 2rem;
+        top: 0.82rem;
+        left: 0.82rem;
+        width: 2.35rem;
+        height: 2.35rem;
         border: 0;
         border-radius: 999px;
-        background: rgba(115, 84, 23, 0.34);
-        color: rgba(255, 245, 218, 0.9);
+        background: rgba(255, 255, 255, 0.92);
+        color: rgba(18, 22, 30, 0.92);
         font: inherit;
-        font-size: 1.1rem;
+        font-size: 1.38rem;
+        font-weight: 700;
         line-height: 1;
         display: grid;
         place-items: center;
         cursor: pointer;
         z-index: 2;
+        box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.16);
       }
 
       .panel-close:hover {
-        background: rgba(168, 129, 49, 0.38);
+        background: rgba(255, 255, 255, 1);
+      }
+
+      .panel-close:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.95);
+        outline-offset: 0.14rem;
       }
 
       #timer-panel-title,
@@ -984,7 +991,7 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1rem 1.1rem;
         align-items: stretch;
-        padding: 0.18rem 0.3rem 0;
+        padding: 1.08rem 0.3rem 0 1.28rem;
       }
 
       #timer-panel-layout > .timer-panel-section {
@@ -1356,7 +1363,7 @@
         grid-template-columns: minmax(17rem, 19rem) minmax(0, 1fr);
         gap: 1rem 1.2rem;
         align-items: start;
-        padding: 0.18rem 0.3rem 0;
+        padding: 1.08rem 0.3rem 0 1.28rem;
       }
 
       #account-panel-main,
@@ -1558,7 +1565,7 @@
         --panel-radius: 1.25rem;
         position: relative;
         width: min(42rem, calc(100vw - 2rem));
-        padding: 1.95rem 1.5rem 2rem;
+        padding: 1.95rem 1.5rem 2rem 3.6rem;
         border: 0;
         border-radius: var(--panel-radius);
         background-color: rgba(var(--altai-blue-rgb), 0.8);
@@ -1748,19 +1755,19 @@
 
       .sticky-note-delete {
         position: absolute;
-        top: 0.48rem;
-        left: 0.48rem;
-        width: 1.22rem;
-        height: 1.22rem;
+        top: 0.38rem;
+        left: 0.38rem;
+        width: 1.5rem;
+        height: 1.5rem;
         border: 0;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.34);
-        color: rgba(41, 37, 29, 0.72);
+        background: rgba(255, 255, 255, 0.52);
+        color: rgba(41, 37, 29, 0.84);
         display: grid;
         place-items: center;
         padding: 0;
         font: inherit;
-        font-size: 0.92rem;
+        font-size: 1.08rem;
         font-weight: 700;
         line-height: 1;
         cursor: pointer;
@@ -2060,10 +2067,15 @@
           padding: 1.35rem 1.04rem 1.9rem;
         }
 
+        #timer-panel-layout,
+        #account-panel-layout {
+          padding: 0.98rem 0.08rem 0 0.92rem;
+        }
+
         #auth-card {
           width: min(100vw - 1rem, 30rem);
           grid-template-columns: 1fr;
-          padding: 1.48rem 1.06rem 1.62rem;
+          padding: 1.48rem 1.06rem 1.62rem 3rem;
         }
 
         #auth-actions {
