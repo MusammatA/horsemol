@@ -13,6 +13,7 @@
         --modal-width: min(34rem, calc(100vw - 2rem));
         --timer-panel-width: min(56rem, calc(100vw - 2rem));
         --account-panel-width: min(64rem, calc(100vw - 2rem));
+        --journal-panel-width: min(74rem, calc(100vw - 2rem));
         --ornament-frame-inset: 0.48rem;
         --up-next-visible-count: 5;
         --altai-blue-rgb: 51, 153, 255;
@@ -529,6 +530,7 @@
 
       #account-tab,
       #timer-tab,
+      #journal-tab,
       #todo-tab,
       #sticky-note-tab {
         position: relative;
@@ -565,6 +567,11 @@
         touch-action: manipulation;
       }
 
+      #journal-tab {
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
       #todo-tab {
         cursor: pointer;
         touch-action: manipulation;
@@ -581,12 +588,15 @@
 
       #account-tab:focus-visible,
       #timer-tab:focus-visible,
+      #journal-tab:focus-visible,
       #todo-tab:focus-visible,
       #sticky-note-tab:focus-visible,
       .sticky-note-card:focus-visible,
       .sticky-swatch:focus-visible,
       #note-title-input:focus-visible,
       #note-body-input:focus-visible,
+      .journal-page-input:focus-visible,
+      .journal-turn-zone:focus-visible,
       .todo-toggle:focus-visible,
       .todo-input:focus-visible,
       .todo-delete:focus-visible {
@@ -660,6 +670,42 @@
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.94);
+      }
+
+      .journal-tab-book {
+        position: relative;
+        width: 1.5rem;
+        height: 1.34rem;
+        flex: 0 0 auto;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 0.42rem;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.14) 0 44%,
+            rgba(255, 255, 255, 0.3) 44% 48%,
+            rgba(255, 255, 255, 0.14) 48% 100%
+          ),
+          rgba(var(--altai-blue-rgb), 0.18);
+        overflow: hidden;
+      }
+
+      .journal-tab-book::before,
+      .journal-tab-book::after {
+        content: "";
+        position: absolute;
+        left: 0.22rem;
+        right: 0.22rem;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.34);
+      }
+
+      .journal-tab-book::before {
+        top: 0.4rem;
+      }
+
+      .journal-tab-book::after {
+        top: 0.78rem;
       }
 
       .sticky-tab-glyphs {
@@ -866,7 +912,8 @@
       }
 
       #timer-panel-backdrop,
-      #account-panel-backdrop {
+      #account-panel-backdrop,
+      #journal-panel-backdrop {
         position: fixed;
         z-index: 11;
         inset: 0;
@@ -880,12 +927,14 @@
       }
 
       #timer-panel-backdrop.is-open,
-      #account-panel-backdrop.is-open {
+      #account-panel-backdrop.is-open,
+      #journal-panel-backdrop.is-open {
         display: flex;
       }
 
       #timer-panel,
-      #account-panel {
+      #account-panel,
+      #journal-panel {
         --panel-radius: 1.35rem;
         position: relative;
         width: var(--timer-panel-width);
@@ -915,13 +964,21 @@
         width: var(--account-panel-width);
       }
 
+      #journal-panel {
+        width: var(--journal-panel-width);
+        padding: 1.95rem 1.6rem 1.7rem 3.7rem;
+        overflow: hidden;
+      }
+
       #timer-panel.is-open,
-      #account-panel.is-open {
+      #account-panel.is-open,
+      #journal-panel.is-open {
         display: flex;
       }
 
       #timer-panel::before,
       #account-panel::before,
+      #journal-panel::before,
       #auth-card::before {
         content: "";
         position: absolute;
@@ -934,6 +991,7 @@
 
       #timer-panel::after,
       #account-panel::after,
+      #journal-panel::after,
       #auth-card::after {
         content: "";
         position: absolute;
@@ -945,7 +1003,8 @@
       }
 
       #timer-panel > *,
-      #account-panel > * {
+      #account-panel > *,
+      #journal-panel > * {
         position: relative;
         z-index: 1;
       }
@@ -1400,6 +1459,198 @@
         gap: 1rem 1.2rem;
         align-items: start;
         padding: 1.08rem 0.3rem 0 1.28rem;
+      }
+
+      #journal-panel-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.55rem 0.35rem 0.1rem 0.3rem;
+      }
+
+      #journal-panel-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      #journal-panel-page-indicator {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      #journal-book {
+        position: relative;
+        min-height: min(36rem, calc(100vh - 10rem));
+        margin-top: 0.3rem;
+        padding: 0.35rem 0;
+      }
+
+      #journal-spread {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.95rem;
+        height: 100%;
+        min-height: inherit;
+        transition: transform 220ms ease, opacity 220ms ease;
+      }
+
+      #journal-spread.is-flipping-next {
+        transform: translateX(-0.4rem) rotateY(-3deg);
+        opacity: 0.94;
+      }
+
+      #journal-spread.is-flipping-prev {
+        transform: translateX(0.4rem) rotateY(3deg);
+        opacity: 0.94;
+      }
+
+      #journal-spread::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0.2rem;
+        bottom: 0.2rem;
+        width: 1.1rem;
+        transform: translateX(-50%);
+        border-radius: 999px;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(91, 69, 43, 0.08),
+            rgba(91, 69, 43, 0.2),
+            rgba(91, 69, 43, 0.08)
+          );
+        pointer-events: none;
+        filter: blur(0.3px);
+      }
+
+      .journal-page {
+        position: relative;
+        min-width: 0;
+        min-height: inherit;
+      }
+
+      .journal-page-inner {
+        position: relative;
+        height: 100%;
+        min-height: inherit;
+        border-radius: 1rem;
+        background: #fffdf7;
+        box-shadow:
+          inset 0 0 0 1px rgba(166, 138, 102, 0.14),
+          0 0.9rem 2.2rem rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+      }
+
+      .journal-page-inner::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(
+            90deg,
+            transparent 0 2.75rem,
+            rgba(209, 109, 109, 0.34) 2.75rem 2.82rem,
+            transparent 2.82rem 100%
+          ),
+          repeating-linear-gradient(
+            180deg,
+            transparent 0 1.78rem,
+            rgba(110, 145, 205, 0.32) 1.78rem 1.86rem
+          );
+        opacity: 0.96;
+        pointer-events: none;
+      }
+
+      .journal-page-number {
+        position: absolute;
+        top: 0.8rem;
+        right: 1rem;
+        z-index: 1;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(93, 77, 58, 0.52);
+      }
+
+      .journal-page-input {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        min-height: inherit;
+        border: 0;
+        background: transparent;
+        color: #4f4337;
+        font: inherit;
+        font-family: "Georgia", "Times New Roman", serif;
+        font-size: clamp(0.9rem, 1.35vw, 1.02rem);
+        line-height: 1.86rem;
+        letter-spacing: 0.01em;
+        padding: 1.85rem 1.2rem 1.1rem 3.2rem;
+        resize: none;
+        outline: none;
+      }
+
+      .journal-page-input::placeholder {
+        color: rgba(93, 77, 58, 0.42);
+      }
+
+      .journal-turn-zone {
+        position: absolute;
+        top: 0.85rem;
+        bottom: 0.85rem;
+        width: clamp(2.4rem, 7%, 3.8rem);
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        cursor: pointer;
+        z-index: 2;
+      }
+
+      .journal-turn-zone.is-left {
+        left: 0;
+      }
+
+      .journal-turn-zone.is-right {
+        right: 0;
+      }
+
+      .journal-turn-zone::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        opacity: 0;
+        transition: opacity 160ms ease;
+      }
+
+      .journal-turn-zone.is-left::before {
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+      }
+
+      .journal-turn-zone.is-right::before {
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.18));
+      }
+
+      .journal-turn-zone:hover::before {
+        opacity: 1;
+      }
+
+      #journal-panel-hint {
+        padding: 0.2rem 0.35rem 0;
+        font-size: 0.74rem;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.72);
       }
 
       #account-panel-main,
@@ -2036,6 +2287,16 @@
           grid-template-columns: 1fr;
         }
 
+        #journal-panel {
+          width: calc(100vw - 1rem);
+          padding-left: 3.2rem;
+          padding-right: 1.12rem;
+        }
+
+        #journal-book {
+          min-height: min(32rem, calc(100vh - 10rem));
+        }
+
         #timer-start-button {
           width: 100%;
           min-width: 0;
@@ -2049,6 +2310,7 @@
           --modal-width: min(100vw - 1rem, 28rem);
           --timer-panel-width: min(100vw - 1rem, 34rem);
           --account-panel-width: min(100vw - 1rem, 36rem);
+          --journal-panel-width: calc(100vw - 1rem);
           --ornament-frame-inset: 0.34rem;
         }
 
@@ -2076,6 +2338,7 @@
         }
 
         #timer-tab,
+        #journal-tab,
         #todo-tab,
         #sticky-note-tab {
           padding: 0.54rem 0.62rem 0.54rem 0.68rem;
@@ -2099,13 +2362,28 @@
         }
 
         #timer-panel,
-        #account-panel {
+        #account-panel,
+        #journal-panel {
           padding: 1.35rem 1.04rem 1.9rem;
         }
 
         #timer-panel-layout,
         #account-panel-layout {
           padding: 0.98rem 0.08rem 0 0.92rem;
+        }
+
+        #journal-panel {
+          padding-left: 3rem;
+        }
+
+        #journal-spread {
+          gap: 0.68rem;
+        }
+
+        .journal-page-input {
+          padding-left: 2.8rem;
+          padding-right: 0.95rem;
+          font-size: 0.86rem;
         }
 
         #auth-card {
@@ -2237,6 +2515,10 @@
             <span class="sticky-tab-badge"></span>
             <span class="sticky-tab-pencil"></span>
           </span>
+        </button>
+        <button id="journal-tab" type="button" aria-label="Open journal" aria-pressed="false">
+          <span class="sticky-tab-label">Journal</span>
+          <span class="journal-tab-book" aria-hidden="true"></span>
         </button>
       </div>
       <div id="timer-panel-backdrop" aria-hidden="true">
@@ -2375,6 +2657,56 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div id="journal-panel-backdrop" aria-hidden="true">
+        <div id="journal-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="journal-panel-title">
+          <button id="journal-panel-close" class="panel-close" type="button" aria-label="Close journal">×</button>
+          <div id="journal-panel-header">
+            <div id="journal-panel-title">Journal</div>
+            <div id="journal-panel-page-indicator">Pages 1 - 2</div>
+          </div>
+          <div id="journal-book" tabindex="0" aria-label="Notebook journal">
+            <button
+              id="journal-turn-left"
+              class="journal-turn-zone is-left"
+              type="button"
+              aria-label="Turn to previous pages"
+            ></button>
+            <div id="journal-spread">
+              <section class="journal-page is-left" aria-label="Left journal page">
+                <div class="journal-page-inner">
+                  <div id="journal-left-page-number" class="journal-page-number">1</div>
+                  <textarea
+                    id="journal-left-input"
+                    class="journal-page-input"
+                    data-page-side="left"
+                    placeholder="Write here..."
+                    spellcheck="false"
+                  ></textarea>
+                </div>
+              </section>
+              <section class="journal-page is-right" aria-label="Right journal page">
+                <div class="journal-page-inner">
+                  <div id="journal-right-page-number" class="journal-page-number">2</div>
+                  <textarea
+                    id="journal-right-input"
+                    class="journal-page-input"
+                    data-page-side="right"
+                    placeholder="Write here..."
+                    spellcheck="false"
+                  ></textarea>
+                </div>
+              </section>
+            </div>
+            <button
+              id="journal-turn-right"
+              class="journal-turn-zone is-right"
+              type="button"
+              aria-label="Turn to next pages"
+            ></button>
+          </div>
+          <div id="journal-panel-hint">Use the left and right arrow keys, or tap the page edges, to turn the notebook.</div>
         </div>
       </div>
       <div id="notes-canvas" aria-live="polite"></div>
@@ -2716,6 +3048,19 @@
       const accountWarriorGrid = document.getElementById("account-warrior-grid");
       const accountFocusTotal = document.getElementById("account-focus-total");
       const accountFocusBreakdown = document.getElementById("account-focus-breakdown");
+      const journalTab = document.getElementById("journal-tab");
+      const journalPanelBackdrop = document.getElementById("journal-panel-backdrop");
+      const journalPanel = document.getElementById("journal-panel");
+      const journalPanelCloseButton = document.getElementById("journal-panel-close");
+      const journalPanelPageIndicator = document.getElementById("journal-panel-page-indicator");
+      const journalBook = document.getElementById("journal-book");
+      const journalSpread = document.getElementById("journal-spread");
+      const journalTurnLeftButton = document.getElementById("journal-turn-left");
+      const journalTurnRightButton = document.getElementById("journal-turn-right");
+      const journalLeftPageNumber = document.getElementById("journal-left-page-number");
+      const journalRightPageNumber = document.getElementById("journal-right-page-number");
+      const journalLeftInput = document.getElementById("journal-left-input");
+      const journalRightInput = document.getElementById("journal-right-input");
       const authGate = document.getElementById("auth-gate");
       const authCard = document.getElementById("auth-card");
       const authTitle = document.getElementById("auth-title");
@@ -2817,6 +3162,7 @@
         },
       };
       const firebaseProfileCollection = "profiles";
+      const journalStorageKey = "horsemol-journal-pages-v1";
       const todoStorageKey = "horsemol-todo-items-v1";
       const stickyNoteStorageKey = "horsemol-sticky-notes-v1";
       const stickyNoteColors = ["yellow", "pink", "blue", "green"];
@@ -2859,6 +3205,9 @@
       let guestSavePromptShown = false;
       let authPromptMode = "account";
       let authStateResolved = false;
+      let journalPages = ["", ""];
+      let journalSpreadStart = 0;
+      let journalFlipTimeoutId = 0;
       let timerPresetKey = "25-5";
       let timerFocusCategory = focusCategories[0];
       let timerPhase = "idle";
@@ -3065,6 +3414,7 @@
         const shouldWave =
           isTimerPanelOpen() ||
           isAccountPanelOpen() ||
+          isJournalPanelOpen() ||
           authGate.classList.contains("is-visible") ||
           noteEditorBackdrop.classList.contains("is-open");
 
@@ -3511,10 +3861,386 @@
         };
       }
 
+      function normalizeJournalPages(input) {
+        const fallbackPages = ["", ""];
+
+        if (!Array.isArray(input)) {
+          return fallbackPages;
+        }
+
+        const normalizedPages = input.map((page) => (typeof page === "string" ? page : ""));
+
+        if (!normalizedPages.length) {
+          return fallbackPages;
+        }
+
+        while (normalizedPages.length < 2) {
+          normalizedPages.push("");
+        }
+
+        return normalizedPages;
+      }
+
+      function cloneJournalPages(pages = journalPages) {
+        return normalizeJournalPages(pages).map((page) => page);
+      }
+
+      function ensureJournalPagesForSpread(startIndex) {
+        const normalizedStart = Math.max(0, Math.floor(startIndex / 2) * 2);
+
+        journalPages = normalizeJournalPages(journalPages);
+
+        while (journalPages.length < normalizedStart + 2) {
+          journalPages.push("");
+        }
+
+        return normalizedStart;
+      }
+
+      function persistJournalState() {
+        try {
+          window.localStorage.setItem(
+            journalStorageKey,
+            JSON.stringify({
+              pages: cloneJournalPages(),
+              spreadStart: journalSpreadStart,
+            }),
+          );
+        } catch (error) {
+          // Ignore storage failures and keep the journal in memory.
+        }
+      }
+
+      function renderJournalSpread() {
+        journalSpreadStart = ensureJournalPagesForSpread(journalSpreadStart);
+        const leftPageIndex = journalSpreadStart;
+        const rightPageIndex = journalSpreadStart + 1;
+        const leftPageValue = journalPages[leftPageIndex] || "";
+        const rightPageValue = journalPages[rightPageIndex] || "";
+
+        journalLeftInput.dataset.pageIndex = String(leftPageIndex);
+        journalRightInput.dataset.pageIndex = String(rightPageIndex);
+
+        if (journalLeftInput.value !== leftPageValue) {
+          journalLeftInput.value = leftPageValue;
+        }
+
+        if (journalRightInput.value !== rightPageValue) {
+          journalRightInput.value = rightPageValue;
+        }
+
+        journalLeftPageNumber.textContent = String(leftPageIndex + 1);
+        journalRightPageNumber.textContent = String(rightPageIndex + 1);
+        journalPanelPageIndicator.textContent = `Pages ${leftPageIndex + 1} - ${rightPageIndex + 1}`;
+        journalTurnLeftButton.disabled = journalSpreadStart <= 0;
+        journalTurnLeftButton.setAttribute("aria-disabled", journalSpreadStart <= 0 ? "true" : "false");
+      }
+
+      function setJournalInputSelection(input, position) {
+        const targetInput = input instanceof HTMLTextAreaElement ? input : null;
+
+        if (!targetInput) {
+          return;
+        }
+
+        const nextPosition =
+          position === "end"
+            ? targetInput.value.length
+            : clamp(Number.isFinite(position) ? position : 0, 0, targetInput.value.length);
+
+        targetInput.setSelectionRange(nextPosition, nextPosition);
+      }
+
+      function focusJournalPage(side, position = "start") {
+        const targetInput = side === "right" ? journalRightInput : journalLeftInput;
+
+        window.requestAnimationFrame(() => {
+          targetInput.focus({ preventScroll: true });
+          setJournalInputSelection(targetInput, position);
+        });
+      }
+
+      function animateJournalTurn(direction) {
+        const directionClass = direction < 0 ? "is-flipping-prev" : "is-flipping-next";
+
+        window.clearTimeout(journalFlipTimeoutId);
+        journalSpread.classList.remove("is-flipping-next", "is-flipping-prev");
+        void journalSpread.offsetWidth;
+        journalSpread.classList.add(directionClass);
+        journalFlipTimeoutId = window.setTimeout(() => {
+          journalSpread.classList.remove("is-flipping-next", "is-flipping-prev");
+        }, 240);
+      }
+
+      function isJournalPanelOpen() {
+        return journalPanel.classList.contains("is-open");
+      }
+
+      function setJournalPanelOpen(isOpen) {
+        const nextOpenState = Boolean(isOpen);
+
+        journalPanelBackdrop.classList.toggle("is-open", nextOpenState);
+        journalPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
+        journalPanel.classList.toggle("is-open", nextOpenState);
+        journalPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
+        journalTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+
+        if (nextOpenState) {
+          renderJournalSpread();
+        }
+
+        syncBackgroundWaveState();
+      }
+
+      function closeJournalPanel() {
+        setJournalPanelOpen(false);
+      }
+
+      function turnJournalSpread(
+        direction,
+        { focusSide = direction < 0 ? "right" : "left", focusPosition = direction < 0 ? "end" : "start", captureUndo = true } = {},
+      ) {
+        const normalizedDirection = direction < 0 ? -1 : 1;
+        const nextSpreadStart = journalSpreadStart + normalizedDirection * 2;
+
+        if (nextSpreadStart < 0) {
+          return false;
+        }
+
+        if (captureUndo) {
+          captureUndoSnapshot();
+        }
+
+        journalSpreadStart = nextSpreadStart;
+        ensureJournalPagesForSpread(journalSpreadStart);
+        persistJournalState();
+        renderJournalSpread();
+        animateJournalTurn(normalizedDirection);
+        focusJournalPage(focusSide, focusPosition);
+        return true;
+      }
+
+      function loadJournalState() {
+        try {
+          const storedJournal = JSON.parse(window.localStorage.getItem(journalStorageKey) || "{}");
+          const storedPages = normalizeJournalPages(storedJournal.pages);
+          const storedSpreadStart = Number.isFinite(storedJournal.spreadStart)
+            ? Math.max(0, Math.floor(storedJournal.spreadStart / 2) * 2)
+            : 0;
+          const lastAvailableSpreadStart = Math.max(0, Math.floor((storedPages.length - 1) / 2) * 2);
+
+          journalPages = storedPages;
+          journalSpreadStart = Math.min(storedSpreadStart, lastAvailableSpreadStart);
+        } catch (error) {
+          journalPages = ["", ""];
+          journalSpreadStart = 0;
+        }
+
+        ensureJournalPagesForSpread(journalSpreadStart);
+        renderJournalSpread();
+        persistJournalState();
+      }
+
+      function isCaretAtBoundary(input, boundary) {
+        if (!(input instanceof HTMLTextAreaElement)) {
+          return false;
+        }
+
+        if (input.selectionStart !== input.selectionEnd) {
+          return false;
+        }
+
+        if (boundary === "start") {
+          return input.selectionStart === 0;
+        }
+
+        return input.selectionStart === input.value.length;
+      }
+
+      function onJournalTabClick() {
+        if (isJournalPanelOpen()) {
+          closeJournalPanel();
+          return;
+        }
+
+        setJournalPanelOpen(true);
+        focusJournalPage("left", "start");
+      }
+
+      function onJournalTurnLeftClick() {
+        if (journalSpreadStart <= 0) {
+          focusJournalPage("left", "start");
+          return;
+        }
+
+        turnJournalSpread(-1, {
+          focusPosition: "end",
+          focusSide: "right",
+        });
+      }
+
+      function onJournalTurnRightClick() {
+        turnJournalSpread(1, {
+          focusPosition: "start",
+          focusSide: "left",
+        });
+      }
+
+      function onJournalInputFocus(event) {
+        const input = event.currentTarget;
+
+        if (!(input instanceof HTMLTextAreaElement)) {
+          return;
+        }
+
+        const pageIndex = Number.parseInt(input.dataset.pageIndex || "", 10);
+
+        if (!Number.isFinite(pageIndex)) {
+          return;
+        }
+
+        const nextSpreadStart = Math.floor(pageIndex / 2) * 2;
+
+        if (journalSpreadStart !== nextSpreadStart) {
+          journalSpreadStart = nextSpreadStart;
+          renderJournalSpread();
+          persistJournalState();
+        }
+      }
+
+      function onJournalBeforeInput(event) {
+        if (event.inputType === "historyRedo" || event.inputType === "historyUndo") {
+          return;
+        }
+
+        if (shouldPromptForGuestSave(event.inputType)) {
+          promptGuestToSaveWork();
+        }
+
+        captureUndoSnapshot();
+      }
+
+      function onJournalInput(event) {
+        const input = event.currentTarget;
+
+        if (!(input instanceof HTMLTextAreaElement)) {
+          return;
+        }
+
+        const pageIndex = Number.parseInt(input.dataset.pageIndex || "", 10);
+
+        if (!Number.isFinite(pageIndex) || pageIndex < 0) {
+          return;
+        }
+
+        ensureJournalPagesForSpread(Math.floor(pageIndex / 2) * 2);
+        journalPages[pageIndex] = input.value;
+
+        if (input.value.trim()) {
+          promptGuestToSaveWork();
+        }
+
+        persistJournalState();
+      }
+
+      function onJournalInputKeyDown(event) {
+        const input = event.currentTarget;
+
+        if (!(input instanceof HTMLTextAreaElement)) {
+          return;
+        }
+
+        if (
+          !event.metaKey &&
+          !event.ctrlKey &&
+          !event.altKey &&
+          event.key === "ArrowRight" &&
+          isCaretAtBoundary(input, "end")
+        ) {
+          event.preventDefault();
+
+          if (input === journalLeftInput) {
+            focusJournalPage("right", "start");
+            return;
+          }
+
+          turnJournalSpread(1, {
+            focusPosition: "start",
+            focusSide: "left",
+          });
+          return;
+        }
+
+        if (
+          !event.metaKey &&
+          !event.ctrlKey &&
+          !event.altKey &&
+          event.key === "ArrowLeft" &&
+          isCaretAtBoundary(input, "start")
+        ) {
+          event.preventDefault();
+
+          if (input === journalRightInput) {
+            focusJournalPage("left", "end");
+            return;
+          }
+
+          if (!turnJournalSpread(-1, {
+            focusPosition: "end",
+            focusSide: "right",
+          })) {
+            focusJournalPage("left", "start");
+          }
+
+          return;
+        }
+
+        onEditableKeyDown(event);
+      }
+
+      function handleJournalGlobalArrowKey(event) {
+        if (
+          !isJournalPanelOpen() ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.altKey ||
+          (event.key !== "ArrowLeft" && event.key !== "ArrowRight")
+        ) {
+          return false;
+        }
+
+        if (event.target === journalLeftInput || event.target === journalRightInput) {
+          return false;
+        }
+
+        event.preventDefault();
+
+        if (event.key === "ArrowLeft") {
+          if (journalSpreadStart <= 0) {
+            focusJournalPage("left", "start");
+            return true;
+          }
+
+          turnJournalSpread(-1, {
+            focusPosition: "end",
+            focusSide: "right",
+          });
+          return true;
+        }
+
+        turnJournalSpread(1, {
+          focusPosition: "start",
+          focusSide: "left",
+        });
+        return true;
+      }
+
       function buildUndoSnapshot() {
         return {
           activeNoteId,
           currentImageIndex,
+          journalPages: cloneJournalPages(),
+          journalSpreadStart,
           nextStickyNoteNumber,
           todoScrollTop: todoListPanel.scrollTop,
           todoItems: todoItems.map(cloneTodoItem),
@@ -3613,11 +4339,15 @@
         stopStickyNoteInteraction();
 
         todoItems = Array.isArray(snapshot.todoItems) ? snapshot.todoItems.map(cloneTodoItem) : [];
+        journalPages = normalizeJournalPages(snapshot.journalPages);
         stickyNotes = Array.isArray(snapshot.stickyNotes) ? snapshot.stickyNotes.map(cloneStickyNote) : [];
         const snapshotImageIndex = Number.isFinite(snapshot.currentImageIndex) ? snapshot.currentImageIndex : 0;
 
         currentImageIndex = images.length
           ? ((snapshotImageIndex % images.length) + images.length) % images.length
+          : 0;
+        journalSpreadStart = Number.isFinite(snapshot.journalSpreadStart)
+          ? Math.max(0, Math.floor(snapshot.journalSpreadStart / 2) * 2)
           : 0;
         nextStickyNoteNumber = Number.isFinite(snapshot.nextStickyNoteNumber)
           ? snapshot.nextStickyNoteNumber
@@ -3632,6 +4362,9 @@
         }
 
         syncStickyNotesState();
+        ensureJournalPagesForSpread(journalSpreadStart);
+        renderJournalSpread();
+        persistJournalState();
         persistTodoItems();
         persistStickyNotes();
 
@@ -4519,6 +5252,11 @@
           return;
         }
 
+        if (isJournalPanelOpen() && event.target === journalPanelBackdrop) {
+          closeJournalPanel();
+          return;
+        }
+
         if (isAccountPanelOpen() && event.target === accountPanelBackdrop) {
           closeAccountPanel();
           return;
@@ -4531,10 +5269,13 @@
           (
             timerPanelBackdrop.contains(target) ||
             timerPanel.contains(target) ||
+            journalPanelBackdrop.contains(target) ||
+            journalPanel.contains(target) ||
             accountPanelBackdrop.contains(target) ||
             accountPanel.contains(target) ||
             authGate.contains(target) ||
-            accountTab.contains(target)
+            accountTab.contains(target) ||
+            journalTab.contains(target)
           )
         );
       }
@@ -6059,8 +6800,20 @@
       };
 
       accountTab.addEventListener("click", onAccountTabClick);
+      journalTab.addEventListener("click", onJournalTabClick);
       timerTab.addEventListener("click", onTimerTabClick);
       timerPanelCloseButton.addEventListener("click", closeTimerPanel);
+      journalPanelCloseButton.addEventListener("click", closeJournalPanel);
+      journalTurnLeftButton.addEventListener("click", onJournalTurnLeftClick);
+      journalTurnRightButton.addEventListener("click", onJournalTurnRightClick);
+      journalLeftInput.addEventListener("focus", onJournalInputFocus);
+      journalRightInput.addEventListener("focus", onJournalInputFocus);
+      journalLeftInput.addEventListener("beforeinput", onJournalBeforeInput);
+      journalRightInput.addEventListener("beforeinput", onJournalBeforeInput);
+      journalLeftInput.addEventListener("input", onJournalInput);
+      journalRightInput.addEventListener("input", onJournalInput);
+      journalLeftInput.addEventListener("keydown", onJournalInputKeyDown);
+      journalRightInput.addEventListener("keydown", onJournalInputKeyDown);
       timerPresetButtons.forEach((button) => {
         button.addEventListener("click", onTimerPresetClick);
       });
@@ -6150,6 +6903,15 @@
           return;
         }
 
+        if (handleJournalGlobalArrowKey(event)) {
+          return;
+        }
+
+        if (event.key === "Escape" && isJournalPanelOpen()) {
+          closeJournalPanel();
+          return;
+        }
+
         if (event.key === "Escape" && isAccountPanelOpen()) {
           closeAccountPanel();
           return;
@@ -6173,6 +6935,7 @@
       loadTodoItems();
       updateTodoDockPosition();
       loadStickyNotes();
+      loadJournalState();
       syncBackgroundWaveState();
       syncTimerPresetUi();
       syncTimerFocusUi();
