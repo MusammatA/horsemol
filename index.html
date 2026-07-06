@@ -13,10 +13,13 @@
         --modal-width: min(34rem, calc(100vw - 2rem));
         --timer-panel-width: min(56rem, calc(100vw - 2rem));
         --account-panel-width: min(64rem, calc(100vw - 2rem));
+        --settings-panel-width: min(58rem, calc(100vw - 2rem));
         --journal-panel-width: min(74rem, calc(100vw - 2rem));
         --ornament-frame-inset: 0.48rem;
         --up-next-visible-count: 5;
         --altai-blue-rgb: 51, 153, 255;
+        --griff-run-duration: 18s;
+        --griff-bob-duration: 1.08s;
         --water-glass-border: rgba(236, 248, 255, 0.24);
         --water-glass-outline: rgba(255, 255, 255, 0.08);
         --water-shell-shadow: 0 0.9rem 2.2rem rgba(0, 0, 0, 0.18);
@@ -165,7 +168,7 @@
         position: absolute;
         left: 0;
         bottom: -0.95rem;
-        animation: griff-run-across 18s linear infinite;
+        animation: griff-run-across var(--griff-run-duration) linear infinite;
         will-change: transform;
       }
 
@@ -174,7 +177,7 @@
         width: clamp(5.9rem, 12vw, 8.85rem);
         height: auto;
         filter: drop-shadow(0 0.55rem 0.9rem rgba(0, 0, 0, 0.28));
-        animation: griff-run-bob 1.08s ease-in-out infinite;
+        animation: griff-run-bob var(--griff-bob-duration) ease-in-out infinite;
         will-change: transform;
       }
 
@@ -552,6 +555,7 @@
       }
 
       #account-tab,
+      #settings-tab,
       #timer-tab,
       #journal-tab,
       #todo-tab,
@@ -593,6 +597,11 @@
         touch-action: manipulation;
       }
 
+      #settings-tab {
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
       #journal-tab {
         cursor: pointer;
         touch-action: manipulation;
@@ -613,6 +622,7 @@
       }
 
       #account-tab:focus-visible,
+      #settings-tab:focus-visible,
       #timer-tab:focus-visible,
       #journal-tab:focus-visible,
       #todo-tab:focus-visible,
@@ -668,6 +678,40 @@
       .timer-tab-glyph::after {
         height: 0.46rem;
         transform: translate(-50%, -100%) rotate(58deg);
+      }
+
+      .settings-tab-glyph {
+        position: relative;
+        width: 1.5rem;
+        height: 1.08rem;
+        flex: 0 0 auto;
+      }
+
+      .settings-tab-glyph::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0.13rem;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.78);
+        box-shadow:
+          0 0.38rem 0 rgba(255, 255, 255, 0.78),
+          0 0.76rem 0 rgba(255, 255, 255, 0.78);
+      }
+
+      .settings-tab-glyph::after {
+        content: "";
+        position: absolute;
+        left: 0.7rem;
+        top: 0;
+        width: 0.34rem;
+        height: 0.34rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow:
+          -0.44rem 0.38rem 0 rgba(255, 255, 255, 0.94),
+          0.38rem 0.76rem 0 rgba(255, 255, 255, 0.94);
       }
 
       .account-tab-avatar {
@@ -944,6 +988,7 @@
 
       #timer-panel-backdrop,
       #account-panel-backdrop,
+      #settings-panel-backdrop,
       #journal-panel-backdrop {
         position: fixed;
         z-index: 11;
@@ -959,12 +1004,14 @@
 
       #timer-panel-backdrop.is-open,
       #account-panel-backdrop.is-open,
+      #settings-panel-backdrop.is-open,
       #journal-panel-backdrop.is-open {
         display: flex;
       }
 
       #timer-panel,
       #account-panel,
+      #settings-panel,
       #journal-panel {
         --panel-radius: 1.35rem;
         position: relative;
@@ -991,6 +1038,10 @@
         width: var(--account-panel-width);
       }
 
+      #settings-panel {
+        width: var(--settings-panel-width);
+      }
+
       #journal-panel {
         width: var(--journal-panel-width);
         max-height: calc(100vh - 1rem);
@@ -1004,12 +1055,14 @@
 
       #timer-panel.is-open,
       #account-panel.is-open,
+      #settings-panel.is-open,
       #journal-panel.is-open {
         display: flex;
       }
 
       #timer-panel::before,
       #account-panel::before,
+      #settings-panel::before,
       #auth-card::before {
         content: "";
         position: absolute;
@@ -1022,6 +1075,7 @@
 
       #timer-panel::after,
       #account-panel::after,
+      #settings-panel::after,
       #auth-card::after {
         content: "";
         position: absolute;
@@ -1034,6 +1088,7 @@
 
       #timer-panel > *,
       #account-panel > *,
+      #settings-panel > *,
       #journal-panel > * {
         position: relative;
         z-index: 1;
@@ -1087,6 +1142,7 @@
       }
 
       #timer-panel-title,
+      #settings-panel-title,
       .account-section-title {
         font-size: 0.82rem;
         font-weight: 700;
@@ -1096,6 +1152,14 @@
       }
 
       #timer-panel-heading {
+        grid-column: 1 / -1;
+        padding: 0.55rem 2.5rem 0.3rem 0.2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.16rem;
+      }
+
+      #settings-panel-heading {
         grid-column: 1 / -1;
         padding: 0.55rem 2.5rem 0.3rem 0.2rem;
         display: flex;
@@ -1136,7 +1200,19 @@
         padding: 1.08rem 0.3rem 0 1.28rem;
       }
 
+      #settings-panel-layout {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem 1.1rem;
+        align-items: stretch;
+        padding: 1.08rem 0.3rem 0 1.28rem;
+      }
+
       #timer-panel-layout > .timer-panel-section {
+        height: 100%;
+      }
+
+      #settings-panel-layout > .settings-panel-section {
         height: 100%;
       }
 
@@ -1272,6 +1348,238 @@
         align-self: center;
         justify-content: center;
         margin-bottom: 0.12rem;
+      }
+
+      .settings-panel-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.72rem;
+        min-width: 0;
+        padding: 1rem;
+        border: 1px solid rgba(239, 248, 255, 0.14);
+        border-radius: 1.05rem;
+        background: var(--water-section-bg);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      }
+
+      #settings-alarm-options {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.62rem;
+      }
+
+      #settings-alarm-options .timer-choice {
+        min-height: 3.75rem;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      #settings-alarm-options .timer-choice-text {
+        align-items: center;
+      }
+
+      .settings-slider-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .settings-slider-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .settings-slider-value {
+        flex: 0 0 auto;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .settings-slider {
+        width: 100%;
+        margin: 0;
+        appearance: none;
+        height: 0.52rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        outline: none;
+        cursor: pointer;
+      }
+
+      .settings-slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.92);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 0.25rem 0.8rem rgba(0, 0, 0, 0.16);
+      }
+
+      .settings-slider::-moz-range-thumb {
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.92);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 0.25rem 0.8rem rgba(0, 0, 0, 0.16);
+      }
+
+      .settings-slider::-moz-range-track {
+        height: 0.52rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .settings-slider:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.88);
+        outline-offset: 0.16rem;
+      }
+
+      .settings-field-note {
+        font-size: 0.72rem;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .settings-link-list {
+        display: grid;
+        gap: 0.55rem;
+      }
+
+      .settings-link-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.22rem;
+      }
+
+      .settings-link-anchor,
+      .settings-link-button {
+        align-self: flex-start;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.96);
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.35;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.16rem;
+        cursor: pointer;
+      }
+
+      .settings-link-anchor:hover,
+      .settings-link-button:hover {
+        color: rgba(255, 255, 255, 1);
+      }
+
+      .settings-link-anchor:focus-visible,
+      .settings-link-button:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.88);
+        outline-offset: 0.18rem;
+        border-radius: 0.35rem;
+      }
+
+      .settings-inline-meta {
+        font-size: 0.72rem;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.72);
+        word-break: break-word;
+      }
+
+      a.settings-inline-meta {
+        text-decoration: none;
+      }
+
+      a.settings-inline-meta:hover {
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      #settings-panel-footer {
+        grid-column: 1 / -1;
+        padding: 0 0.35rem 1rem;
+      }
+
+      #settings-status {
+        min-height: 1.2rem;
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.76);
+        text-align: center;
+      }
+
+      #settings-legal-backdrop {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.2rem;
+        background: rgba(8, 12, 20, 0.42);
+        backdrop-filter: blur(10px);
+      }
+
+      #settings-legal-backdrop.is-open {
+        display: flex;
+      }
+
+      #settings-legal-dialog {
+        position: relative;
+        width: min(42rem, calc(100vw - 3.2rem));
+        max-height: calc(100vh - 5rem);
+        overflow-y: auto;
+        padding: 3rem 1.3rem 1.35rem;
+        border-radius: 1.18rem;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(148, 221, 255, 0.34),
+            rgba(var(--altai-blue-rgb), 0.26) 58%,
+            rgba(255, 255, 255, 0.1)
+          );
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+          0 1rem 2.6rem rgba(0, 0, 0, 0.24);
+        backdrop-filter: blur(20px) saturate(140%);
+        color: rgba(255, 255, 255, 0.94);
+      }
+
+      #settings-legal-title {
+        margin-bottom: 0.85rem;
+        font-size: 0.92rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.88);
+      }
+
+      #settings-legal-body {
+        display: grid;
+        gap: 0.82rem;
+        font-size: 0.8rem;
+        line-height: 1.62;
+        color: rgba(255, 255, 255, 0.84);
+      }
+
+      #settings-legal-body p,
+      #settings-legal-body ul {
+        margin: 0;
+      }
+
+      #settings-legal-body ul {
+        padding-left: 1.1rem;
+      }
+
+      #settings-legal-body strong {
+        color: rgba(255, 255, 255, 0.94);
       }
 
       #timer-display {
@@ -2508,6 +2816,7 @@
           --modal-width: min(100vw - 1rem, 28rem);
           --timer-panel-width: min(100vw - 1rem, 34rem);
           --account-panel-width: min(100vw - 1rem, 36rem);
+          --settings-panel-width: min(100vw - 1rem, 36rem);
           --journal-panel-width: calc(100vw - 1rem);
           --ornament-frame-inset: 0.34rem;
         }
@@ -2535,6 +2844,7 @@
           font-size: 0.6rem;
         }
 
+        #settings-tab,
         #timer-tab,
         #journal-tab,
         #todo-tab,
@@ -2566,13 +2876,23 @@
 
         #timer-panel,
         #account-panel,
+        #settings-panel,
         #journal-panel {
           padding: 1.35rem 1.04rem 1.9rem;
         }
 
         #timer-panel-layout,
-        #account-panel-layout {
+        #account-panel-layout,
+        #settings-panel-layout {
           padding: 0.98rem 0.08rem 0 0.92rem;
+        }
+
+        #settings-panel-layout {
+          grid-template-columns: 1fr;
+        }
+
+        #settings-alarm-options {
+          grid-template-columns: 1fr;
         }
 
         #journal-panel {
@@ -2711,14 +3031,18 @@
         <div id="todo-list-panel" aria-live="polite" aria-hidden="true"></div>
       </div>
       <div id="desk-tools">
-        <button id="timer-tab" type="button" aria-label="Open start timer" aria-pressed="false">
-          <span class="sticky-tab-label">Start Timer</span>
-          <span class="timer-tab-glyph" aria-hidden="true"></span>
-        </button>
         <button id="account-tab" type="button" aria-label="Open account settings" aria-pressed="false">
           <span id="account-tab-avatar" class="account-tab-avatar" aria-hidden="true">
             <span id="account-tab-avatar-fallback" class="account-tab-avatar-fallback">A</span>
           </span>
+        </button>
+        <button id="settings-tab" type="button" aria-label="Open settings" aria-pressed="false">
+          <span class="sticky-tab-label">Settings</span>
+          <span class="settings-tab-glyph" aria-hidden="true"></span>
+        </button>
+        <button id="timer-tab" type="button" aria-label="Open start timer" aria-pressed="false">
+          <span class="sticky-tab-label">Start Timer</span>
+          <span class="timer-tab-glyph" aria-hidden="true"></span>
         </button>
         <button id="sticky-note-tab" type="button" aria-label="Drag to create a sticky note">
           <span class="sticky-tab-label">Sticky Note</span>
@@ -2867,6 +3191,122 @@
                 <div id="account-focus-breakdown" aria-live="polite"></div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div id="settings-panel-backdrop" aria-hidden="true">
+        <div id="settings-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="settings-panel-title">
+          <button id="settings-panel-close" class="panel-close" type="button" aria-label="Close settings">×</button>
+          <div id="settings-panel-layout">
+            <div id="settings-panel-heading">
+              <div id="settings-panel-title">Settings</div>
+            </div>
+            <section class="settings-panel-section" aria-labelledby="settings-alarm-heading">
+              <div id="settings-alarm-heading" class="account-section-title">Alarm</div>
+              <div id="settings-alarm-options">
+                <button class="timer-choice is-selected" type="button" data-alarm-choice="gentle-chime">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">Gentle Chime</span>
+                  </span>
+                </button>
+                <button class="timer-choice" type="button" data-alarm-choice="altai-bells">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">Altai Bells</span>
+                  </span>
+                </button>
+                <button class="timer-choice" type="button" data-alarm-choice="sky-echo">
+                  <span class="timer-choice-text">
+                    <span class="timer-choice-title">Sky Echo</span>
+                  </span>
+                </button>
+              </div>
+              <label class="settings-slider-field" for="settings-alarm-volume">
+                <div class="settings-slider-top">
+                  <span class="timer-field-label">Alarm Volume</span>
+                  <span id="settings-alarm-volume-value" class="settings-slider-value">78%</span>
+                </div>
+                <input
+                  id="settings-alarm-volume"
+                  class="settings-slider"
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value="78"
+                />
+              </label>
+            </section>
+            <section class="settings-panel-section" aria-labelledby="settings-runner-heading">
+              <div id="settings-runner-heading" class="account-section-title">Horse</div>
+              <label class="settings-slider-field" for="settings-horse-speed">
+                <div class="settings-slider-top">
+                  <span class="timer-field-label">Speed Of Horse</span>
+                  <span id="settings-horse-speed-value" class="settings-slider-value">100% • Steady</span>
+                </div>
+                <input
+                  id="settings-horse-speed"
+                  class="settings-slider"
+                  type="range"
+                  min="60"
+                  max="150"
+                  step="5"
+                  value="100"
+                />
+              </label>
+              <div class="settings-field-note">Adjust how fast the griff runs across the bottom of the page.</div>
+            </section>
+            <section class="settings-panel-section" aria-labelledby="settings-feedback-heading">
+              <div id="settings-feedback-heading" class="account-section-title">Feedback And Support</div>
+              <div class="settings-link-list">
+                <div class="settings-link-row">
+                  <a
+                    class="settings-link-anchor"
+                    href="mailto:aktarmusammat5@gmail.com?subject=horsemol%20feedback"
+                  >Email Feedback</a>
+                  <a class="settings-inline-meta" href="mailto:aktarmusammat5@gmail.com">aktarmusammat5@gmail.com</a>
+                </div>
+                <div class="settings-link-row">
+                  <a
+                    class="settings-link-anchor"
+                    href="mailto:aktarmusammat5@gmail.com?subject=horsemol%20donation"
+                  >Possible Donation</a>
+                  <div class="settings-inline-meta">Use this if you want to ask about supporting horsemol.</div>
+                </div>
+              </div>
+            </section>
+            <section class="settings-panel-section" aria-labelledby="settings-links-heading">
+              <div id="settings-links-heading" class="account-section-title">Links And Legal</div>
+              <div class="settings-link-list">
+                <div class="settings-link-row">
+                  <button id="settings-terms-link" class="settings-link-button" type="button">
+                    Terms &amp; Conditions
+                  </button>
+                </div>
+                <div class="settings-link-row">
+                  <button id="settings-privacy-link" class="settings-link-button" type="button">
+                    Privacy Policy
+                  </button>
+                </div>
+                <div class="settings-link-row">
+                  <a
+                    class="settings-link-anchor"
+                    href="https://www.instagram.com/e_i_t_y_y_y/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >Instagram</a>
+                </div>
+              </div>
+            </section>
+            <div id="settings-panel-footer">
+              <div id="settings-status" aria-live="polite">Settings save automatically on this device.</div>
+            </div>
+          </div>
+        </div>
+        <div id="settings-legal-backdrop" aria-hidden="true">
+          <div id="settings-legal-dialog" role="dialog" aria-modal="true" aria-labelledby="settings-legal-title">
+            <button id="settings-legal-close" class="panel-close" type="button" aria-label="Close legal popup">×</button>
+            <div id="settings-legal-title">Terms &amp; Conditions</div>
+            <div id="settings-legal-body"></div>
           </div>
         </div>
       </div>
@@ -3229,6 +3669,8 @@
 
       const backgroundSwitcher = document.getElementById("background-switcher");
       const backgroundImages = Array.from(document.querySelectorAll(".background-image"));
+      const griffRunnerTrack = document.getElementById("griff-runner-track");
+      const griffRunner = document.getElementById("griff-runner");
       const musicStack = document.getElementById("music-stack");
       const musicStrip = document.getElementById("music-strip");
       const playerToggle = document.getElementById("player-toggle");
@@ -3255,6 +3697,22 @@
       const accountTab = document.getElementById("account-tab");
       const accountTabAvatar = document.getElementById("account-tab-avatar");
       const accountTabAvatarFallback = document.getElementById("account-tab-avatar-fallback");
+      const settingsTab = document.getElementById("settings-tab");
+      const settingsPanelBackdrop = document.getElementById("settings-panel-backdrop");
+      const settingsPanel = document.getElementById("settings-panel");
+      const settingsPanelCloseButton = document.getElementById("settings-panel-close");
+      const settingsAlarmButtons = Array.from(document.querySelectorAll("#settings-alarm-options .timer-choice"));
+      const settingsAlarmVolumeInput = document.getElementById("settings-alarm-volume");
+      const settingsAlarmVolumeValue = document.getElementById("settings-alarm-volume-value");
+      const settingsHorseSpeedInput = document.getElementById("settings-horse-speed");
+      const settingsHorseSpeedValue = document.getElementById("settings-horse-speed-value");
+      const settingsTermsLink = document.getElementById("settings-terms-link");
+      const settingsPrivacyLink = document.getElementById("settings-privacy-link");
+      const settingsStatus = document.getElementById("settings-status");
+      const settingsLegalBackdrop = document.getElementById("settings-legal-backdrop");
+      const settingsLegalTitle = document.getElementById("settings-legal-title");
+      const settingsLegalBody = document.getElementById("settings-legal-body");
+      const settingsLegalCloseButton = document.getElementById("settings-legal-close");
       const accountPanelBackdrop = document.getElementById("account-panel-backdrop");
       const accountPanel = document.getElementById("account-panel");
       const accountPanelCloseButton = document.getElementById("account-panel-close");
@@ -3388,10 +3846,41 @@
           focusMinutes: 90,
         },
       };
+      const siteAlarmChoices = [
+        "gentle-chime",
+        "altai-bells",
+        "sky-echo",
+      ];
+      const legalContentMap = {
+        privacy: {
+          title: "Privacy Policy",
+          html: `
+            <p><strong>What horsemol saves:</strong> your journal pages, sticky notes, to-do items, and site settings are saved in your browser on the device you use.</p>
+            <p><strong>When you sign in with Google:</strong> horsemol stores your profile name, profile photo choice, warrior choice, and focus-time summary with Firebase so your saved account can follow you across devices.</p>
+            <p><strong>Third-party services:</strong> Google sign-in is handled through Firebase Authentication, and Instagram or email links open the services you choose to visit.</p>
+            <p><strong>Your control:</strong> you can sign out any time, reset your profile picture, or clear your browser storage if you want local notebook data removed from that device.</p>
+            <p><strong>No selling of data:</strong> horsemol is not built to sell your information.</p>
+          `,
+        },
+        terms: {
+          title: "Terms & Conditions",
+          html: `
+            <p><strong>Use of horsemol:</strong> you may use the site for personal writing, studying, planning, and focus tracking.</p>
+            <ul>
+              <li>You are responsible for the text, notes, and images you choose to add.</li>
+              <li>Please do not use horsemol for harmful, illegal, or abusive content.</li>
+              <li>External links such as Google sign-in, email, YouTube, and Instagram are governed by their own services.</li>
+              <li>horsemol is offered as-is, so features may change, improve, or occasionally be unavailable.</li>
+            </ul>
+            <p><strong>Saved account data:</strong> if you sign in, you give permission for horsemol to save your profile and focus summary to its connected Firebase project.</p>
+          `,
+        },
+      };
       const firebaseProfileCollection = "profiles";
       const journalStorageKey = "horsemol-journal-pages-v1";
       const todoStorageKey = "horsemol-todo-items-v1";
       const stickyNoteStorageKey = "horsemol-sticky-notes-v1";
+      const siteSettingsStorageKey = "horsemol-site-settings-v1";
       const stickyNoteColors = ["yellow", "pink", "blue", "green"];
       const undoHistoryLimit = 120;
       const todoElements = new Map();
@@ -3443,9 +3932,211 @@
       let timerVisible = false;
       let activeTimerConfig = null;
       let alarmAudioContext = null;
+      let siteSettings = createDefaultSiteSettings();
+      let settingsStatusTimeoutId = 0;
 
       function clamp(value, min, max) {
         return Math.min(max, Math.max(min, value));
+      }
+
+      function createDefaultSiteSettings() {
+        return {
+          alarmChoice: "gentle-chime",
+          alarmVolume: 78,
+          horseSpeed: 100,
+        };
+      }
+
+      function normalizeSiteSettings(input) {
+        const defaults = createDefaultSiteSettings();
+        const normalizedAlarmChoice = siteAlarmChoices.includes(input && input.alarmChoice)
+          ? input.alarmChoice
+          : defaults.alarmChoice;
+        const normalizedAlarmVolume = clamp(
+          Number.isFinite(Number(input && input.alarmVolume))
+            ? Number(input.alarmVolume)
+            : defaults.alarmVolume,
+          0,
+          100,
+        );
+        const normalizedHorseSpeed = clamp(
+          Number.isFinite(Number(input && input.horseSpeed))
+            ? Number(input.horseSpeed)
+            : defaults.horseSpeed,
+          60,
+          150,
+        );
+
+        return {
+          alarmChoice: normalizedAlarmChoice,
+          alarmVolume: Math.round(normalizedAlarmVolume),
+          horseSpeed: Math.round(normalizedHorseSpeed / 5) * 5,
+        };
+      }
+
+      function loadSiteSettings() {
+        try {
+          const storedSettings = JSON.parse(window.localStorage.getItem(siteSettingsStorageKey) || "{}");
+          siteSettings = normalizeSiteSettings(storedSettings);
+        } catch (error) {
+          siteSettings = createDefaultSiteSettings();
+        }
+      }
+
+      function persistSiteSettings() {
+        try {
+          window.localStorage.setItem(siteSettingsStorageKey, JSON.stringify(siteSettings));
+        } catch (error) {
+          // Ignore storage failures and keep the settings in memory.
+        }
+      }
+
+      function getHorseSpeedLabel(speed) {
+        if (speed <= 80) {
+          return "Calm";
+        }
+
+        if (speed <= 105) {
+          return "Steady";
+        }
+
+        if (speed <= 125) {
+          return "Swift";
+        }
+
+        return "Wind";
+      }
+
+      function applyHorseSpeed() {
+        const speedFactor = siteSettings.horseSpeed / 100;
+        const runDuration = 18 / speedFactor;
+        const bobSpeedFactor = clamp(speedFactor, 0.8, 1.32);
+        const bobDuration = 1.08 / bobSpeedFactor;
+
+        document.documentElement.style.setProperty("--griff-run-duration", `${runDuration.toFixed(2)}s`);
+        document.documentElement.style.setProperty("--griff-bob-duration", `${bobDuration.toFixed(2)}s`);
+
+        if (griffRunnerTrack) {
+          griffRunnerTrack.style.animationDuration = `${runDuration.toFixed(2)}s`;
+        }
+
+        if (griffRunner) {
+          griffRunner.style.animationDuration = `${bobDuration.toFixed(2)}s`;
+        }
+      }
+
+      function applySiteSettings() {
+        applyHorseSpeed();
+      }
+
+      function setSettingsStatus(message, { persist = true } = {}) {
+        settingsStatus.textContent = message || "";
+
+        window.clearTimeout(settingsStatusTimeoutId);
+
+        if (!message || !persist) {
+          return;
+        }
+
+        settingsStatusTimeoutId = window.setTimeout(() => {
+          settingsStatus.textContent = "Settings save automatically on this device.";
+        }, 1800);
+      }
+
+      function syncSettingsUi() {
+        settingsAlarmButtons.forEach((button) => {
+          button.classList.toggle("is-selected", button.dataset.alarmChoice === siteSettings.alarmChoice);
+        });
+        settingsAlarmVolumeInput.value = String(siteSettings.alarmVolume);
+        settingsAlarmVolumeValue.textContent = `${siteSettings.alarmVolume}%`;
+        settingsHorseSpeedInput.value = String(siteSettings.horseSpeed);
+        settingsHorseSpeedValue.textContent = `${siteSettings.horseSpeed}% • ${getHorseSpeedLabel(siteSettings.horseSpeed)}`;
+      }
+
+      function isSettingsPanelOpen() {
+        return settingsPanel.classList.contains("is-open");
+      }
+
+      function isSettingsLegalDialogOpen() {
+        return settingsLegalBackdrop.classList.contains("is-open");
+      }
+
+      function closeSettingsLegalDialog() {
+        settingsLegalBackdrop.classList.remove("is-open");
+        settingsLegalBackdrop.setAttribute("aria-hidden", "true");
+      }
+
+      function openSettingsLegalDialog(type) {
+        const legalContent = legalContentMap[type];
+
+        if (!legalContent) {
+          return;
+        }
+
+        settingsLegalTitle.textContent = legalContent.title;
+        settingsLegalBody.innerHTML = legalContent.html;
+        settingsLegalBackdrop.classList.add("is-open");
+        settingsLegalBackdrop.setAttribute("aria-hidden", "false");
+
+        window.requestAnimationFrame(() => {
+          settingsLegalCloseButton.focus({ preventScroll: true });
+        });
+      }
+
+      function setSettingsPanelOpen(isOpen) {
+        const nextOpenState = Boolean(isOpen);
+
+        if (!nextOpenState) {
+          closeSettingsLegalDialog();
+        }
+
+        settingsPanelBackdrop.classList.toggle("is-open", nextOpenState);
+        settingsPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
+        settingsPanel.classList.toggle("is-open", nextOpenState);
+        settingsPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
+        settingsTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+        syncBackgroundWaveState();
+      }
+
+      function closeSettingsPanel() {
+        setSettingsPanelOpen(false);
+      }
+
+      function saveSiteSettings(message) {
+        persistSiteSettings();
+        applySiteSettings();
+        syncSettingsUi();
+        setSettingsStatus(message);
+      }
+
+      function onSettingsAlarmChoiceClick(event) {
+        const nextChoice = event.currentTarget.dataset.alarmChoice;
+
+        if (!siteAlarmChoices.includes(nextChoice)) {
+          return;
+        }
+
+        siteSettings = {
+          ...siteSettings,
+          alarmChoice: nextChoice,
+        };
+        saveSiteSettings("Alarm choice saved.");
+      }
+
+      function onSettingsAlarmVolumeInput() {
+        siteSettings = {
+          ...siteSettings,
+          alarmVolume: clamp(Number.parseInt(settingsAlarmVolumeInput.value, 10) || 0, 0, 100),
+        };
+        saveSiteSettings("Alarm volume saved.");
+      }
+
+      function onSettingsHorseSpeedInput() {
+        siteSettings = {
+          ...siteSettings,
+          horseSpeed: clamp(Number.parseInt(settingsHorseSpeedInput.value, 10) || 100, 60, 150),
+        };
+        saveSiteSettings("Horse speed saved.");
       }
 
       function createEmptyFocusStats() {
@@ -3641,6 +4332,8 @@
         const shouldWave =
           isTimerPanelOpen() ||
           isAccountPanelOpen() ||
+          isSettingsPanelOpen() ||
+          isSettingsLegalDialogOpen() ||
           isJournalPanelOpen() ||
           authGate.classList.contains("is-visible") ||
           noteEditorBackdrop.classList.contains("is-open");
@@ -3764,20 +4457,50 @@
         return alarmAudioContext;
       }
 
-      async function playGentleAlarm() {
+      async function playConfiguredAlarm() {
         const audioContext = await ensureAlarmAudioReady();
 
         if (!audioContext) {
           return;
         }
 
-        const notes = [
-          { delay: 0, duration: 0.18, frequency: 659.25 },
-          { delay: 0.26, duration: 0.22, frequency: 783.99 },
-          { delay: 0.56, duration: 0.28, frequency: 987.77 },
-        ];
-        const repeatCount = 3;
-        const repeatGap = 0.38;
+        const alarmPatterns = {
+          "altai-bells": {
+            notes: [
+              { delay: 0, duration: 0.22, frequency: 523.25, type: "sine" },
+              { delay: 0.3, duration: 0.26, frequency: 659.25, type: "triangle" },
+              { delay: 0.7, duration: 0.3, frequency: 783.99, type: "sine" },
+            ],
+            peakGain: 0.11,
+            repeatCount: 3,
+            repeatGap: 0.42,
+          },
+          "sky-echo": {
+            notes: [
+              { delay: 0, duration: 0.2, frequency: 587.33, type: "triangle" },
+              { delay: 0.24, duration: 0.26, frequency: 698.46, type: "triangle" },
+              { delay: 0.58, duration: 0.34, frequency: 880, type: "sine" },
+            ],
+            peakGain: 0.115,
+            repeatCount: 3,
+            repeatGap: 0.4,
+          },
+          "gentle-chime": {
+            notes: [
+              { delay: 0, duration: 0.18, frequency: 659.25, type: "triangle" },
+              { delay: 0.26, duration: 0.22, frequency: 783.99, type: "triangle" },
+              { delay: 0.56, duration: 0.28, frequency: 987.77, type: "triangle" },
+            ],
+            peakGain: 0.1,
+            repeatCount: 3,
+            repeatGap: 0.38,
+          },
+        };
+        const selectedPattern = alarmPatterns[siteSettings.alarmChoice] || alarmPatterns["gentle-chime"];
+        const notes = selectedPattern.notes;
+        const volumeScale = clamp(siteSettings.alarmVolume / 100, 0, 1);
+        const repeatCount = selectedPattern.repeatCount;
+        const repeatGap = selectedPattern.repeatGap;
         const patternDuration = notes[notes.length - 1].delay + notes[notes.length - 1].duration;
         const repeatDuration = patternDuration + repeatGap;
         const startAt = audioContext.currentTime + 0.02;
@@ -3789,9 +4512,12 @@
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             const noteStart = startAt + repeatOffset + note.delay;
-            const peakGain = repeatIndex === repeatCount - 1 ? 0.1 : 0.082;
+            const peakGain =
+              (repeatIndex === repeatCount - 1
+                ? selectedPattern.peakGain
+                : selectedPattern.peakGain * 0.82) * volumeScale;
 
-            oscillator.type = "triangle";
+            oscillator.type = note.type || "triangle";
             oscillator.frequency.setValueAtTime(note.frequency, noteStart);
             gainNode.gain.setValueAtTime(0.0001, noteStart);
             gainNode.gain.linearRampToValueAtTime(peakGain, noteStart + 0.03);
@@ -3804,7 +4530,7 @@
           });
         }
 
-        const totalDuration = repeatDuration * repeatCount;
+        const totalDuration = repeatDuration * selectedPattern.repeatCount;
 
         await new Promise((resolve) => {
           window.setTimeout(resolve, totalDuration * 1000);
@@ -3891,7 +4617,7 @@
 
         if (completedPhase === "focus") {
           pauseMusicForTimer();
-          await playGentleAlarm();
+          await playConfiguredAlarm();
           recordFocusSession(
             completedConfig.focusCategory,
             Math.round(completedConfig.focusMinutes * 60000),
@@ -3903,7 +4629,7 @@
             return;
           }
         } else if (completedPhase === "break") {
-          await playGentleAlarm();
+          await playConfiguredAlarm();
           setTimerPanelStatus("");
         }
 
@@ -5432,6 +6158,18 @@
         });
       }
 
+      function onSettingsTabClick() {
+        if (isSettingsPanelOpen()) {
+          closeSettingsPanel();
+          return;
+        }
+
+        setSettingsPanelOpen(true);
+        window.requestAnimationFrame(() => {
+          settingsPanelCloseButton.focus({ preventScroll: true });
+        });
+      }
+
       function onTimerPresetClick(event) {
         const presetKey = event.currentTarget.dataset.presetKey;
 
@@ -5497,8 +6235,19 @@
           return;
         }
 
+        if (isSettingsLegalDialogOpen() && event.target === settingsLegalBackdrop) {
+          closeSettingsLegalDialog();
+          syncBackgroundWaveState();
+          return;
+        }
+
         if (isTimerPanelOpen() && event.target === timerPanelBackdrop) {
           closeTimerPanel();
+          return;
+        }
+
+        if (isSettingsPanelOpen() && event.target === settingsPanelBackdrop) {
+          closeSettingsPanel();
           return;
         }
 
@@ -5519,12 +6268,15 @@
           (
             timerPanelBackdrop.contains(target) ||
             timerPanel.contains(target) ||
+            settingsPanelBackdrop.contains(target) ||
+            settingsPanel.contains(target) ||
             journalPanelBackdrop.contains(target) ||
             journalPanel.contains(target) ||
             accountPanelBackdrop.contains(target) ||
             accountPanel.contains(target) ||
             authGate.contains(target) ||
             accountTab.contains(target) ||
+            settingsTab.contains(target) ||
             journalTab.contains(target)
           )
         );
@@ -7050,9 +7802,11 @@
       };
 
       accountTab.addEventListener("click", onAccountTabClick);
+      settingsTab.addEventListener("click", onSettingsTabClick);
       journalTab.addEventListener("click", onJournalTabClick);
       timerTab.addEventListener("click", onTimerTabClick);
       timerPanelCloseButton.addEventListener("click", closeTimerPanel);
+      settingsPanelCloseButton.addEventListener("click", closeSettingsPanel);
       journalPanelCloseButton.addEventListener("click", closeJournalPanel);
       journalTurnLeftButton.addEventListener("click", onJournalTurnLeftClick);
       journalTurnRightButton.addEventListener("click", onJournalTurnRightClick);
@@ -7067,8 +7821,23 @@
       timerPresetButtons.forEach((button) => {
         button.addEventListener("click", onTimerPresetClick);
       });
+      settingsAlarmButtons.forEach((button) => {
+        button.addEventListener("click", onSettingsAlarmChoiceClick);
+      });
       timerFocusButtons.forEach((button) => {
         button.addEventListener("click", onTimerFocusClick);
+      });
+      settingsAlarmVolumeInput.addEventListener("input", onSettingsAlarmVolumeInput);
+      settingsHorseSpeedInput.addEventListener("input", onSettingsHorseSpeedInput);
+      settingsTermsLink.addEventListener("click", () => {
+        openSettingsLegalDialog("terms");
+      });
+      settingsPrivacyLink.addEventListener("click", () => {
+        openSettingsLegalDialog("privacy");
+      });
+      settingsLegalCloseButton.addEventListener("click", () => {
+        closeSettingsLegalDialog();
+        syncBackgroundWaveState();
       });
       timerStartButton.addEventListener("click", () => {
         void startTimerSession();
@@ -7157,8 +7926,19 @@
           return;
         }
 
+        if (event.key === "Escape" && isSettingsLegalDialogOpen()) {
+          closeSettingsLegalDialog();
+          syncBackgroundWaveState();
+          return;
+        }
+
         if (event.key === "Escape" && isJournalPanelOpen()) {
           closeJournalPanel();
+          return;
+        }
+
+        if (event.key === "Escape" && isSettingsPanelOpen()) {
+          closeSettingsPanel();
           return;
         }
 
@@ -7186,6 +7966,9 @@
       updateTodoDockPosition();
       loadStickyNotes();
       loadJournalState();
+      loadSiteSettings();
+      applySiteSettings();
+      syncSettingsUi();
       syncBackgroundWaveState();
       syncTimerPresetUi();
       syncTimerFocusUi();
