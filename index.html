@@ -589,14 +589,12 @@
       }
 
       #account-tab {
-        align-self: flex-end;
         cursor: pointer;
         touch-action: manipulation;
-        width: clamp(4.8rem, 6.4vw, 5.75rem);
-        height: clamp(4.8rem, 6.4vw, 5.75rem);
-        padding: 0;
+        aspect-ratio: 1 / 1;
+        padding: 0.42rem;
         justify-content: center;
-        border-radius: 999px;
+        border-radius: 1.25rem;
       }
 
       #timer-tab {
@@ -722,10 +720,10 @@
       }
 
       .account-tab-avatar {
-        width: calc(100% - 0.28rem);
-        height: calc(100% - 0.28rem);
+        width: 100%;
+        height: 100%;
         border: 1px solid rgba(255, 255, 255, 0.42);
-        border-radius: 999px;
+        border-radius: 1rem;
         background:
           linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
           rgba(var(--altai-blue-rgb), 0.18);
@@ -1238,13 +1236,13 @@
         color: rgba(17, 21, 28, 0.94);
         font: inherit;
         display: flex;
-        align-items: flex-start;
-        justify-content: flex-start;
+        align-items: center;
+        justify-content: center;
         gap: 0.72rem;
-        min-height: 4.5rem;
+        min-height: 3.5rem;
         padding: 0.86rem 0.9rem;
         cursor: pointer;
-        text-align: left;
+        text-align: center;
       }
 
       .timer-choice.is-selected {
@@ -1272,6 +1270,7 @@
         flex-direction: column;
         gap: 0.14rem;
         min-width: 0;
+        align-items: center;
       }
 
       .timer-choice-title {
@@ -1279,13 +1278,6 @@
         font-weight: 700;
         letter-spacing: 0.04em;
         text-transform: uppercase;
-      }
-
-      .timer-choice-copy {
-        font-size: 0.72rem;
-        line-height: 1.45;
-        color: inherit;
-        opacity: 0.76;
       }
 
       #timer-custom-fields {
@@ -1448,12 +1440,6 @@
         outline-offset: 0.16rem;
       }
 
-      .settings-field-note {
-        font-size: 0.72rem;
-        line-height: 1.45;
-        color: rgba(255, 255, 255, 0.72);
-      }
-
       .settings-link-list {
         display: grid;
         gap: 0.55rem;
@@ -1603,8 +1589,8 @@
         right: var(--page-gutter);
         bottom: var(--page-gutter);
         z-index: 10;
-        min-width: 10rem;
-        padding: 0.82rem 0.95rem 0.88rem;
+        min-width: 13rem;
+        padding: 1rem 1.1rem 1.02rem;
         border: 1px solid var(--water-glass-border);
         border-radius: 1rem;
         background: linear-gradient(180deg, rgba(147, 220, 255, 0.18), rgba(10, 24, 40, 0.36));
@@ -1616,7 +1602,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        gap: 0.12rem;
+        gap: 0.2rem;
         pointer-events: none;
         opacity: 0;
         transform: translateY(0.8rem);
@@ -1641,7 +1627,7 @@
       }
 
       #timer-display-clock {
-        font-size: clamp(2rem, 5vw, 3rem);
+        font-size: clamp(2.9rem, 7vw, 4.6rem);
         font-weight: 700;
         letter-spacing: 0.08em;
         line-height: 1;
@@ -2794,6 +2780,17 @@
         transform: translateY(0);
       }
 
+      #alarm-player-shell {
+        position: fixed;
+        left: -9999px;
+        top: -9999px;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
       @keyframes marquee-scroll {
         0%,
         14% {
@@ -2882,8 +2879,7 @@
         }
 
         #account-tab {
-          width: 4.35rem;
-          height: 4.35rem;
+          aspect-ratio: 1 / 1;
         }
 
         .sticky-tab-label {
@@ -3098,25 +3094,21 @@
                 <button class="timer-choice is-selected" type="button" data-preset-key="25-5">
                   <span class="timer-choice-text">
                     <span class="timer-choice-title">25 / 5</span>
-                    <span class="timer-choice-copy">25 minutes focus, 5 minute break</span>
                   </span>
                 </button>
                 <button class="timer-choice" type="button" data-preset-key="50-15">
                   <span class="timer-choice-text">
                     <span class="timer-choice-title">50 / 15</span>
-                    <span class="timer-choice-copy">50 minutes focus, 15 minute break</span>
                   </span>
                 </button>
                 <button class="timer-choice" type="button" data-preset-key="90-20">
                   <span class="timer-choice-text">
                     <span class="timer-choice-title">90 / 20</span>
-                    <span class="timer-choice-copy">90 minutes focus, 20 minute break</span>
                   </span>
                 </button>
                 <button class="timer-choice" type="button" data-preset-key="custom">
                   <span class="timer-choice-text">
                     <span class="timer-choice-title">Custom</span>
-                    <span class="timer-choice-copy">Set your own focus and break minutes</span>
                   </span>
                 </button>
               </div>
@@ -3233,19 +3225,19 @@
             <section class="settings-panel-section" aria-labelledby="settings-alarm-heading">
               <div id="settings-alarm-heading" class="account-section-title">Alarm</div>
               <div id="settings-alarm-options">
-                <button class="timer-choice is-selected" type="button" data-alarm-choice="gentle-chime">
+                <button class="timer-choice is-selected" type="button" data-alarm-choice="standard-alarm">
                   <span class="timer-choice-text">
-                    <span class="timer-choice-title">Gentle Chime</span>
+                    <span class="timer-choice-title">Standard Alarm</span>
                   </span>
                 </button>
-                <button class="timer-choice" type="button" data-alarm-choice="altai-bells">
+                <button class="timer-choice" type="button" data-alarm-choice="altai-alarm">
                   <span class="timer-choice-text">
-                    <span class="timer-choice-title">Altai Bells</span>
+                    <span class="timer-choice-title">Altai Alarm</span>
                   </span>
                 </button>
-                <button class="timer-choice" type="button" data-alarm-choice="sky-echo">
+                <button class="timer-choice" type="button" data-alarm-choice="gentle-alarm">
                   <span class="timer-choice-text">
-                    <span class="timer-choice-title">Sky Echo</span>
+                    <span class="timer-choice-title">Gentle Alarm</span>
                   </span>
                 </button>
               </div>
@@ -3282,7 +3274,6 @@
                   value="100"
                 />
               </label>
-              <div class="settings-field-note">Adjust how fast the griff runs across the bottom of the page.</div>
             </section>
             <section class="settings-panel-section" aria-labelledby="settings-feedback-heading">
               <div id="settings-feedback-heading" class="account-section-title">Feedback And Support</div>
@@ -3293,13 +3284,6 @@
                     href="mailto:aktarmusammat5@gmail.com?subject=horsemol%20feedback"
                   >Email Feedback</a>
                   <a class="settings-inline-meta" href="mailto:aktarmusammat5@gmail.com">aktarmusammat5@gmail.com</a>
-                </div>
-                <div class="settings-link-row">
-                  <a
-                    class="settings-link-anchor"
-                    href="mailto:aktarmusammat5@gmail.com?subject=horsemol%20donation"
-                  >Possible Donation</a>
-                  <div class="settings-inline-meta">Use this if you want to ask about supporting horsemol.</div>
                 </div>
               </div>
             </section>
@@ -3466,6 +3450,9 @@
 
     <div id="yt-player-shell" aria-hidden="true">
       <div id="yt-player"></div>
+    </div>
+    <div id="alarm-player-shell" aria-hidden="true">
+      <div id="alarm-player"></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
@@ -3677,7 +3664,6 @@
         "My Native Land, Altai (Live)",
       ];
       const secondaryPlaylistTracks = [
-        { title: "Intro", videoId: "C2xOS5ZRo2Y" },
         { title: "Bai Terek", videoId: "ik09RA5V26I" },
         { title: "Kadyn bazhy", videoId: "cMX2eLLFnlY" },
         { title: "Jolo", videoId: "iVEqtqltdwk" },
@@ -3694,7 +3680,6 @@
         .filter((track) => track.title && track.videoId);
       const softOpeningTrackTitles = [
         "Spring Water",
-        "Intro",
         "Bai Terek",
         "Salkyndu key-sanaa",
         "Kadyn bazhy",
@@ -3836,6 +3821,7 @@
       const authCloseButton = document.getElementById("auth-close-button");
       const authDismissButton = document.getElementById("auth-dismiss-button");
       const authSetupNote = document.getElementById("auth-setup-note");
+      const deskTools = document.getElementById("desk-tools");
       const todoDock = document.getElementById("todo-dock");
       const todoTab = document.getElementById("todo-tab");
       const todoListPanel = document.getElementById("todo-list-panel");
@@ -3927,11 +3913,35 @@
           focusMinutes: 90,
         },
       };
+      const defaultAlarmChoice = "standard-alarm";
+      const standardAlarmVideoId = "77S70NhRoBc";
       const siteAlarmChoices = [
-        "gentle-chime",
-        "altai-bells",
-        "sky-echo",
+        "standard-alarm",
+        "altai-alarm",
+        "gentle-alarm",
       ];
+      const legacyAlarmChoiceMap = {
+        "altai-bells": "altai-alarm",
+        "gentle-chime": "gentle-alarm",
+        "sky-echo": "standard-alarm",
+      };
+      const alarmSourceMap = {
+        "standard-alarm": {
+          clipDurationMs: 3800,
+          kind: "youtube",
+          videoId: standardAlarmVideoId,
+        },
+        "altai-alarm": {
+          clipDurationMs: 4800,
+          kind: "audio",
+          src: "assets/alarms/throat-singing.mp3",
+        },
+        "gentle-alarm": {
+          clipDurationMs: 3600,
+          kind: "audio",
+          src: "assets/alarms/gentle-pixel-3.mp3",
+        },
+      };
       const legalContentMap = {
         privacy: {
           title: "Privacy Policy",
@@ -3968,6 +3978,7 @@
       const noteElements = new Map();
       const backgroundCache = new Map();
       const thumbnailColorCache = new Map();
+      const alarmAudioElements = new Map();
       let todoItems = [];
       let stickyNotes = [];
       let undoHistory = [];
@@ -3989,6 +4000,7 @@
       let shouldPlayWhenReady = true;
       let marqueeFrame = 0;
       let titleSyncInterval = 0;
+      let playbackRecoveryTimeoutIds = [];
       let firebaseApp = null;
       let firebaseAuth = null;
       let firestoreDb = null;
@@ -4011,9 +4023,14 @@
       let timerPhase = "idle";
       let timerIntervalId = 0;
       let timerEndAt = 0;
-      let timerVisible = false;
+      let timerVisible = true;
       let activeTimerConfig = null;
-      let alarmAudioContext = null;
+      let activeAlarmAudio = null;
+      let activeAlarmPlaybackToken = 0;
+      let alarmPlayer = null;
+      let alarmPlayerCreationRequested = false;
+      let alarmPlayerReady = false;
+      let alarmPlayerReadyResolvers = [];
       let siteSettings = createDefaultSiteSettings();
       let settingsStatusTimeoutId = 0;
 
@@ -4023,16 +4040,25 @@
 
       function createDefaultSiteSettings() {
         return {
-          alarmChoice: "gentle-chime",
+          alarmChoice: defaultAlarmChoice,
           alarmVolume: 78,
           horseSpeed: 100,
         };
       }
 
+      function getNormalizedAlarmChoice(choice) {
+        if (typeof choice !== "string") {
+          return "";
+        }
+
+        return legacyAlarmChoiceMap[choice] || choice;
+      }
+
       function normalizeSiteSettings(input) {
         const defaults = createDefaultSiteSettings();
-        const normalizedAlarmChoice = siteAlarmChoices.includes(input && input.alarmChoice)
-          ? input.alarmChoice
+        const requestedAlarmChoice = getNormalizedAlarmChoice(input && input.alarmChoice);
+        const normalizedAlarmChoice = siteAlarmChoices.includes(requestedAlarmChoice)
+          ? requestedAlarmChoice
           : defaults.alarmChoice;
         const normalizedAlarmVolume = clamp(
           Number.isFinite(Number(input && input.alarmVolume))
@@ -4495,7 +4521,7 @@
       }
 
       function updateTimerDisplay(remainingMs = 0) {
-        const shouldShow = timerVisible || timerPhase !== "idle" || timerPhase === "complete";
+        const shouldShow = true;
 
         timerDisplay.classList.toggle("is-visible", shouldShow);
         timerDisplay.setAttribute("aria-hidden", shouldShow ? "false" : "true");
@@ -4513,114 +4539,248 @@
         timerIntervalId = 0;
       }
 
-      async function ensureAlarmAudioReady() {
-        const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+      function getAlarmConfig(choice = siteSettings.alarmChoice) {
+        const normalizedChoice = getNormalizedAlarmChoice(choice);
 
-        if (!AudioContextConstructor) {
+        return alarmSourceMap[normalizedChoice] || alarmSourceMap[defaultAlarmChoice];
+      }
+
+      function getAlarmAudioElement(choice = siteSettings.alarmChoice) {
+        const config = getAlarmConfig(choice);
+
+        if (!config || config.kind !== "audio") {
           return null;
         }
 
-        if (!alarmAudioContext) {
-          alarmAudioContext = new AudioContextConstructor();
+        if (!alarmAudioElements.has(config.src)) {
+          const audio = new Audio(config.src);
+          audio.preload = "auto";
+          audio.playsInline = true;
+          alarmAudioElements.set(config.src, audio);
         }
 
-        if (alarmAudioContext.state === "suspended") {
-          try {
-            await Promise.race([
-              alarmAudioContext.resume(),
-              new Promise((resolve) => {
-                window.setTimeout(resolve, 450);
-              }),
-            ]);
-          } catch (error) {
-            return alarmAudioContext;
-          }
-        }
-
-        return alarmAudioContext;
+        return alarmAudioElements.get(config.src) || null;
       }
 
-      async function playConfiguredAlarm({ choice = siteSettings.alarmChoice, repeatCountOverride = null } = {}) {
-        const audioContext = await ensureAlarmAudioReady();
+      function resolveAlarmPlayerReady(playerInstance = alarmPlayer) {
+        while (alarmPlayerReadyResolvers.length) {
+          const resolve = alarmPlayerReadyResolvers.shift();
 
-        if (!audioContext) {
+          if (typeof resolve === "function") {
+            resolve(playerInstance || null);
+          }
+        }
+      }
+
+      function waitForAlarmPlayerReady() {
+        if (alarmPlayerReady && alarmPlayer) {
+          return Promise.resolve(alarmPlayer);
+        }
+
+        return new Promise((resolve) => {
+          alarmPlayerReadyResolvers.push(resolve);
+        });
+      }
+
+      function createAlarmPlayer() {
+        if (alarmPlayer || !window.YT || typeof window.YT.Player !== "function") {
           return;
         }
 
-        const alarmPatterns = {
-          "altai-bells": {
-            notes: [
-              { delay: 0, duration: 0.22, frequency: 523.25, type: "sine" },
-              { delay: 0.3, duration: 0.26, frequency: 659.25, type: "triangle" },
-              { delay: 0.7, duration: 0.3, frequency: 783.99, type: "sine" },
-            ],
-            peakGain: 0.11,
-            repeatCount: 3,
-            repeatGap: 0.42,
-          },
-          "sky-echo": {
-            notes: [
-              { delay: 0, duration: 0.2, frequency: 587.33, type: "triangle" },
-              { delay: 0.24, duration: 0.26, frequency: 698.46, type: "triangle" },
-              { delay: 0.58, duration: 0.34, frequency: 880, type: "sine" },
-            ],
-            peakGain: 0.115,
-            repeatCount: 3,
-            repeatGap: 0.4,
-          },
-          "gentle-chime": {
-            notes: [
-              { delay: 0, duration: 0.18, frequency: 659.25, type: "triangle" },
-              { delay: 0.26, duration: 0.22, frequency: 783.99, type: "triangle" },
-              { delay: 0.56, duration: 0.28, frequency: 987.77, type: "triangle" },
-            ],
-            peakGain: 0.1,
-            repeatCount: 3,
-            repeatGap: 0.38,
-          },
+        alarmPlayerCreationRequested = true;
+        const playerVars = {
+          autoplay: 0,
+          controls: 0,
+          playsinline: 1,
+          rel: 0,
         };
-        const selectedPattern = alarmPatterns[choice] || alarmPatterns["gentle-chime"];
-        const notes = selectedPattern.notes;
-        const volumeScale = clamp(siteSettings.alarmVolume / 100, 0, 1);
+
+        if (window.location.protocol.startsWith("http")) {
+          playerVars.origin = window.location.origin;
+        }
+
+        alarmPlayer = new window.YT.Player("alarm-player", {
+          width: "1",
+          height: "1",
+          videoId: standardAlarmVideoId,
+          playerVars,
+          events: {
+            onError: () => {
+              alarmPlayerReady = false;
+              resolveAlarmPlayerReady(null);
+            },
+            onReady: (event) => {
+              alarmPlayerReady = true;
+              resolveAlarmPlayerReady(event && event.target ? event.target : alarmPlayer);
+            },
+          },
+        });
+      }
+
+      function stopConfiguredAlarm({ incrementToken = true } = {}) {
+        if (incrementToken) {
+          activeAlarmPlaybackToken += 1;
+        }
+
+        if (activeAlarmAudio) {
+          activeAlarmAudio.pause();
+          activeAlarmAudio.currentTime = 0;
+          activeAlarmAudio = null;
+        }
+
+        if (alarmPlayer && alarmPlayerReady) {
+          if (typeof alarmPlayer.pauseVideo === "function") {
+            alarmPlayer.pauseVideo();
+          }
+
+          if (typeof alarmPlayer.seekTo === "function") {
+            alarmPlayer.seekTo(0, true);
+          }
+        }
+      }
+
+      async function ensureAlarmPlaybackReady(choice = siteSettings.alarmChoice) {
+        const config = getAlarmConfig(choice);
+
+        if (!config) {
+          return null;
+        }
+
+        if (config.kind === "audio") {
+          const audio = getAlarmAudioElement(choice);
+
+          if (audio) {
+            audio.load();
+          }
+
+          return audio;
+        }
+
+        alarmPlayerCreationRequested = true;
+
+        if (window.YT && typeof window.YT.Player === "function") {
+          createAlarmPlayer();
+        } else {
+          loadYouTubeApi();
+        }
+
+        return waitForAlarmPlayerReady();
+      }
+
+      async function waitForAlarmClipDuration(durationMs, playbackToken) {
+        await new Promise((resolve) => {
+          window.setTimeout(resolve, durationMs);
+        });
+
+        return playbackToken === activeAlarmPlaybackToken;
+      }
+
+      async function playAudioAlarmClip(choice, config, repeatCount, playbackToken) {
+        const audio = await ensureAlarmPlaybackReady(choice);
+
+        if (!audio || playbackToken !== activeAlarmPlaybackToken) {
+          return;
+        }
+
+        activeAlarmAudio = audio;
+        const volume = clamp(siteSettings.alarmVolume / 100, 0, 1);
+
+        for (let repeatIndex = 0; repeatIndex < repeatCount; repeatIndex += 1) {
+          if (playbackToken !== activeAlarmPlaybackToken) {
+            break;
+          }
+
+          audio.pause();
+          audio.currentTime = 0;
+          audio.volume = volume;
+
+          try {
+            await audio.play();
+          } catch (error) {
+            break;
+          }
+
+          const completed = await waitForAlarmClipDuration(config.clipDurationMs, playbackToken);
+
+          audio.pause();
+          audio.currentTime = 0;
+
+          if (!completed) {
+            break;
+          }
+        }
+
+        if (activeAlarmAudio === audio) {
+          activeAlarmAudio = null;
+        }
+      }
+
+      async function playStandardAlarmClip(config, repeatCount, playbackToken) {
+        const standardPlayer = await ensureAlarmPlaybackReady(defaultAlarmChoice);
+
+        if (!standardPlayer || playbackToken !== activeAlarmPlaybackToken) {
+          return;
+        }
+
+        if (typeof standardPlayer.unMute === "function") {
+          standardPlayer.unMute();
+        }
+
+        if (typeof standardPlayer.setVolume === "function") {
+          standardPlayer.setVolume(clamp(siteSettings.alarmVolume, 0, 100));
+        }
+
+        for (let repeatIndex = 0; repeatIndex < repeatCount; repeatIndex += 1) {
+          if (playbackToken !== activeAlarmPlaybackToken) {
+            break;
+          }
+
+          if (typeof standardPlayer.seekTo === "function") {
+            standardPlayer.seekTo(0, true);
+          }
+
+          if (typeof standardPlayer.playVideo === "function") {
+            standardPlayer.playVideo();
+          }
+
+          const completed = await waitForAlarmClipDuration(config.clipDurationMs, playbackToken);
+
+          if (typeof standardPlayer.pauseVideo === "function") {
+            standardPlayer.pauseVideo();
+          }
+
+          if (!completed) {
+            break;
+          }
+        }
+
+        if (typeof standardPlayer.seekTo === "function") {
+          standardPlayer.seekTo(0, true);
+        }
+      }
+
+      async function playConfiguredAlarm({ choice = siteSettings.alarmChoice, repeatCountOverride = null } = {}) {
+        stopConfiguredAlarm();
+
+        const normalizedChoice = getNormalizedAlarmChoice(choice) || defaultAlarmChoice;
+        const config = getAlarmConfig(normalizedChoice);
+
+        if (!config) {
+          return;
+        }
+
         const repeatCount =
           Number.isFinite(repeatCountOverride) && repeatCountOverride > 0
             ? Math.max(1, Math.round(repeatCountOverride))
-            : selectedPattern.repeatCount;
-        const repeatGap = selectedPattern.repeatGap;
-        const patternDuration = notes[notes.length - 1].delay + notes[notes.length - 1].duration;
-        const repeatDuration = patternDuration + repeatGap;
-        const startAt = audioContext.currentTime + 0.02;
+            : 3;
+        const playbackToken = activeAlarmPlaybackToken;
 
-        for (let repeatIndex = 0; repeatIndex < repeatCount; repeatIndex += 1) {
-          const repeatOffset = repeatIndex * repeatDuration;
-
-          notes.forEach((note) => {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            const noteStart = startAt + repeatOffset + note.delay;
-            const peakGain =
-              (repeatIndex === repeatCount - 1
-                ? selectedPattern.peakGain
-                : selectedPattern.peakGain * 0.82) * volumeScale;
-
-            oscillator.type = note.type || "triangle";
-            oscillator.frequency.setValueAtTime(note.frequency, noteStart);
-            gainNode.gain.setValueAtTime(0.0001, noteStart);
-            gainNode.gain.linearRampToValueAtTime(peakGain, noteStart + 0.03);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, noteStart + note.duration);
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.start(noteStart);
-            oscillator.stop(noteStart + note.duration + 0.04);
-          });
+        if (config.kind === "youtube") {
+          await playStandardAlarmClip(config, repeatCount, playbackToken);
+          return;
         }
 
-        const totalDuration = repeatDuration * repeatCount;
-
-        await new Promise((resolve) => {
-          window.setTimeout(resolve, totalDuration * 1000);
-        });
+        await playAudioAlarmClip(normalizedChoice, config, repeatCount, playbackToken);
       }
 
       function pauseMusicForTimer() {
@@ -4710,7 +4870,7 @@
           );
 
           if (completedConfig.breakMinutes > 0) {
-            setTimerPanelStatus(`Break started for ${completedConfig.breakMinutes} minutes.`);
+            setTimerPanelStatus("");
             startTimerPhase("break", completedConfig.breakMinutes * 60000);
             return;
           }
@@ -4753,16 +4913,14 @@
           return;
         }
 
-        void ensureAlarmAudioReady();
+        void ensureAlarmPlaybackReady(siteSettings.alarmChoice);
         clearTimerInterval();
         activeTimerConfig = {
           breakMinutes: selectedDurations.breakMinutes,
           focusCategory: timerFocusCategory,
           focusMinutes: selectedDurations.focusMinutes,
         };
-        setTimerPanelStatus(
-          `${selectedDurations.focusMinutes} minute focus timer started for ${timerFocusCategory}.`,
-        );
+        setTimerPanelStatus("");
         closeTimerPanel();
         startTimerPhase("focus", selectedDurations.focusMinutes * 60000);
       }
@@ -6669,6 +6827,18 @@
         };
       }
 
+      function getDeskToolsObstacleRect() {
+        const rect = deskTools.getBoundingClientRect();
+        const clearance = 12;
+
+        return {
+          left: Math.max(0, rect.left - clearance),
+          top: Math.max(0, rect.top - clearance),
+          right: Math.min(window.innerWidth, rect.right + clearance),
+          bottom: Math.min(window.innerHeight, rect.bottom + clearance),
+        };
+      }
+
       function getTodoDockMetrics() {
         const rootFontSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
         const horizontalInset = window.innerWidth <= 640 ? 7 * rootFontSize : 8.4 * rootFontSize;
@@ -6757,7 +6927,7 @@
 
       function resolveStickyNotePosition(x, y, width, height) {
         const margin = 12;
-        const obstacleRects = [getMusicObstacleRect(), getTodoListObstacleRect()];
+        const obstacleRects = [getMusicObstacleRect(), getTodoListObstacleRect(), getDeskToolsObstacleRect()];
         const clampedPosition = clampStickyNotePosition(x, y, width, height, margin);
 
         if (isStickyNotePositionClear(clampedPosition.x, clampedPosition.y, width, height, obstacleRects)) {
@@ -7020,6 +7190,16 @@
         updateStickyNoteZIndices();
       }
 
+      function getStickyNoteLauncherSpawnPosition(width, height) {
+        const deskToolsRect = deskTools.getBoundingClientRect();
+        const stickyRect = stickyNoteTab.getBoundingClientRect();
+        const gap = 16;
+        const desiredX = deskToolsRect.left - width - gap;
+        const desiredY = stickyRect.top + (stickyRect.height - height) / 2;
+
+        return resolveStickyNotePosition(desiredX, desiredY, width, height);
+      }
+
       function createStickyNoteAtPointer(clientX, clientY) {
         const noteSize = getFallbackNoteSize();
         const note = {
@@ -7035,8 +7215,9 @@
 
         nextStickyNoteNumber += 1;
         stickyNotes.push(note);
-        note.x = clientX - note.width / 2;
-        note.y = clientY - note.height / 2;
+        const launchPosition = getStickyNoteLauncherSpawnPosition(note.width, note.height);
+        note.x = launchPosition.x;
+        note.y = launchPosition.y;
         normalizeStickyNoteLayout(note);
         syncStickyNoteElement(note);
         persistStickyNotes();
@@ -7505,6 +7686,33 @@
         startCommand();
       }
 
+      function clearPlaybackRecoveryTimeouts() {
+        playbackRecoveryTimeoutIds.forEach((timeoutId) => {
+          window.clearTimeout(timeoutId);
+        });
+        playbackRecoveryTimeoutIds = [];
+      }
+
+      function queuePlaybackRecovery({ force = false, delays = [260, 900, 1800] } = {}) {
+        clearPlaybackRecoveryTimeouts();
+
+        if (!shouldPlayWhenReady || !player || !playerReady) {
+          return;
+        }
+
+        playbackRecoveryTimeoutIds = delays.map((delay) =>
+          window.setTimeout(() => {
+            if (!shouldPlayWhenReady || isPlaying || !player || !playerReady) {
+              return;
+            }
+
+            playerNeedsManualStart = false;
+            updatePlayerUnlockUi();
+            syncPlayerTrackSelection({ play: true, force });
+          }, delay),
+        );
+      }
+
       function syncPlayerTrackSelection({ play = false, force = false } = {}) {
         const track = getTrackAt(currentTrackIndex);
 
@@ -7718,6 +7926,7 @@
           playerNeedsManualStart = false;
           updatePlayerUnlockUi();
           syncPlayerTrackSelection({ play: true, force: true });
+          queuePlaybackRecovery({ force: true });
         } else {
           syncPlayerTrackSelection({ play: false, force: true });
         }
@@ -7739,16 +7948,24 @@
         if (event.data === window.YT.PlayerState.PLAYING) {
           isPlaying = true;
           playerNeedsManualStart = false;
+          clearPlaybackRecoveryTimeouts();
           updatePlayerUnlockUi();
           syncTrackInfo();
         } else if (event.data === window.YT.PlayerState.BUFFERING) {
           syncTrackInfo();
         } else if (event.data === window.YT.PlayerState.PAUSED) {
           isPlaying = false;
+          if (shouldPlayWhenReady) {
+            queuePlaybackRecovery();
+          }
         } else if (event.data === window.YT.PlayerState.CUED) {
           syncTrackInfo();
+          if (shouldPlayWhenReady) {
+            queuePlaybackRecovery({ force: true, delays: [180, 720, 1500] });
+          }
         } else if (event.data === window.YT.PlayerState.ENDED) {
           isPlaying = false;
+          clearPlaybackRecoveryTimeouts();
           playTrackAt(currentTrackIndex + 1);
         }
 
@@ -7759,18 +7976,19 @@
         isPlaying = false;
         shouldPlayWhenReady = true;
         playerNeedsManualStart = true;
+        clearPlaybackRecoveryTimeouts();
         updatePlayerDebug({
           event: "onAutoplayBlocked",
         });
         updatePlayerUnlockUi();
         updateToggleState();
-        syncPlayerTrackSelection({ play: false });
       }
 
       function onPlayerError(event) {
         isPlaying = false;
         shouldPlayWhenReady = false;
         playerNeedsManualStart = false;
+        clearPlaybackRecoveryTimeouts();
         updatePlayerDebug({
           errorCode: event && typeof event.data !== "undefined" ? event.data : null,
           event: "onPlayerError",
@@ -7807,6 +8025,7 @@
 
         if (isPlaying) {
           shouldPlayWhenReady = false;
+          clearPlaybackRecoveryTimeouts();
           updatePlayerDebug({
             command: "pauseVideo",
           });
@@ -7816,6 +8035,7 @@
 
         shouldPlayWhenReady = true;
         syncPlayerTrackSelection({ play: true });
+        queuePlaybackRecovery();
       }
 
       function attemptPlaybackFromUserGesture() {
@@ -7842,6 +8062,7 @@
         playerNeedsManualStart = false;
         updatePlayerUnlockUi();
         syncPlayerTrackSelection({ play: true, force: true });
+        queuePlaybackRecovery({ force: true, delays: [220, 780] });
       }
 
       function playTrackAt(index) {
@@ -7931,11 +8152,13 @@
       }
 
       window.onYouTubeIframeAPIReady = function onYouTubeIframeAPIReady() {
-        if (!playerCreationRequested && !shouldPlayWhenReady) {
-          return;
+        if (playerCreationRequested || shouldPlayWhenReady) {
+          createYouTubePlayer({ autoplay: shouldPlayWhenReady });
         }
 
-        createYouTubePlayer({ autoplay: shouldPlayWhenReady });
+        if (alarmPlayerCreationRequested) {
+          createAlarmPlayer();
+        }
       };
 
       accountTab.addEventListener("click", onAccountTabClick);
