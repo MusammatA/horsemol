@@ -1261,6 +1261,21 @@
         text-align: center;
       }
 
+      #timer-preset-options .timer-choice {
+        min-height: 4.8rem;
+      }
+
+      #timer-preset-options .timer-choice-title {
+        font-size: clamp(1.55rem, 3vw, 2.2rem);
+        letter-spacing: 0.06em;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+
+      #timer-preset-options .timer-choice[data-preset-key="custom"] .timer-choice-title {
+        font-size: clamp(1rem, 1.8vw, 1.22rem);
+      }
+
       #timer-focus-options .timer-choice-text {
         align-items: center;
       }
@@ -2725,32 +2740,19 @@
 
       #yt-player-shell {
         position: fixed;
-        width: 240px;
-        height: 135px;
-        right: 0;
-        bottom: 0;
+        left: -9999px;
+        top: -9999px;
+        width: 1px;
+        height: 1px;
         opacity: 0;
         pointer-events: none;
-        transform: scale(0.01);
-        transform-origin: bottom right;
         overflow: hidden;
         z-index: 0;
-        border-radius: 1rem;
-        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
-        transition:
-          opacity 180ms ease,
-          transform 180ms ease;
       }
 
       #yt-player-shell.is-unlock-visible {
-        top: calc(var(--page-gutter) + 9.55rem);
-        left: var(--page-gutter);
-        right: auto;
-        bottom: auto;
-        opacity: 1;
-        pointer-events: auto;
-        transform: none;
-        z-index: 7;
+        left: -9999px;
+        top: -9999px;
       }
 
       #player-unlock-hint {
