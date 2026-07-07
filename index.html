@@ -8086,18 +8086,28 @@
 
       function playTrackAt(index) {
         const playlistLength = getPlaylistLength();
+        const shouldKeepPlaying = isPlaying || shouldPlayWhenReady;
         currentTrackIndex = normalizePlaylistIndex(index, playlistLength);
         syncSelectedTrackUi();
         updatePlayerDebug({
           action: "playTrackAt",
+          play: shouldKeepPlaying,
         });
 
         if (!playerReady || !player) {
+          shouldPlayWhenReady = shouldKeepPlaying;
           return;
         }
 
-        shouldPlayWhenReady = isPlaying;
-        syncPlayerTrackSelection({ play: isPlaying, force: true });
+        shouldPlayWhenReady = shouldKeepPlaying;
+        syncPlayerTrackSelection({ play: shouldKeepPlaying, force: true });
+
+        if (shouldKeepPlaying) {
+          queuePlaybackRecovery({ force: true, delays: [220, 780, 1500] });
+          return;
+        }
+
+        clearPlaybackRecoveryTimeouts();
       }
 
       function seekBy(seconds) {
