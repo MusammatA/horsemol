@@ -9,6 +9,7 @@
         --page-gutter: clamp(0.75rem, 2vw, 1.25rem);
         --strip-height: clamp(3.1rem, 6vw, 3.8rem);
         --todo-tool-width: clamp(10rem, calc(100vw - (var(--page-gutter) * 2) - 8.4rem), 20.5rem);
+        --todo-tab-width: var(--todo-tool-width);
         --desk-tool-width: clamp(8.9rem, 16vw, 11.25rem);
         --modal-width: min(34rem, calc(100vw - 2rem));
         --timer-panel-width: min(56rem, calc(100vw - 2rem));
@@ -553,7 +554,7 @@
         top: var(--page-gutter);
         left: 50%;
         z-index: 9;
-        width: var(--todo-tool-width);
+        width: var(--todo-dock-width, var(--todo-tab-width));
         transform: translateX(-50%);
         display: flex;
         flex-direction: column;
@@ -871,11 +872,12 @@
       #todo-list-panel {
         position: absolute;
         top: calc(100% + 0.58rem);
-        left: 0;
+        left: 50%;
         right: auto;
-        transform: none;
-        width: 100%;
+        transform: translateX(-50%);
+        width: var(--todo-panel-width, 100%);
         max-height: calc(100vh - (var(--page-gutter) * 2) - 3.8rem);
+        max-width: calc(100vw - (var(--page-gutter) * 2));
         padding: 0.5rem;
         border: 1px solid var(--water-glass-border);
         border-radius: 1rem;
@@ -2965,17 +2967,20 @@
         :root {
           --page-gutter: clamp(0.5rem, 2vw, 0.78rem);
           --strip-height: clamp(2.8rem, 9vw, 3.15rem);
-          --desk-tool-width: clamp(4.9rem, 22vw, 6.25rem);
-          --todo-tool-width: min(
-            17rem,
-            calc(100vw - (var(--page-gutter) * 3) - var(--desk-tool-width))
-          );
+          --desk-tool-width: clamp(4.25rem, 18vw, 5.55rem);
+          --todo-tab-width: clamp(5.1rem, 16vw, 6.7rem);
+          --todo-tool-width: min(14.75rem, calc(100vw - (var(--page-gutter) * 2)));
         }
 
         #music-stack {
-          width: min(
-            30rem,
-            calc(100vw - (var(--page-gutter) * 3) - var(--desk-tool-width))
+          width: max(
+            12.6rem,
+            min(
+              27rem,
+              calc(
+                100vw - (var(--page-gutter) * 4) - var(--desk-tool-width) - var(--todo-tab-width)
+              )
+            )
           );
           gap: 0.38rem;
         }
@@ -3001,20 +3006,22 @@
 
         #player-unlock-hint {
           top: calc(var(--page-gutter) + 6.6rem);
-          max-width: calc(100vw - (var(--page-gutter) * 3) - var(--desk-tool-width));
-          font-size: 0.62rem;
-        }
-
-        #todo-dock {
-          left: var(--page-gutter);
-          width: var(--todo-tool-width);
-          transform: none;
-          gap: 0.44rem;
+          max-width: max(
+            9rem,
+            calc(
+              100vw - (var(--page-gutter) * 4) - var(--desk-tool-width) - var(--todo-tab-width)
+            )
+          );
+          font-size: 0.58rem;
         }
 
         #desk-tools {
           width: var(--desk-tool-width);
           gap: 0.44rem;
+        }
+
+        #todo-dock {
+          gap: 0.38rem;
         }
 
         #account-tab,
@@ -3093,16 +3100,16 @@
         }
 
         .transport-chip {
-          min-width: 2.08rem;
-          height: 1.84rem;
-          padding: 0 0.42rem;
-          font-size: 0.53rem;
-          letter-spacing: 0.06em;
+          min-width: 1.9rem;
+          height: 1.72rem;
+          padding: 0 0.3rem;
+          font-size: 0.47rem;
+          letter-spacing: 0.05em;
         }
 
         #player-toggle {
-          width: 1.96rem;
-          height: 1.96rem;
+          width: 1.82rem;
+          height: 1.82rem;
         }
 
         .player-icon {
@@ -3154,11 +3161,9 @@
       @media (max-width: 640px) {
         :root {
           --page-gutter: clamp(0.45rem, 2vw, 0.7rem);
-          --todo-tool-width: min(
-            14.4rem,
-            calc(100vw - (var(--page-gutter) * 3) - var(--desk-tool-width))
-          );
-          --desk-tool-width: clamp(4.7rem, 21vw, 5.7rem);
+          --desk-tool-width: clamp(3.95rem, 17vw, 4.95rem);
+          --todo-tab-width: clamp(4.6rem, 16vw, 5.8rem);
+          --todo-tool-width: min(13.2rem, calc(100vw - (var(--page-gutter) * 2)));
           --modal-width: min(100vw - 1rem, 28rem);
           --timer-panel-width: min(100vw - 1rem, 34rem);
           --account-panel-width: min(100vw - 1rem, 36rem);
@@ -3193,9 +3198,11 @@
         }
 
         #music-stack {
-          width: min(
-            100%,
-            calc(100vw - (var(--page-gutter) * 3) - var(--desk-tool-width))
+          width: max(
+            10.8rem,
+            calc(
+              100vw - (var(--page-gutter) * 4) - var(--desk-tool-width) - var(--todo-tab-width)
+            )
           );
         }
 
@@ -3214,7 +3221,12 @@
         }
 
         #desk-tools .sticky-tab-label {
-          font-size: 0.55rem;
+          font-size: 0.5rem;
+          line-height: 1.02;
+        }
+
+        #todo-tab .sticky-tab-label {
+          font-size: 0.58rem;
         }
 
         #timer-custom-fields {
@@ -7336,20 +7348,44 @@
         };
       }
 
+      function isCompactTopLayout() {
+        return window.matchMedia("(max-width: 820px), (pointer: coarse) and (max-width: 900px)").matches;
+      }
+
       function getTodoDockMetrics() {
         const rootFontSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
-        const horizontalInset = window.innerWidth <= 640 ? 7 * rootFontSize : 8.4 * rootFontSize;
-        const minimumWidth = (window.innerWidth <= 640 ? 9 : 10) * rootFontSize;
-        const maximumWidth = (window.innerWidth <= 640 ? 15.75 : 20.5) * rootFontSize;
+        const compactTopLayout = isCompactTopLayout();
+        const horizontalInset = compactTopLayout
+          ? 9.4 * rootFontSize
+          : window.innerWidth <= 640
+            ? 7 * rootFontSize
+            : 8.4 * rootFontSize;
+        const minimumWidth = compactTopLayout
+          ? (window.innerWidth <= 640 ? 10.4 : 11.4) * rootFontSize
+          : (window.innerWidth <= 640 ? 9 : 10) * rootFontSize;
+        const maximumWidth = compactTopLayout
+          ? (window.innerWidth <= 640 ? 13.2 : 14.75) * rootFontSize
+          : (window.innerWidth <= 640 ? 15.75 : 20.5) * rootFontSize;
+        const minimumDockWidth = compactTopLayout
+          ? (window.innerWidth <= 640 ? 4.6 : 5.1) * rootFontSize
+          : minimumWidth;
+        const maximumDockWidth = compactTopLayout
+          ? (window.innerWidth <= 640 ? 5.8 : 6.7) * rootFontSize
+          : maximumWidth;
         const maximumHeightInset = (window.innerWidth <= 640 ? 3.5 : 3.8) * rootFontSize;
         const stickyRect = stickyNoteTab.getBoundingClientRect();
         const pageGutter = Math.max(12, window.innerWidth - stickyRect.right);
         const preferredWidth = window.innerWidth - pageGutter * 2 - horizontalInset;
         const panelWidth = clamp(preferredWidth, minimumWidth, maximumWidth);
+        const dockWidth = compactTopLayout
+          ? clamp(panelWidth * 0.42, minimumDockWidth, maximumDockWidth)
+          : panelWidth;
         const panelMaxHeight = Math.max(0, window.innerHeight - pageGutter * 2 - maximumHeightInset);
         const topGap = 0.58 * rootFontSize;
 
         return {
+          compactTopLayout,
+          dockWidth,
           pageGutter,
           panelMaxHeight,
           panelWidth,
@@ -7360,9 +7396,9 @@
       function updateTodoDockPosition() {
         const musicRect = musicStack.getBoundingClientRect();
         const stickyRect = stickyNoteTab.getBoundingClientRect();
-        const { pageGutter, panelWidth } = getTodoDockMetrics();
-        const minimumCenter = pageGutter + panelWidth / 2;
-        const maximumCenter = window.innerWidth - pageGutter - panelWidth / 2;
+        const { dockWidth, pageGutter, panelWidth } = getTodoDockMetrics();
+        const minimumCenter = pageGutter + dockWidth / 2;
+        const maximumCenter = window.innerWidth - pageGutter - dockWidth / 2;
         const desiredCenter = (musicRect.right + stickyRect.left) / 2;
         const fallbackCenter = window.innerWidth / 2;
         const centerX = clamp(
@@ -7371,6 +7407,8 @@
           maximumCenter,
         );
 
+        todoDock.style.setProperty("--todo-dock-width", `${dockWidth}px`);
+        todoDock.style.setProperty("--todo-panel-width", `${panelWidth}px`);
         todoDock.style.left = `${centerX}px`;
       }
 
