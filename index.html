@@ -13,6 +13,7 @@
         --modal-width: min(34rem, calc(100vw - 2rem));
         --timer-panel-width: min(56rem, calc(100vw - 2rem));
         --account-panel-width: min(64rem, calc(100vw - 2rem));
+        --altai-panel-width: min(62rem, calc(100vw - 2rem));
         --settings-panel-width: min(58rem, calc(100vw - 2rem));
         --journal-panel-width: min(74rem, calc(100vw - 2rem));
         --ornament-frame-inset: 0.48rem;
@@ -562,6 +563,7 @@
       }
 
       #account-tab,
+      #altai-tab,
       #settings-tab,
       #timer-tab,
       #journal-tab,
@@ -602,6 +604,11 @@
         touch-action: manipulation;
       }
 
+      #altai-tab {
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
       #settings-tab {
         cursor: pointer;
         touch-action: manipulation;
@@ -627,6 +634,7 @@
       }
 
       #account-tab:focus-visible,
+      #altai-tab:focus-visible,
       #settings-tab:focus-visible,
       #timer-tab:focus-visible,
       #journal-tab:focus-visible,
@@ -683,6 +691,21 @@
       .timer-tab-glyph::after {
         height: 0.46rem;
         transform: translate(-50%, -100%) rotate(58deg);
+      }
+
+      .altai-tab-glyph {
+        min-width: 1.6rem;
+        padding: 0.18rem 0.34rem;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 999px;
+        background: rgba(var(--altai-blue-rgb), 0.18);
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 0.84rem;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        letter-spacing: 0.04em;
+        flex: 0 0 auto;
       }
 
       .settings-tab-glyph {
@@ -993,6 +1016,7 @@
 
       #timer-panel-backdrop,
       #account-panel-backdrop,
+      #altai-panel-backdrop,
       #settings-panel-backdrop,
       #journal-panel-backdrop {
         position: fixed;
@@ -1009,6 +1033,7 @@
 
       #timer-panel-backdrop.is-open,
       #account-panel-backdrop.is-open,
+      #altai-panel-backdrop.is-open,
       #settings-panel-backdrop.is-open,
       #journal-panel-backdrop.is-open {
         display: flex;
@@ -1016,6 +1041,7 @@
 
       #timer-panel,
       #account-panel,
+      #altai-panel,
       #settings-panel,
       #journal-panel {
         --panel-radius: 1.35rem;
@@ -1043,6 +1069,10 @@
         width: var(--account-panel-width);
       }
 
+      #altai-panel {
+        width: var(--altai-panel-width);
+      }
+
       #settings-panel {
         width: var(--settings-panel-width);
       }
@@ -1060,6 +1090,7 @@
 
       #timer-panel.is-open,
       #account-panel.is-open,
+      #altai-panel.is-open,
       #settings-panel.is-open,
       #journal-panel.is-open {
         display: flex;
@@ -1067,6 +1098,7 @@
 
       #timer-panel::before,
       #account-panel::before,
+      #altai-panel::before,
       #settings-panel::before,
       #auth-card::before {
         content: "";
@@ -1080,6 +1112,7 @@
 
       #timer-panel::after,
       #account-panel::after,
+      #altai-panel::after,
       #settings-panel::after,
       #auth-card::after {
         content: "";
@@ -1093,6 +1126,7 @@
 
       #timer-panel > *,
       #account-panel > *,
+      #altai-panel > *,
       #settings-panel > *,
       #journal-panel > * {
         position: relative;
@@ -1147,6 +1181,7 @@
       }
 
       #timer-panel-title,
+      #altai-panel-title,
       #settings-panel-title,
       .account-section-title {
         font-size: 0.82rem;
@@ -1170,6 +1205,20 @@
         display: flex;
         flex-direction: column;
         gap: 0.16rem;
+      }
+
+      #altai-panel-heading {
+        padding: 0.55rem 2.5rem 0.2rem 1.48rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.32rem;
+      }
+
+      #altai-panel-copy {
+        max-width: 38rem;
+        font-size: 0.82rem;
+        line-height: 1.55;
+        color: rgba(255, 255, 255, 0.76);
       }
 
       #timer-panel-name {
@@ -1213,12 +1262,96 @@
         padding: 1.08rem 0.3rem 0 1.28rem;
       }
 
+      #altai-panel-layout {
+        display: grid;
+        gap: 1rem;
+        padding: 0 0.3rem 0 1.28rem;
+      }
+
       #timer-panel-layout > .timer-panel-section {
         height: 100%;
       }
 
       #settings-panel-layout > .settings-panel-section {
         height: 100%;
+      }
+
+      #altai-panel-link-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.26rem;
+        padding: 1rem;
+        border: 1px solid rgba(239, 248, 255, 0.14);
+        border-radius: 1.05rem;
+        background: var(--water-section-bg);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      }
+
+      #altai-panel-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+      }
+
+      .altai-card {
+        display: grid;
+        grid-template-columns: 5.35rem minmax(0, 1fr);
+        align-items: start;
+        gap: 0.82rem;
+        padding: 1rem;
+        border: 1px solid rgba(239, 248, 255, 0.14);
+        border-radius: 1.05rem;
+        background: var(--water-section-bg);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      }
+
+      .altai-card-thumb {
+        width: 5.35rem;
+        height: 5.35rem;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 1rem;
+        object-fit: cover;
+        object-position: var(--warrior-object-position, center 24%);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0.45rem 1rem rgba(0, 0, 0, 0.16);
+      }
+
+      .altai-card-body {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.36rem;
+      }
+
+      .altai-card-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        line-height: 1.25;
+        color: rgba(255, 255, 255, 0.96);
+      }
+
+      .altai-card-copy {
+        font-size: 0.78rem;
+        line-height: 1.58;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      #altai-panel-link-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      #altai-panel-link-copy {
+        font-size: 0.78rem;
+        line-height: 1.52;
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      #altai-panel-link {
+        align-self: flex-start;
       }
 
       #timer-preset-options,
@@ -2861,6 +2994,7 @@
           --modal-width: min(100vw - 1rem, 28rem);
           --timer-panel-width: min(100vw - 1rem, 34rem);
           --account-panel-width: min(100vw - 1rem, 36rem);
+          --altai-panel-width: min(100vw - 1rem, 38rem);
           --settings-panel-width: min(100vw - 1rem, 36rem);
           --journal-panel-width: calc(100vw - 1rem);
           --ornament-frame-inset: 0.34rem;
@@ -2890,6 +3024,7 @@
         }
 
         #settings-tab,
+        #altai-tab,
         #timer-tab,
         #journal-tab,
         #todo-tab,
@@ -2920,6 +3055,7 @@
 
         #timer-panel,
         #account-panel,
+        #altai-panel,
         #settings-panel,
         #journal-panel {
           padding: 1.35rem 1.04rem 1.9rem;
@@ -2927,6 +3063,7 @@
 
         #timer-panel-layout,
         #account-panel-layout,
+        #altai-panel-layout,
         #settings-panel-layout {
           padding: 0.98rem 0.08rem 0 0.92rem;
         }
@@ -2936,6 +3073,10 @@
         }
 
         #settings-alarm-options {
+          grid-template-columns: 1fr;
+        }
+
+        #altai-panel-grid {
           grid-template-columns: 1fr;
         }
 
@@ -3079,6 +3220,10 @@
           <span id="account-tab-avatar" class="account-tab-avatar" aria-hidden="true">
             <span id="account-tab-avatar-fallback" class="account-tab-avatar-fallback">A</span>
           </span>
+        </button>
+        <button id="altai-tab" type="button" aria-label="Open Altai information" aria-pressed="false">
+          <span class="sticky-tab-label">Altai?</span>
+          <span class="altai-tab-glyph" aria-hidden="true">?</span>
         </button>
         <button id="settings-tab" type="button" aria-label="Open settings" aria-pressed="false">
           <span class="sticky-tab-label">Settings</span>
@@ -3231,6 +3376,35 @@
                 <div id="account-focus-breakdown" aria-live="polite"></div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div id="altai-panel-backdrop" aria-hidden="true">
+        <div id="altai-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="altai-panel-title">
+          <button id="altai-panel-close" class="panel-close" type="button" aria-label="Close Altai information">×</button>
+          <div id="altai-panel-heading">
+            <div id="altai-panel-title">Altai?</div>
+            <div id="altai-panel-copy">
+              Warriors, heroes, and remembered figures connected to the Altai and wider Turkic steppe tradition.
+            </div>
+          </div>
+          <div id="altai-panel-layout">
+            <div id="altai-panel-link-row">
+              <div id="altai-panel-link-label">Read More</div>
+              <a
+                id="altai-panel-link"
+                class="settings-link-anchor"
+                href="https://factsanddetails.com/russia/Minorities/sub9_3e/entry-5124.html"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Facts and Details: Altai People, History, and Culture
+              </a>
+              <div id="altai-panel-link-copy">
+                Open the article for more background on Altai people, traditions, and history.
+              </div>
+            </div>
+            <div id="altai-panel-grid" aria-live="polite"></div>
           </div>
         </div>
       </div>
@@ -3782,6 +3956,11 @@
       const accountTab = document.getElementById("account-tab");
       const accountTabAvatar = document.getElementById("account-tab-avatar");
       const accountTabAvatarFallback = document.getElementById("account-tab-avatar-fallback");
+      const altaiTab = document.getElementById("altai-tab");
+      const altaiPanelBackdrop = document.getElementById("altai-panel-backdrop");
+      const altaiPanel = document.getElementById("altai-panel");
+      const altaiPanelCloseButton = document.getElementById("altai-panel-close");
+      const altaiPanelGrid = document.getElementById("altai-panel-grid");
       const settingsTab = document.getElementById("settings-tab");
       const settingsPanelBackdrop = document.getElementById("settings-panel-backdrop");
       const settingsPanel = document.getElementById("settings-panel");
@@ -3916,6 +4095,43 @@
           imagePath: "The Ukok Princess.jpg",
           name: "The Ukok Princess",
           objectPosition: "center 20%",
+        },
+      ];
+      const altaiInfoEntries = [
+        {
+          warriorId: "altai-buchai",
+          description:
+            "A legendary Altai warrior remembered for his strength, courage, and defense of his homeland.",
+        },
+        {
+          warriorId: "alpamysh",
+          description:
+            "The heroic champion of Turkic epic tradition, celebrated for loyalty, bravery, and protecting his people.",
+        },
+        {
+          warriorId: "bogenbay-batyr",
+          description:
+            "One of Kazakhstan's greatest military leaders, who fought to unite and defend the Kazakh steppe.",
+        },
+        {
+          warriorId: "kogudei-mergen",
+          description:
+            "A legendary hunter and archer from the Altai epics, admired for his wisdom, precision, and heroic deeds.",
+        },
+        {
+          warriorId: "ospan-batyr",
+          description:
+            "A 20th-century Kazakh leader who resisted foreign rule and fought to preserve the freedom of his people.",
+        },
+        {
+          warriorId: "raiymbek-batyr",
+          description:
+            "A renowned Kazakh commander who defended his homeland against invasion and became a symbol of patriotism.",
+        },
+        {
+          warriorId: "ukok-princess",
+          description:
+            "A remarkably preserved Pazyryk noblewoman discovered in the Altai Mountains, offering a glimpse into the region's ancient culture and traditions.",
         },
       ];
       const timerPresetMap = {
@@ -4384,6 +4600,49 @@
         );
       }
 
+      function renderAltaiInfoCards() {
+        const fragment = document.createDocumentFragment();
+
+        altaiInfoEntries.forEach((entry) => {
+          const warrior = getWarriorProfileById(entry.warriorId);
+
+          if (!warrior) {
+            return;
+          }
+
+          const card = document.createElement("article");
+          const thumb = document.createElement("img");
+          const body = document.createElement("div");
+          const title = document.createElement("div");
+          const copy = document.createElement("div");
+
+          card.className = "altai-card";
+
+          thumb.className = "altai-card-thumb";
+          thumb.src = encodeURI(warrior.imagePath);
+          thumb.alt = warrior.name;
+          thumb.loading = "lazy";
+          thumb.style.setProperty(
+            "--warrior-object-position",
+            warrior.objectPosition || "center 24%",
+          );
+
+          body.className = "altai-card-body";
+
+          title.className = "altai-card-title";
+          title.textContent = warrior.name;
+
+          copy.className = "altai-card-copy";
+          copy.textContent = entry.description;
+
+          body.append(title, copy);
+          card.append(thumb, body);
+          fragment.append(card);
+        });
+
+        altaiPanelGrid.replaceChildren(fragment);
+      }
+
       function formatDurationCompact(totalMs) {
         const roundedMinutes = Math.round(Math.max(0, Number(totalMs) || 0) / 60000);
 
@@ -4460,6 +4719,7 @@
         const shouldWave =
           isTimerPanelOpen() ||
           isAccountPanelOpen() ||
+          isAltaiPanelOpen() ||
           isSettingsPanelOpen() ||
           isSettingsLegalDialogOpen() ||
           isJournalPanelOpen() ||
@@ -4471,6 +4731,10 @@
 
       function isTimerPanelOpen() {
         return timerPanel.classList.contains("is-open");
+      }
+
+      function isAltaiPanelOpen() {
+        return altaiPanel.classList.contains("is-open");
       }
 
       function setTimerPanelOpen(isOpen) {
@@ -4486,6 +4750,21 @@
 
       function closeTimerPanel() {
         setTimerPanelOpen(false);
+      }
+
+      function setAltaiPanelOpen(isOpen) {
+        const nextOpenState = Boolean(isOpen);
+
+        altaiPanelBackdrop.classList.toggle("is-open", nextOpenState);
+        altaiPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
+        altaiPanel.classList.toggle("is-open", nextOpenState);
+        altaiPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
+        altaiTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+        syncBackgroundWaveState();
+      }
+
+      function closeAltaiPanel() {
+        setAltaiPanelOpen(false);
       }
 
       function syncTimerPresetUi() {
@@ -6449,6 +6728,20 @@
         });
       }
 
+      function onAltaiTabClick() {
+        attemptPlaybackFromUserGesture();
+
+        if (isAltaiPanelOpen()) {
+          closeAltaiPanel();
+          return;
+        }
+
+        setAltaiPanelOpen(true);
+        window.requestAnimationFrame(() => {
+          altaiPanelCloseButton.focus({ preventScroll: true });
+        });
+      }
+
       function onTimerPresetClick(event) {
         const presetKey = event.currentTarget.dataset.presetKey;
 
@@ -6528,6 +6821,11 @@
           return;
         }
 
+        if (isAltaiPanelOpen() && event.target === altaiPanelBackdrop) {
+          closeAltaiPanel();
+          return;
+        }
+
         if (isSettingsPanelOpen() && event.target === settingsPanelBackdrop) {
           closeSettingsPanel();
           return;
@@ -6550,6 +6848,8 @@
           (
             timerPanelBackdrop.contains(target) ||
             timerPanel.contains(target) ||
+            altaiPanelBackdrop.contains(target) ||
+            altaiPanel.contains(target) ||
             settingsPanelBackdrop.contains(target) ||
             settingsPanel.contains(target) ||
             journalPanelBackdrop.contains(target) ||
@@ -6558,6 +6858,7 @@
             accountPanel.contains(target) ||
             authGate.contains(target) ||
             accountTab.contains(target) ||
+            altaiTab.contains(target) ||
             settingsTab.contains(target) ||
             journalTab.contains(target)
           )
@@ -8191,10 +8492,12 @@
       };
 
       accountTab.addEventListener("click", onAccountTabClick);
+      altaiTab.addEventListener("click", onAltaiTabClick);
       settingsTab.addEventListener("click", onSettingsTabClick);
       journalTab.addEventListener("click", onJournalTabClick);
       timerTab.addEventListener("click", onTimerTabClick);
       timerPanelCloseButton.addEventListener("click", closeTimerPanel);
+      altaiPanelCloseButton.addEventListener("click", closeAltaiPanel);
       settingsPanelCloseButton.addEventListener("click", closeSettingsPanel);
       journalPanelCloseButton.addEventListener("click", closeJournalPanel);
       journalTurnLeftButton.addEventListener("click", onJournalTurnLeftClick);
@@ -8327,6 +8630,11 @@
           return;
         }
 
+        if (event.key === "Escape" && isAltaiPanelOpen()) {
+          closeAltaiPanel();
+          return;
+        }
+
         if (event.key === "Escape" && isSettingsPanelOpen()) {
           closeSettingsPanel();
           return;
@@ -8362,6 +8670,7 @@
       syncBackgroundWaveState();
       syncTimerPresetUi();
       syncTimerFocusUi();
+      renderAltaiInfoCards();
       renderAccountFocusStats();
       updateTimerDisplay(0);
       void initializeAccountAuth();
