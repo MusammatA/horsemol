@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedInOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isValidFocusStats(stats) {
+      return stats is map
+        && stats.categories is map
+        && stats.totalMs is number
+        && stats.totalMs >= 0
+        && stats.categories.Study is number
+        && stats.categories.Study >= 0
+        && stats.categories.Work is number
+        && stats.categories.Work >= 0
+        && stats.categories.Creative is number
+        && stats.categories.Creative >= 0
+        && stats.categories["Climb the Altai Mountains"] is number
+        && stats.categories["Climb the Altai Mountains"] >= 0;
+    }
+
+    function isValidProfileDocument(data) {
+      return data.email is string
+        && data.email.size() <= 320
+        && data.googleDisplayName is string
+        && data.googleDisplayName.size() <= 200
+        && data.googlePhotoURL is string
+        && data.googlePhotoURL.size() <= 2048
+        && data.photoURL is string
+        && data.photoURL.size() <= 700000
+        && data.username is string
+        && data.username.size() <= 40
+        && data.warriorName is string
+        && data.warriorName.size() <= 80
+        && data.updatedAt is timestamp
+        && isValidFocusStats(data.focusStats);
+    }
+
+    match /profiles/{userId} {
+      allow read: if isSignedInOwner(userId);
+      allow create, update: if isSignedInOwner(userId) && isValidProfileDocument(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

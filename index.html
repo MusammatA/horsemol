@@ -3,6 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="object-src 'none'; base-uri 'self'; upgrade-insecure-requests;"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      http-equiv="Permissions-Policy"
+      content="camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    />
     <title>horsemol</title>
     <style>
       :root {
@@ -3876,7 +3885,7 @@
                 class="settings-link-anchor"
                 href="https://factsanddetails.com/russia/Minorities/sub9_3e/entry-5124.html"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 Facts and Details: Altai People, History, and Culture
               </a>
@@ -3978,7 +3987,7 @@
                     class="settings-link-anchor"
                     href="https://www.instagram.com/e_i_t_y_y_y/"
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >Instagram</a>
                 </div>
               </div>
@@ -4660,26 +4669,57 @@
       const legalContentMap = {
         privacy: {
           title: "Privacy Policy",
-          html: `
-            <p><strong>What horsemol saves:</strong> your journal pages, sticky notes, to-do items, and site settings are saved in your browser on the device you use.</p>
-            <p><strong>When you sign in with Google:</strong> horsemol stores your profile name, profile photo choice, warrior choice, and focus-time summary with Firebase so your saved account can follow you across devices.</p>
-            <p><strong>Third-party services:</strong> Google sign-in is handled through Firebase Authentication, and Instagram or email links open the services you choose to visit.</p>
-            <p><strong>Your control:</strong> you can sign out any time, reset your profile picture, or clear your browser storage if you want local notebook data removed from that device.</p>
-            <p><strong>No selling of data:</strong> horsemol is not built to sell your information.</p>
-          `,
+          blocks: [
+            {
+              type: "paragraph",
+              lead: "What horsemol saves:",
+              text: "your journal pages, sticky notes, to-do items, and site settings are saved in your browser on the device you use.",
+            },
+            {
+              type: "paragraph",
+              lead: "When you sign in with Google:",
+              text: "horsemol stores your profile name, profile photo choice, warrior choice, and focus-time summary with Firebase so your saved account can follow you across devices.",
+            },
+            {
+              type: "paragraph",
+              lead: "Third-party services:",
+              text: "Google sign-in is handled through Firebase Authentication, and Instagram or email links open the services you choose to visit.",
+            },
+            {
+              type: "paragraph",
+              lead: "Your control:",
+              text: "you can sign out any time, reset your profile picture, or clear your browser storage if you want local notebook data removed from that device.",
+            },
+            {
+              type: "paragraph",
+              lead: "No selling of data:",
+              text: "horsemol is not built to sell your information.",
+            },
+          ],
         },
         terms: {
           title: "Terms & Conditions",
-          html: `
-            <p><strong>Use of horsemol:</strong> you may use the site for personal writing, studying, planning, and focus tracking.</p>
-            <ul>
-              <li>You are responsible for the text, notes, and images you choose to add.</li>
-              <li>Please do not use horsemol for harmful, illegal, or abusive content.</li>
-              <li>External links such as Google sign-in, email, YouTube, and Instagram are governed by their own services.</li>
-              <li>horsemol is offered as-is, so features may change, improve, or occasionally be unavailable.</li>
-            </ul>
-            <p><strong>Saved account data:</strong> if you sign in, you give permission for horsemol to save your profile and focus summary to its connected Firebase project.</p>
-          `,
+          blocks: [
+            {
+              type: "paragraph",
+              lead: "Use of horsemol:",
+              text: "you may use the site for personal writing, studying, planning, and focus tracking.",
+            },
+            {
+              type: "list",
+              items: [
+                "You are responsible for the text, notes, and images you choose to add.",
+                "Please do not use horsemol for harmful, illegal, or abusive content.",
+                "External links such as Google sign-in, email, YouTube, and Instagram are governed by their own services.",
+                "horsemol is offered as-is, so features may change, improve, or occasionally be unavailable.",
+              ],
+            },
+            {
+              type: "paragraph",
+              lead: "Saved account data:",
+              text: "if you sign in, you give permission for horsemol to save your profile and focus summary to its connected Firebase project.",
+            },
+          ],
         },
       };
       const firebaseProfileCollection = "profiles";
@@ -4889,6 +4929,46 @@
         settingsLegalBackdrop.setAttribute("aria-hidden", "true");
       }
 
+      function renderSettingsLegalContent(legalContent) {
+        const fragment = document.createDocumentFragment();
+        const blocks = Array.isArray(legalContent && legalContent.blocks) ? legalContent.blocks : [];
+
+        blocks.forEach((block) => {
+          if (!block || typeof block !== "object") {
+            return;
+          }
+
+          if (block.type === "list" && Array.isArray(block.items)) {
+            const list = document.createElement("ul");
+
+            block.items.forEach((item) => {
+              const listItem = document.createElement("li");
+              listItem.textContent = String(item || "");
+              list.append(listItem);
+            });
+
+            fragment.append(list);
+            return;
+          }
+
+          if (block.type === "paragraph") {
+            const paragraph = document.createElement("p");
+
+            if (block.lead) {
+              const strong = document.createElement("strong");
+              strong.textContent = String(block.lead);
+              paragraph.append(strong, document.createTextNode(` ${String(block.text || "")}`));
+            } else {
+              paragraph.textContent = String(block.text || "");
+            }
+
+            fragment.append(paragraph);
+          }
+        });
+
+        settingsLegalBody.replaceChildren(fragment);
+      }
+
       function openSettingsLegalDialog(type) {
         const legalContent = legalContentMap[type];
 
@@ -4897,7 +4977,7 @@
         }
 
         settingsLegalTitle.textContent = legalContent.title;
-        settingsLegalBody.innerHTML = legalContent.html;
+        renderSettingsLegalContent(legalContent);
         settingsLegalBackdrop.classList.add("is-open");
         settingsLegalBackdrop.setAttribute("aria-hidden", "false");
 
@@ -5022,6 +5102,63 @@
           username: "",
           warriorName: "",
         };
+      }
+
+      function sanitizeStoredProfilePhotoUrl(photoURL) {
+        if (typeof photoURL !== "string") {
+          return "";
+        }
+
+        const trimmedPhotoUrl = photoURL.trim();
+
+        if (!trimmedPhotoUrl) {
+          return "";
+        }
+
+        const matchingWarrior = getWarriorProfileByPhotoUrl(trimmedPhotoUrl);
+
+        if (matchingWarrior) {
+          return matchingWarrior.imagePath;
+        }
+
+        if (
+          /^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(trimmedPhotoUrl) &&
+          trimmedPhotoUrl.length <= 700000
+        ) {
+          return trimmedPhotoUrl;
+        }
+
+        return "";
+      }
+
+      function sanitizeGoogleProfilePhotoUrl(photoURL) {
+        if (typeof photoURL !== "string") {
+          return "";
+        }
+
+        const trimmedPhotoUrl = photoURL.trim();
+
+        if (!trimmedPhotoUrl) {
+          return "";
+        }
+
+        try {
+          const parsedUrl = new URL(trimmedPhotoUrl);
+          const hostname = parsedUrl.hostname.toLowerCase();
+          const isAllowedGoogleHost =
+            hostname.endsWith(".googleusercontent.com") ||
+            hostname === "googleusercontent.com" ||
+            hostname.endsWith(".ggpht.com") ||
+            hostname === "ggpht.com";
+
+          if (parsedUrl.protocol === "https:" && isAllowedGoogleHost) {
+            return parsedUrl.toString();
+          }
+        } catch (error) {
+          return "";
+        }
+
+        return "";
       }
 
       function getNormalizedPhotoPath(photoURL) {
@@ -6427,14 +6564,13 @@
       }
 
       function getPreferredAccountPhoto(user = accountUser, profile = accountProfile) {
-        const customPhotoUrl =
-          profile && typeof profile.photoURL === "string" ? profile.photoURL.trim() : "";
+        const customPhotoUrl = sanitizeStoredProfilePhotoUrl(profile && profile.photoURL);
 
         if (customPhotoUrl) {
           return customPhotoUrl;
         }
 
-        return user && typeof user.photoURL === "string" ? user.photoURL.trim() : "";
+        return sanitizeGoogleProfilePhotoUrl(user && user.photoURL);
       }
 
       function getAvatarInitials(label) {
@@ -6630,9 +6766,7 @@
       }
 
       function hasCustomAccountPhoto(profile = accountProfile) {
-        return Boolean(
-          profile && typeof profile.photoURL === "string" && profile.photoURL.trim(),
-        );
+        return Boolean(sanitizeStoredProfilePhotoUrl(profile && profile.photoURL));
       }
 
       function setAccountPanelOpen(isOpen) {
@@ -6797,7 +6931,7 @@
             );
           }
 
-          const savedPhotoUrl = typeof data.photoURL === "string" ? data.photoURL : "";
+          const savedPhotoUrl = sanitizeStoredProfilePhotoUrl(data.photoURL);
           const savedWarriorName =
             typeof data.warriorName === "string" ? data.warriorName : "";
           const inferredWarriorProfile =
@@ -6807,7 +6941,7 @@
             errorMessage: "",
             profile: {
               focusStats: normalizeFocusStats(data.focusStats),
-              photoURL: savedPhotoUrl,
+              photoURL: inferredWarriorProfile ? inferredWarriorProfile.imagePath : savedPhotoUrl,
               username: typeof data.username === "string" ? data.username : "",
               warriorName: inferredWarriorProfile ? inferredWarriorProfile.name : "",
             },
@@ -7050,7 +7184,8 @@
         }
 
         const username = accountUsernameInput.value.trim();
-        const normalizedPhotoUrl = typeof photoURL === "string" ? photoURL.trim() : "";
+        const requestedPhotoUrl = typeof photoURL === "string" ? photoURL.trim() : "";
+        const normalizedPhotoUrl = sanitizeStoredProfilePhotoUrl(requestedPhotoUrl);
         const normalizedWarriorName = typeof warriorName === "string" ? warriorName.trim() : "";
 
         accountSaveInFlight = true;
@@ -7058,6 +7193,10 @@
         setAccountStatus("Saving account...");
 
         try {
+          if (requestedPhotoUrl && !normalizedPhotoUrl) {
+            throw new Error("Only built-in warrior photos or uploaded image files can be saved.");
+          }
+
           await profileRef.set(
             {
               email: accountUser.email || "",
