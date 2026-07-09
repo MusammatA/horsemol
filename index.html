@@ -4095,6 +4095,11 @@
               <h3 id="settings-links-heading" class="account-section-title">Links And Legal</h3>
               <div class="settings-link-list">
                 <div class="settings-link-row">
+                  <button id="settings-developer-link" class="settings-link-button" type="button">
+                    About Developer
+                  </button>
+                </div>
+                <div class="settings-link-row">
                   <button id="settings-terms-link" class="settings-link-button" type="button">
                     Terms &amp; Conditions
                   </button>
@@ -4121,7 +4126,7 @@
         </div>
         <div id="settings-legal-backdrop" aria-hidden="true">
           <div id="settings-legal-dialog" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="settings-legal-title" aria-describedby="settings-legal-body">
-            <button id="settings-legal-close" class="panel-close" type="button" aria-label="Close legal popup">×</button>
+            <button id="settings-legal-close" class="panel-close" type="button" aria-label="Close information popup">×</button>
             <h2 id="settings-legal-title">Terms &amp; Conditions</h2>
             <div id="settings-legal-body"></div>
           </div>
@@ -4589,6 +4594,7 @@
       const settingsAlarmVolumeValue = document.getElementById("settings-alarm-volume-value");
       const settingsHorseSpeedInput = document.getElementById("settings-horse-speed");
       const settingsHorseSpeedValue = document.getElementById("settings-horse-speed-value");
+      const settingsDeveloperLink = document.getElementById("settings-developer-link");
       const settingsTermsLink = document.getElementById("settings-terms-link");
       const settingsPrivacyLink = document.getElementById("settings-privacy-link");
       const settingsStatus = document.getElementById("settings-status");
@@ -4798,6 +4804,23 @@
         },
       };
       const legalContentMap = {
+        developer: {
+          title: "About Developer",
+          blocks: [
+            {
+              type: "paragraph",
+              text: "Hi, I'm Musammat Aktar, a Mathematics and Computer Science student at Columbia University from Detroit, Michigan. I enjoy building projects that combine technology with subjects that don't usually meet.",
+            },
+            {
+              type: "paragraph",
+              text: "One of those interests is the culture of the Altai people. Their music, shaped by both Turkic and Mongolic traditions, often tells stories of legendary warriors, folklore, and life on the steppe. Listening to it while I work makes coding feel like its own expedition: instead of conquering mountains, I'm solving problems and turning vague ideas into something real.",
+            },
+            {
+              type: "paragraph",
+              text: "Horsemol is my attempt to bring those two worlds together, a productivity space inspired by a culture whose music, stories, and history deserve to be better known.",
+            },
+          ],
+        },
         privacy: {
           title: "Privacy Policy",
           blocks: [
@@ -9471,6 +9494,9 @@
       });
       settingsAlarmVolumeInput.addEventListener("input", onSettingsAlarmVolumeInput);
       settingsHorseSpeedInput.addEventListener("input", onSettingsHorseSpeedInput);
+      settingsDeveloperLink.addEventListener("click", () => {
+        openSettingsLegalDialog("developer");
+      });
       settingsTermsLink.addEventListener("click", () => {
         openSettingsLegalDialog("terms");
       });
