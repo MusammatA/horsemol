@@ -12,6 +12,32 @@
       http-equiv="Permissions-Policy"
       content="camera=(), microphone=(), geolocation=(), payment=(), usb=()"
     />
+    <meta
+      name="description"
+      content="horsemol is an Altai-inspired focus space with music, timers, to-do lists, sticky notes, journaling, and account syncing."
+    />
+    <meta name="application-name" content="horsemol" />
+    <meta name="theme-color" content="#3399FF" />
+    <meta name="color-scheme" content="light" />
+    <link rel="canonical" href="https://horsemol.vercel.app/" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%233399FF'/%3E%3Ctext x='32' y='42' font-size='34' text-anchor='middle' fill='white' font-family='Trebuchet MS, Arial, sans-serif'%3EH%3C/text%3E%3C/svg%3E"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="horsemol" />
+    <meta property="og:title" content="horsemol" />
+    <meta
+      property="og:description"
+      content="An Altai-inspired focus space with music, timers, to-do lists, sticky notes, and journaling."
+    />
+    <meta property="og:url" content="https://horsemol.vercel.app/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="horsemol" />
+    <meta
+      name="twitter:description"
+      content="An Altai-inspired focus space with music, timers, to-do lists, sticky notes, and journaling."
+    />
     <title>horsemol</title>
     <style>
       :root {
@@ -82,12 +108,49 @@
         display: block;
         width: 100vw;
         height: 100vh;
+        appearance: none;
         border: 0;
+        margin: 0;
         padding: 0;
         overflow: hidden;
         cursor: pointer;
         background: #000000;
+        font: inherit;
+        text-align: inherit;
         user-select: none;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 0.65rem;
+        left: 0.65rem;
+        z-index: 20;
+        padding: 0.6rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(7, 21, 37, 0.92);
+        color: #ffffff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-decoration: none;
+        transform: translateY(-160%);
+        transition: transform 180ms ease;
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
       }
 
       .background-image {
@@ -147,6 +210,10 @@
       .transport-control:focus-visible {
         outline: 2px solid rgba(255, 255, 255, 0.88);
         outline-offset: 0.2rem;
+      }
+
+      #workspace-root:focus {
+        outline: none;
       }
 
       #background-hint {
@@ -243,6 +310,7 @@
       #music-title-tab {
         width: 100%;
         min-height: 2.5rem;
+        margin: 0;
         padding: 0.58rem 1rem;
         border: 1px solid rgba(255, 255, 255, 0.24);
         border-radius: 999px;
@@ -1200,6 +1268,7 @@
       #altai-panel-title,
       #settings-panel-title,
       .account-section-title {
+        margin: 0;
         font-size: 0.82rem;
         font-weight: 700;
         letter-spacing: 0.08em;
@@ -1231,6 +1300,7 @@
       }
 
       #altai-panel-copy {
+        margin: 0;
         max-width: 38rem;
         font-size: 0.82rem;
         line-height: 1.55;
@@ -1735,7 +1805,7 @@
       }
 
       #settings-legal-title {
-        margin-bottom: 0.85rem;
+        margin: 0 0 0.85rem;
         padding-right: 3.2rem;
         font-size: 0.92rem;
         font-weight: 700;
@@ -1919,6 +1989,7 @@
       }
 
       #account-display-name {
+        margin: 0;
         font-size: 0.92rem;
         font-weight: 700;
         line-height: 1.2;
@@ -1926,6 +1997,7 @@
       }
 
       #account-email {
+        margin: 0;
         font-size: 0.74rem;
         line-height: 1.35;
         color: rgba(255, 255, 255, 0.74);
@@ -2018,6 +2090,7 @@
       }
 
       #journal-panel-title {
+        margin: 0;
         font-size: 0.82rem;
         font-weight: 700;
         letter-spacing: 0.08em;
@@ -2455,6 +2528,7 @@
       }
 
       #account-focus-total {
+        margin: 0;
         font-size: 0.8rem;
         line-height: 1.45;
         color: rgba(255, 255, 255, 0.82);
@@ -2586,6 +2660,7 @@
       }
 
       #auth-title {
+        margin: 0;
         width: 100%;
         padding: 0 3.4rem;
         font-size: 1.06rem;
@@ -2596,6 +2671,7 @@
       }
 
       #auth-copy {
+        margin: 0;
         display: none;
         grid-column: 1 / -1;
         font-size: 0.82rem;
@@ -2604,6 +2680,7 @@
       }
 
       #auth-status {
+        margin: 0;
         display: none;
         grid-column: 1 / -1;
         min-height: 1.2rem;
@@ -2650,6 +2727,7 @@
       }
 
       #auth-setup-note {
+        margin: 0;
         display: none;
         grid-column: 1 / -1;
         font-size: 0.72rem;
@@ -2922,6 +3000,7 @@
       }
 
       #player-unlock-hint {
+        margin: 0;
         position: fixed;
         top: calc(var(--page-gutter) + 7.6rem);
         left: var(--page-gutter);
@@ -3629,15 +3708,15 @@
     </style>
   </head>
   <body>
-    <div
+    <a class="skip-link" href="#workspace-root">Skip to workspace</a>
+    <button
       id="background-switcher"
-      role="button"
-      tabindex="0"
+      type="button"
       aria-label="Change background image"
     >
       <img class="background-image" alt="" />
       <img class="background-image" alt="" />
-    </div>
+    </button>
     <div id="background-hint" aria-hidden="true">Click to Change the Background</div>
     <div id="griff-runner-lane" aria-hidden="true">
       <div id="griff-runner-track">
@@ -3645,16 +3724,17 @@
       </div>
     </div>
 
-    <div id="music-stack">
-      <div id="music-title-tab" aria-hidden="true">Алтай җыры - Songs of Altai</div>
+    <main id="workspace-root" tabindex="-1" aria-label="Horsemol workspace">
+    <section id="music-stack" aria-labelledby="music-title-tab">
+      <h1 id="music-title-tab">Алтай җыры - Songs of Altai</h1>
       <div id="music-strip">
-        <div id="track-window" aria-live="polite">
+        <div id="track-window" role="status" aria-live="polite">
           <div id="track-marquee">
             <span id="track-title">Spring Water</span>
             <span id="track-title-clone" aria-hidden="true"></span>
           </div>
         </div>
-        <div id="transport-controls" aria-label="Playlist controls">
+        <div id="transport-controls" role="toolbar" aria-label="Playlist controls">
           <button
             id="previous-track"
             class="transport-control transport-chip"
@@ -3671,7 +3751,13 @@
           >
             -10
           </button>
-          <button id="player-toggle" class="transport-control" type="button" aria-label="Play playlist">
+          <button
+            id="player-toggle"
+            class="transport-control"
+            type="button"
+            aria-label="Play playlist"
+            aria-pressed="false"
+          >
             <span class="player-icon" aria-hidden="true"></span>
           </button>
           <button
@@ -3694,31 +3780,60 @@
       </div>
 
       <div id="up-next-list" aria-label="Upcoming songs" role="list"></div>
-    </div>
+    </section>
     <div id="player-unlock-hint" aria-hidden="true">Tap once anywhere to start the music</div>
 
     <div id="notes-layer">
-      <div id="todo-dock">
+      <section id="todo-dock" aria-labelledby="todo-section-title">
+        <h2 id="todo-section-title" class="visually-hidden">To-do list</h2>
         <button id="todo-tab" type="button" aria-label="Add a to-do item">
           <span class="sticky-tab-label">TO DO</span>
         </button>
-        <div id="todo-list-panel" aria-live="polite" aria-hidden="true"></div>
-      </div>
-      <div id="desk-tools">
-        <button id="account-tab" type="button" aria-label="Open account settings" aria-pressed="false">
+        <div id="todo-list-panel" role="list" aria-live="polite" aria-hidden="true"></div>
+      </section>
+      <div id="desk-tools" role="toolbar" aria-label="Workspace tools" aria-orientation="vertical">
+        <button
+          id="account-tab"
+          type="button"
+          aria-label="Open account settings"
+          aria-expanded="false"
+          aria-haspopup="dialog"
+          aria-controls="account-panel"
+        >
           <span id="account-tab-avatar" class="account-tab-avatar" aria-hidden="true">
             <span id="account-tab-avatar-fallback" class="account-tab-avatar-fallback">A</span>
           </span>
         </button>
-        <button id="altai-tab" type="button" aria-label="Open Altai information" aria-pressed="false">
+        <button
+          id="altai-tab"
+          type="button"
+          aria-label="Open Altai information"
+          aria-expanded="false"
+          aria-haspopup="dialog"
+          aria-controls="altai-panel"
+        >
           <span class="sticky-tab-label">Altai?</span>
           <span class="altai-tab-glyph" aria-hidden="true">?</span>
         </button>
-        <button id="settings-tab" type="button" aria-label="Open settings" aria-pressed="false">
+        <button
+          id="settings-tab"
+          type="button"
+          aria-label="Open settings"
+          aria-expanded="false"
+          aria-haspopup="dialog"
+          aria-controls="settings-panel"
+        >
           <span class="sticky-tab-label">Settings</span>
           <span class="settings-tab-glyph" aria-hidden="true"></span>
         </button>
-        <button id="timer-tab" type="button" aria-label="Open start timer" aria-pressed="false">
+        <button
+          id="timer-tab"
+          type="button"
+          aria-label="Open start timer"
+          aria-expanded="false"
+          aria-haspopup="dialog"
+          aria-controls="timer-panel"
+        >
           <span class="sticky-tab-label">Start Timer</span>
           <span class="timer-tab-glyph" aria-hidden="true"></span>
         </button>
@@ -3729,20 +3844,27 @@
             <span class="sticky-tab-pencil"></span>
           </span>
         </button>
-        <button id="journal-tab" type="button" aria-label="Open journal" aria-pressed="false">
+        <button
+          id="journal-tab"
+          type="button"
+          aria-label="Open journal"
+          aria-expanded="false"
+          aria-haspopup="dialog"
+          aria-controls="journal-panel"
+        >
           <span class="sticky-tab-label">Journal</span>
           <span class="journal-tab-book" aria-hidden="true"></span>
         </button>
       </div>
       <div id="timer-panel-backdrop" aria-hidden="true">
-        <div id="timer-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="timer-panel-title">
+        <div id="timer-panel" tabindex="-1" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="timer-panel-title">
           <button id="timer-panel-close" class="panel-close" type="button" aria-label="Close timer">×</button>
           <div id="timer-panel-layout">
             <div id="timer-panel-heading">
-              <div id="timer-panel-title">Start Timer</div>
+              <h2 id="timer-panel-title">Start Timer</h2>
             </div>
             <div class="timer-panel-section">
-              <div class="account-section-title">Choose A Timer</div>
+              <h3 class="account-section-title">Choose A Timer</h3>
               <div id="timer-preset-options">
                 <button class="timer-choice is-selected" type="button" data-preset-key="25-5">
                   <span class="timer-choice-text">
@@ -3777,7 +3899,7 @@
               </div>
             </div>
             <div class="timer-panel-section">
-              <div class="account-section-title">What do you want to focus on?</div>
+              <h3 class="account-section-title">What do you want to focus on?</h3>
               <div id="timer-focus-options">
                 <button class="timer-choice is-selected" type="button" data-focus-category="Study">
                   <span class="timer-choice-text">
@@ -3811,7 +3933,7 @@
         </div>
       </div>
       <div id="account-panel-backdrop" aria-hidden="true">
-        <div id="account-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-display-name">
+        <div id="account-panel" tabindex="-1" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-display-name">
           <button id="account-panel-close" class="panel-close" type="button" aria-label="Close account">×</button>
           <div id="account-panel-layout">
             <div id="account-panel-main">
@@ -3826,8 +3948,8 @@
                   <input id="account-photo-file-input" type="file" accept="image/*" hidden />
                 </div>
                 <div id="account-panel-identity">
-                  <div id="account-display-name">Account</div>
-                  <div id="account-email">Sign in with Google to open your account.</div>
+                  <h2 id="account-display-name">Account</h2>
+                  <p id="account-email">Sign in with Google to open your account.</p>
                   <div id="account-warrior-name" hidden></div>
                 </div>
               </div>
@@ -3856,12 +3978,12 @@
             </div>
             <div id="account-panel-side">
               <div id="account-warrior-section">
-                <div class="account-section-title">Altai Warriors</div>
+                <h3 class="account-section-title">Altai Warriors</h3>
                 <div id="account-warrior-grid" aria-live="polite"></div>
               </div>
               <div id="account-focus-summary">
-                <div class="account-section-title">Focus Summary</div>
-                <div id="account-focus-total">Total focus time: 0m</div>
+                <h3 class="account-section-title">Focus Summary</h3>
+                <p id="account-focus-total">Total focus time: 0m</p>
                 <div id="account-focus-breakdown" aria-live="polite"></div>
               </div>
             </div>
@@ -3869,17 +3991,17 @@
         </div>
       </div>
       <div id="altai-panel-backdrop" aria-hidden="true">
-        <div id="altai-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="altai-panel-title">
+        <div id="altai-panel" tabindex="-1" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="altai-panel-title" aria-describedby="altai-panel-copy">
           <button id="altai-panel-close" class="panel-close" type="button" aria-label="Close Altai information">×</button>
           <div id="altai-panel-heading">
-            <div id="altai-panel-title">Altai?</div>
-            <div id="altai-panel-copy">
+            <h2 id="altai-panel-title">Altai?</h2>
+            <p id="altai-panel-copy">
               Warriors, heroes, and remembered figures connected to the Altai and wider Turkic steppe tradition.
-            </div>
+            </p>
           </div>
           <div id="altai-panel-layout">
             <div id="altai-panel-link-row">
-              <div id="altai-panel-link-label">Read More</div>
+              <h3 id="altai-panel-link-label">Read More</h3>
               <a
                 id="altai-panel-link"
                 class="settings-link-anchor"
@@ -3889,23 +4011,23 @@
               >
                 Facts and Details: Altai People, History, and Culture
               </a>
-              <div id="altai-panel-link-copy">
+              <p id="altai-panel-link-copy">
                 Open the article for more background on Altai people, traditions, and history.
-              </div>
+              </p>
             </div>
             <div id="altai-panel-grid" aria-live="polite"></div>
           </div>
         </div>
       </div>
       <div id="settings-panel-backdrop" aria-hidden="true">
-        <div id="settings-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="settings-panel-title">
+        <div id="settings-panel" tabindex="-1" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="settings-panel-title">
           <button id="settings-panel-close" class="panel-close" type="button" aria-label="Close settings">×</button>
           <div id="settings-panel-layout">
             <div id="settings-panel-heading">
-              <div id="settings-panel-title">Settings</div>
+              <h2 id="settings-panel-title">Settings</h2>
             </div>
             <section class="settings-panel-section" aria-labelledby="settings-alarm-heading">
-              <div id="settings-alarm-heading" class="account-section-title">Alarm</div>
+              <h3 id="settings-alarm-heading" class="account-section-title">Alarm</h3>
               <div id="settings-alarm-options">
                 <button class="timer-choice is-selected" type="button" data-alarm-choice="standard-alarm">
                   <span class="timer-choice-text">
@@ -3940,7 +4062,7 @@
               </label>
             </section>
             <section class="settings-panel-section" aria-labelledby="settings-runner-heading">
-              <div id="settings-runner-heading" class="account-section-title">Horse</div>
+              <h3 id="settings-runner-heading" class="account-section-title">Horse</h3>
               <label class="settings-slider-field" for="settings-horse-speed">
                 <div class="settings-slider-top">
                   <span class="timer-field-label">Speed Of Horse</span>
@@ -3958,7 +4080,7 @@
               </label>
             </section>
             <section class="settings-panel-section" aria-labelledby="settings-feedback-heading">
-              <div id="settings-feedback-heading" class="account-section-title">Feedback And Support</div>
+              <h3 id="settings-feedback-heading" class="account-section-title">Feedback And Support</h3>
               <div class="settings-link-list">
                 <div class="settings-link-row">
                   <a
@@ -3970,7 +4092,7 @@
               </div>
             </section>
             <section class="settings-panel-section" aria-labelledby="settings-links-heading">
-              <div id="settings-links-heading" class="account-section-title">Links And Legal</div>
+              <h3 id="settings-links-heading" class="account-section-title">Links And Legal</h3>
               <div class="settings-link-list">
                 <div class="settings-link-row">
                   <button id="settings-terms-link" class="settings-link-button" type="button">
@@ -3993,23 +4115,23 @@
               </div>
             </section>
             <div id="settings-panel-footer">
-              <div id="settings-status" aria-live="polite">Settings save automatically on this device.</div>
+              <p id="settings-status" aria-live="polite">Settings save automatically on this device.</p>
             </div>
           </div>
         </div>
         <div id="settings-legal-backdrop" aria-hidden="true">
-          <div id="settings-legal-dialog" role="dialog" aria-modal="true" aria-labelledby="settings-legal-title">
+          <div id="settings-legal-dialog" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="settings-legal-title" aria-describedby="settings-legal-body">
             <button id="settings-legal-close" class="panel-close" type="button" aria-label="Close legal popup">×</button>
-            <div id="settings-legal-title">Terms &amp; Conditions</div>
+            <h2 id="settings-legal-title">Terms &amp; Conditions</h2>
             <div id="settings-legal-body"></div>
           </div>
         </div>
       </div>
       <div id="journal-panel-backdrop" aria-hidden="true">
-        <div id="journal-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="journal-panel-title">
+        <div id="journal-panel" tabindex="-1" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="journal-panel-title" aria-describedby="journal-panel-hint">
           <button id="journal-panel-close" class="panel-close" type="button" aria-label="Close journal">×</button>
           <div id="journal-panel-header">
-            <div id="journal-panel-title">Journal</div>
+            <h2 id="journal-panel-title">Journal</h2>
             <div id="journal-panel-page-indicator">Pages 1 - 2</div>
           </div>
           <div id="journal-book" tabindex="0" aria-label="Notebook journal">
@@ -4066,7 +4188,7 @@
               aria-label="Turn to next pages"
             ></button>
           </div>
-          <div id="journal-panel-hint">Use the left and right arrow keys, or tap the page edges, to turn the notebook.</div>
+          <p id="journal-panel-hint">Use the left and right arrow keys, or tap the page edges, to turn the notebook.</p>
         </div>
       </div>
       <div id="notes-canvas" aria-live="polite"></div>
@@ -4076,23 +4198,31 @@
       <div id="timer-display-label">Timer Ready</div>
       <div id="timer-display-clock">00:00</div>
     </div>
+    </main>
 
     <div id="auth-gate" aria-hidden="true">
-      <div id="auth-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <div id="auth-card" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-copy auth-status auth-setup-note">
         <button id="auth-close-button" class="panel-close" type="button" aria-label="Close sign in">×</button>
-        <div id="auth-title">Sign In With Google</div>
-        <div id="auth-copy"></div>
+        <h2 id="auth-title">Sign In With Google</h2>
+        <p id="auth-copy"></p>
         <div id="auth-actions">
           <button id="auth-google-button" type="button">Continue With Google</button>
           <button id="auth-dismiss-button" type="button">Not Now</button>
         </div>
-        <div id="auth-status" aria-live="polite"></div>
-        <div id="auth-setup-note"></div>
+        <p id="auth-status" aria-live="polite"></p>
+        <p id="auth-setup-note"></p>
       </div>
     </div>
 
     <div id="note-editor-backdrop" aria-hidden="true">
-      <div id="note-editor" data-color="yellow" role="dialog" aria-modal="true" aria-label="Edit sticky note">
+      <div
+        id="note-editor"
+        tabindex="-1"
+        data-color="yellow"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Edit sticky note"
+      >
         <div id="note-editor-header">
           <input id="note-title-input" type="text" maxlength="80" placeholder="Note name" />
           <div id="note-color-picker" aria-label="Note colors">
@@ -4463,6 +4593,7 @@
       const settingsPrivacyLink = document.getElementById("settings-privacy-link");
       const settingsStatus = document.getElementById("settings-status");
       const settingsLegalBackdrop = document.getElementById("settings-legal-backdrop");
+      const settingsLegalDialog = document.getElementById("settings-legal-dialog");
       const settingsLegalTitle = document.getElementById("settings-legal-title");
       const settingsLegalBody = document.getElementById("settings-legal-body");
       const settingsLegalCloseButton = document.getElementById("settings-legal-close");
@@ -4788,9 +4919,120 @@
       let alarmPlayerReadyResolvers = [];
       let siteSettings = createDefaultSiteSettings();
       let settingsStatusTimeoutId = 0;
+      const dialogFocusStack = [];
 
       function clamp(value, min, max) {
         return Math.min(max, Math.max(min, value));
+      }
+
+      function isFocusableCandidate(element) {
+        return (
+          element instanceof HTMLElement &&
+          !element.hasAttribute("disabled") &&
+          element.getAttribute("aria-hidden") !== "true" &&
+          element.tabIndex !== -1 &&
+          element.getClientRects().length > 0
+        );
+      }
+
+      function getFocusableElements(container) {
+        if (!(container instanceof HTMLElement)) {
+          return [];
+        }
+
+        return Array.from(
+          container.querySelectorAll(
+            'a[href], button, input:not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])',
+          ),
+        ).filter((element) => isFocusableCandidate(element));
+      }
+
+      function registerDialogOpen(dialogElement, returnFocusElement = document.activeElement) {
+        if (!(dialogElement instanceof HTMLElement)) {
+          return;
+        }
+
+        for (let index = dialogFocusStack.length - 1; index >= 0; index -= 1) {
+          if (dialogFocusStack[index].dialogElement === dialogElement) {
+            dialogFocusStack.splice(index, 1);
+            break;
+          }
+        }
+
+        dialogFocusStack.push({
+          dialogElement,
+          returnFocusElement: returnFocusElement instanceof HTMLElement ? returnFocusElement : null,
+        });
+      }
+
+      function unregisterDialog(dialogElement, { restoreFocus = true } = {}) {
+        if (!(dialogElement instanceof HTMLElement)) {
+          return;
+        }
+
+        for (let index = dialogFocusStack.length - 1; index >= 0; index -= 1) {
+          const dialogEntry = dialogFocusStack[index];
+
+          if (dialogEntry.dialogElement !== dialogElement) {
+            continue;
+          }
+
+          dialogFocusStack.splice(index, 1);
+
+          if (
+            restoreFocus &&
+            dialogEntry.returnFocusElement &&
+            dialogEntry.returnFocusElement.isConnected &&
+            typeof dialogEntry.returnFocusElement.focus === "function"
+          ) {
+            window.requestAnimationFrame(() => {
+              dialogEntry.returnFocusElement.focus({ preventScroll: true });
+            });
+          }
+
+          break;
+        }
+      }
+
+      function trapFocusWithinActiveDialog(event) {
+        if (event.key !== "Tab") {
+          return false;
+        }
+
+        const activeDialog = dialogFocusStack[dialogFocusStack.length - 1];
+
+        if (!activeDialog || !(activeDialog.dialogElement instanceof HTMLElement)) {
+          return false;
+        }
+
+        const focusableElements = getFocusableElements(activeDialog.dialogElement);
+
+        if (!focusableElements.length) {
+          event.preventDefault();
+          activeDialog.dialogElement.focus({ preventScroll: true });
+          return true;
+        }
+
+        const currentFocus = document.activeElement;
+        const activeIndex = focusableElements.indexOf(currentFocus);
+
+        if (event.shiftKey) {
+          if (activeIndex <= 0) {
+            event.preventDefault();
+            focusableElements[focusableElements.length - 1].focus({ preventScroll: true });
+            return true;
+          }
+
+          return false;
+        }
+
+        if (activeIndex === -1 || activeIndex >= focusableElements.length - 1) {
+          event.preventDefault();
+          focusableElements[0].focus({ preventScroll: true });
+          return true;
+        }
+
+        return false;
       }
 
       function createDefaultSiteSettings() {
@@ -4908,7 +5150,9 @@
 
       function syncSettingsUi() {
         settingsAlarmButtons.forEach((button) => {
-          button.classList.toggle("is-selected", button.dataset.alarmChoice === siteSettings.alarmChoice);
+          const isSelected = button.dataset.alarmChoice === siteSettings.alarmChoice;
+          button.classList.toggle("is-selected", isSelected);
+          button.setAttribute("aria-pressed", isSelected ? "true" : "false");
         });
         settingsAlarmVolumeInput.value = String(siteSettings.alarmVolume);
         settingsAlarmVolumeValue.textContent = `${siteSettings.alarmVolume}%`;
@@ -4924,9 +5168,10 @@
         return settingsLegalBackdrop.classList.contains("is-open");
       }
 
-      function closeSettingsLegalDialog() {
+      function closeSettingsLegalDialog({ restoreFocus = true } = {}) {
         settingsLegalBackdrop.classList.remove("is-open");
         settingsLegalBackdrop.setAttribute("aria-hidden", "true");
+        unregisterDialog(settingsLegalDialog, { restoreFocus });
       }
 
       function renderSettingsLegalContent(legalContent) {
@@ -4978,6 +5223,7 @@
 
         settingsLegalTitle.textContent = legalContent.title;
         renderSettingsLegalContent(legalContent);
+        registerDialogOpen(settingsLegalDialog, document.activeElement);
         settingsLegalBackdrop.classList.add("is-open");
         settingsLegalBackdrop.setAttribute("aria-hidden", "false");
 
@@ -4986,18 +5232,24 @@
         });
       }
 
-      function setSettingsPanelOpen(isOpen) {
+      function setSettingsPanelOpen(isOpen, { returnFocusElement = document.activeElement, restoreFocus = true } = {}) {
         const nextOpenState = Boolean(isOpen);
 
         if (!nextOpenState) {
-          closeSettingsLegalDialog();
+          closeSettingsLegalDialog({ restoreFocus: false });
+        }
+
+        if (nextOpenState) {
+          registerDialogOpen(settingsPanel, returnFocusElement);
+        } else {
+          unregisterDialog(settingsPanel, { restoreFocus });
         }
 
         settingsPanelBackdrop.classList.toggle("is-open", nextOpenState);
         settingsPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
         settingsPanel.classList.toggle("is-open", nextOpenState);
         settingsPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
-        settingsTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+        settingsTab.setAttribute("aria-expanded", nextOpenState ? "true" : "false");
         syncBackgroundWaveState();
       }
 
@@ -5354,14 +5606,20 @@
         return altaiPanel.classList.contains("is-open");
       }
 
-      function setTimerPanelOpen(isOpen) {
+      function setTimerPanelOpen(isOpen, { returnFocusElement = document.activeElement, restoreFocus = true } = {}) {
         const nextOpenState = Boolean(isOpen);
+
+        if (nextOpenState) {
+          registerDialogOpen(timerPanel, returnFocusElement);
+        } else {
+          unregisterDialog(timerPanel, { restoreFocus });
+        }
 
         timerPanelBackdrop.classList.toggle("is-open", nextOpenState);
         timerPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
         timerPanel.classList.toggle("is-open", nextOpenState);
         timerPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
-        timerTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+        timerTab.setAttribute("aria-expanded", nextOpenState ? "true" : "false");
         syncBackgroundWaveState();
       }
 
@@ -5369,14 +5627,20 @@
         setTimerPanelOpen(false);
       }
 
-      function setAltaiPanelOpen(isOpen) {
+      function setAltaiPanelOpen(isOpen, { returnFocusElement = document.activeElement, restoreFocus = true } = {}) {
         const nextOpenState = Boolean(isOpen);
+
+        if (nextOpenState) {
+          registerDialogOpen(altaiPanel, returnFocusElement);
+        } else {
+          unregisterDialog(altaiPanel, { restoreFocus });
+        }
 
         altaiPanelBackdrop.classList.toggle("is-open", nextOpenState);
         altaiPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
         altaiPanel.classList.toggle("is-open", nextOpenState);
         altaiPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
-        altaiTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+        altaiTab.setAttribute("aria-expanded", nextOpenState ? "true" : "false");
         syncBackgroundWaveState();
       }
 
@@ -5386,14 +5650,18 @@
 
       function syncTimerPresetUi() {
         timerPresetButtons.forEach((button) => {
-          button.classList.toggle("is-selected", button.dataset.presetKey === timerPresetKey);
+          const isSelected = button.dataset.presetKey === timerPresetKey;
+          button.classList.toggle("is-selected", isSelected);
+          button.setAttribute("aria-pressed", isSelected ? "true" : "false");
         });
         timerCustomFields.hidden = timerPresetKey !== "custom";
       }
 
       function syncTimerFocusUi() {
         timerFocusButtons.forEach((button) => {
-          button.classList.toggle("is-selected", button.dataset.focusCategory === timerFocusCategory);
+          const isSelected = button.dataset.focusCategory === timerFocusCategory;
+          button.classList.toggle("is-selected", isSelected);
+          button.setAttribute("aria-pressed", isSelected ? "true" : "false");
         });
       }
 
@@ -6104,14 +6372,20 @@
         return journalPanel.classList.contains("is-open");
       }
 
-      function setJournalPanelOpen(isOpen) {
+      function setJournalPanelOpen(isOpen, { returnFocusElement = document.activeElement, restoreFocus = true } = {}) {
         const nextOpenState = Boolean(isOpen);
+
+        if (nextOpenState) {
+          registerDialogOpen(journalPanel, returnFocusElement);
+        } else {
+          unregisterDialog(journalPanel, { restoreFocus });
+        }
 
         journalPanelBackdrop.classList.toggle("is-open", nextOpenState);
         journalPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
         journalPanel.classList.toggle("is-open", nextOpenState);
         journalPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
-        journalTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+        journalTab.setAttribute("aria-expanded", nextOpenState ? "true" : "false");
 
         if (nextOpenState) {
           renderJournalSpread();
@@ -6188,15 +6462,17 @@
         return input.selectionStart === input.value.length;
       }
 
-      function onJournalTabClick() {
+      function onJournalTabClick(event) {
         attemptPlaybackFromUserGesture();
+        const triggerButton =
+          event && event.currentTarget instanceof HTMLElement ? event.currentTarget : journalTab;
 
         if (isJournalPanelOpen()) {
           closeJournalPanel();
           return;
         }
 
-        setJournalPanelOpen(true);
+        setJournalPanelOpen(true, { returnFocusElement: triggerButton });
         focusJournalPage("left", "start");
       }
 
@@ -6419,10 +6695,11 @@
         noteDragState = null;
       }
 
-      function setStickyNoteEditorClosed() {
+      function setStickyNoteEditorClosed({ restoreFocus = true } = {}) {
         activeNoteId = "";
         noteEditorBackdrop.classList.remove("is-open");
         noteEditorBackdrop.setAttribute("aria-hidden", "true");
+        unregisterDialog(noteEditor, { restoreFocus });
         syncBackgroundWaveState();
       }
 
@@ -6504,7 +6781,7 @@
         if (activeNoteId && findStickyNote(activeNoteId)) {
           openStickyNoteEditor(activeNoteId, { focus: false });
         } else {
-          setStickyNoteEditorClosed();
+          setStickyNoteEditorClosed({ restoreFocus: false });
         }
 
         void renderBackground({ immediate: true });
@@ -6701,18 +6978,19 @@
         authDismissButton.textContent = "Not Now";
       }
 
-      function closeAuthPrompt({ force = false } = {}) {
+      function closeAuthPrompt({ force = false, restoreFocus = true } = {}) {
         if (authBusy && !force) {
           return;
         }
 
         openAccountPanelAfterSignIn = false;
         setAuthGateVisibility(false);
+        unregisterDialog(authCard, { restoreFocus });
       }
 
-      function openAuthPrompt(mode = "account") {
+      function openAuthPrompt(mode = "account", { returnFocusElement = document.activeElement } = {}) {
         if (accountUser) {
-          closeAuthPrompt({ force: true });
+          closeAuthPrompt({ force: true, restoreFocus: false });
           return;
         }
 
@@ -6721,7 +6999,11 @@
         }
 
         setAuthPromptMode(mode);
+        registerDialogOpen(authCard, returnFocusElement);
         setAuthGateVisibility(true);
+        window.requestAnimationFrame(() => {
+          authGoogleButton.focus({ preventScroll: true });
+        });
       }
 
       function promptGuestToSaveWork() {
@@ -6730,7 +7012,7 @@
         }
 
         guestSavePromptShown = true;
-        openAuthPrompt("save");
+        openAuthPrompt("save", { returnFocusElement: document.activeElement });
       }
 
       function shouldPromptForGuestSave(inputType) {
@@ -6769,14 +7051,20 @@
         return Boolean(sanitizeStoredProfilePhotoUrl(profile && profile.photoURL));
       }
 
-      function setAccountPanelOpen(isOpen) {
+      function setAccountPanelOpen(isOpen, { returnFocusElement = document.activeElement, restoreFocus = true } = {}) {
         const nextOpenState = Boolean(isOpen) && Boolean(accountUser);
+
+        if (nextOpenState) {
+          registerDialogOpen(accountPanel, returnFocusElement);
+        } else {
+          unregisterDialog(accountPanel, { restoreFocus });
+        }
 
         accountPanelBackdrop.classList.toggle("is-open", nextOpenState);
         accountPanelBackdrop.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
         accountPanel.classList.toggle("is-open", nextOpenState);
         accountPanel.setAttribute("aria-hidden", nextOpenState ? "false" : "true");
-        accountTab.setAttribute("aria-pressed", nextOpenState ? "true" : "false");
+        accountTab.setAttribute("aria-expanded", nextOpenState ? "true" : "false");
         syncBackgroundWaveState();
       }
 
@@ -6895,7 +7183,7 @@
         authBusy = false;
         authStateResolved = true;
         closeAccountPanel();
-        closeAuthPrompt({ force: true });
+        closeAuthPrompt({ force: true, restoreFocus: false });
         setAuthStatus(statusMessage || "Google sign-in is not ready yet.");
         authSetupNote.textContent = setupMessage || "";
         syncAccountUi();
@@ -6967,7 +7255,7 @@
         if (!user) {
           closeAccountPanel();
           syncAccountUi();
-          closeAuthPrompt({ force: true });
+          closeAuthPrompt({ force: true, restoreFocus: false });
           setAuthStatus(
             authConfigured
               ? "Sign in with your Google account to save your work."
@@ -6979,7 +7267,7 @@
         }
 
         guestSavePromptShown = false;
-        closeAuthPrompt({ force: true });
+        closeAuthPrompt({ force: true, restoreFocus: false });
         setAuthStatus(user.email ? `Signed in as ${user.email}.` : "Signed in with Google.");
         syncAccountUi();
         setAccountStatus("Loading your account...");
@@ -6996,13 +7284,13 @@
         setAccountStatus(profileResult.errorMessage || "Account ready.");
 
         if (shouldOpenAccountPanel) {
-          setAccountPanelOpen(true);
+          setAccountPanelOpen(true, { returnFocusElement: accountTab });
         }
       }
 
       async function initializeAccountAuth() {
         syncAccountUi();
-        closeAuthPrompt();
+        closeAuthPrompt({ restoreFocus: false });
         setAuthPromptMode("account");
         setAuthStatus("Checking sign-in...");
         authSetupNote.textContent = "";
@@ -7315,15 +7603,17 @@
         }
       }
 
-      function onTimerTabClick() {
+      function onTimerTabClick(event) {
         attemptPlaybackFromUserGesture();
+        const triggerButton =
+          event && event.currentTarget instanceof HTMLElement ? event.currentTarget : timerTab;
 
         if (isTimerPanelOpen()) {
           closeTimerPanel();
           return;
         }
 
-        setTimerPanelOpen(true);
+        setTimerPanelOpen(true, { returnFocusElement: triggerButton });
         window.requestAnimationFrame(() => {
           const preferredButton =
             timerPresetButtons.find((button) => button.dataset.presetKey === timerPresetKey) ||
@@ -7333,29 +7623,33 @@
         });
       }
 
-      function onSettingsTabClick() {
+      function onSettingsTabClick(event) {
         attemptPlaybackFromUserGesture();
+        const triggerButton =
+          event && event.currentTarget instanceof HTMLElement ? event.currentTarget : settingsTab;
 
         if (isSettingsPanelOpen()) {
           closeSettingsPanel();
           return;
         }
 
-        setSettingsPanelOpen(true);
+        setSettingsPanelOpen(true, { returnFocusElement: triggerButton });
         window.requestAnimationFrame(() => {
           settingsPanelCloseButton.focus({ preventScroll: true });
         });
       }
 
-      function onAltaiTabClick() {
+      function onAltaiTabClick(event) {
         attemptPlaybackFromUserGesture();
+        const triggerButton =
+          event && event.currentTarget instanceof HTMLElement ? event.currentTarget : altaiTab;
 
         if (isAltaiPanelOpen()) {
           closeAltaiPanel();
           return;
         }
 
-        setAltaiPanelOpen(true);
+        setAltaiPanelOpen(true, { returnFocusElement: triggerButton });
         window.requestAnimationFrame(() => {
           altaiPanelCloseButton.focus({ preventScroll: true });
         });
@@ -7390,12 +7684,14 @@
         syncTimerFocusUi();
       }
 
-      function onAccountTabClick() {
+      function onAccountTabClick(event) {
         attemptPlaybackFromUserGesture();
+        const triggerButton =
+          event && event.currentTarget instanceof HTMLElement ? event.currentTarget : accountTab;
 
         if (!accountUser) {
           openAccountPanelAfterSignIn = true;
-          openAuthPrompt("account");
+          openAuthPrompt("account", { returnFocusElement: triggerButton });
           setAuthStatus(
             authConfigured
               ? "Sign in with your Google account to save your work."
@@ -7409,7 +7705,7 @@
           return;
         }
 
-        setAccountPanelOpen(true);
+        setAccountPanelOpen(true, { returnFocusElement: triggerButton });
         window.requestAnimationFrame(() => {
           accountPanelCloseButton.focus({ preventScroll: true });
         });
@@ -7520,6 +7816,7 @@
           element = document.createElement("div");
           element.className = "todo-item";
           element.dataset.id = item.id;
+          element.setAttribute("role", "listitem");
           element.innerHTML =
             '<button class="todo-toggle" type="button" aria-label="Mark to-do complete" aria-pressed="false"></button><input class="todo-input" type="text" maxlength="120" placeholder="Write a short note" /><button class="todo-delete" type="button" aria-label="Delete to-do item">×</button>';
           element.querySelector(".todo-toggle").addEventListener("click", onTodoToggleClick);
@@ -8027,7 +8324,7 @@
         }
 
         if (activeNoteId === noteId) {
-          setStickyNoteEditorClosed();
+          setStickyNoteEditorClosed({ restoreFocus: false });
         }
 
         if (noteDragState && noteDragState.noteId === noteId) {
@@ -8123,6 +8420,7 @@
 
       function openStickyNoteEditor(noteId, { focus = true } = {}) {
         const note = findStickyNote(noteId);
+        const noteElement = noteElements.get(noteId);
 
         if (!note) {
           return;
@@ -8132,6 +8430,7 @@
         noteTitleInput.value = note.title;
         noteBodyInput.value = note.body;
         syncStickyNoteSwatches(stickyNoteColors.includes(note.color) ? note.color : "yellow");
+        registerDialogOpen(noteEditor, noteElement || document.activeElement);
         noteEditorBackdrop.classList.add("is-open");
         noteEditorBackdrop.setAttribute("aria-hidden", "false");
         syncBackgroundWaveState();
@@ -8794,6 +9093,7 @@
         }
 
         playerToggle.setAttribute("aria-label", isPlaying ? "Pause playlist" : "Play playlist");
+        playerToggle.setAttribute("aria-pressed", isPlaying ? "true" : "false");
         document.documentElement.dataset.playerToggleClass = playerToggle.className;
         document.documentElement.dataset.playerToggleAria = playerToggle.getAttribute("aria-label");
       }
@@ -9205,12 +9505,6 @@
       authCloseButton.addEventListener("click", closeAuthPrompt);
       authDismissButton.addEventListener("click", closeAuthPrompt);
       backgroundSwitcher.addEventListener("click", showNextBackgroundWithUndoCapture);
-      backgroundSwitcher.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          showNextBackgroundWithUndoCapture();
-        }
-      });
 
       todoTab.addEventListener("click", onTodoTabClick);
       stickyNoteTab.addEventListener("pointerdown", onStickyNoteTabPointerDown);
@@ -9262,6 +9556,10 @@
         if (isUndoShortcut(event) && undoLastUserAction()) {
           event.preventDefault();
           event.stopPropagation();
+          return;
+        }
+
+        if (trapFocusWithinActiveDialog(event)) {
           return;
         }
 
